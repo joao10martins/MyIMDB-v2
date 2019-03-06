@@ -1,6 +1,16 @@
 <resources>
     <string name="app_name">MyIMDB</string>
-    <string name="title_home">Home</string>
+    <string name="title_home">Welcome to, MyIMDB!</string>
+    <string name="nav_home">Home</string>
     <string name="title_nowplaying">Now Playing</string>
     <string name="title_search">Search</string>
+
+    <string name="home_welcome">Here you can search for your movies and check what\'s currently hot at cinemas!</string>
+    <string name="home_startBrowsing">Start Browsing!</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="item_now_playing">Now Playing</string>
+    <string name="cardview_item_movie_title">Movie Title</string>
+
 </resources>
