@@ -25,7 +25,7 @@
                 android:layout_height="160dp"
                 android:background="@color/colorPrimary"
                 android:contentDescription="@string/item_now_playing"
-                android:scaleType="centerCrop" />
+                android:scaleType="fitCenter" />
 
             <TextView
                 android:id="@+id/movie_title_id"
