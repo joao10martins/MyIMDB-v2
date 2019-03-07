@@ -19,7 +19,7 @@
 
     </FrameLayout>
 
-    <TextView
+    <!--<TextView
         android:id="@+id/message"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -77,7 +77,7 @@
         android:textSize="36sp"
         app:layout_constraintEnd_toEndOf="@+id/home_cinema_image"
         app:layout_constraintStart_toStartOf="@+id/home_cinema_image"
-        app:layout_constraintTop_toBottomOf="@+id/home_cinema_image" />
+        app:layout_constraintTop_toBottomOf="@+id/home_cinema_image" />-->
 
     <android.support.design.widget.BottomNavigationView
         android:id="@+id/navigation"

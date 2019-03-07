@@ -37,7 +37,7 @@ public class NowPlayingRecyclerAdapter extends RecyclerView.Adapter<NowPlayingRe
         public NowPlayingViewHolder(View movieView, NowPlayingRecyclerAdapter adapter) {
             super(movieView);
             title = movieView.findViewById(R.id.movie_title_id);
-            movieImage = movieView.findViewById(R.id.movie_title_id);
+            movieImage = movieView.findViewById(R.id.movie_img_id);
             this.mAdapter = adapter;
         }
     }

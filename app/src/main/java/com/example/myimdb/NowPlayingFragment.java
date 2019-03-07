@@ -33,7 +33,10 @@ import java.util.List;
 public class NowPlayingFragment extends Fragment {
     private ImageView mImageMovie;
     private TextView mTitleMovie;
-    final List<Movie> NowPlaying = new ArrayList<>();
+    private List<Movie> nowPlayingList = new ArrayList<>();
+
+    private RecyclerView mRecyclerView;
+    private NowPlayingRecyclerAdapter mAdapter;
 
     private View mView;
 
@@ -49,8 +52,8 @@ public class NowPlayingFragment extends Fragment {
         // Inflate the layout for this fragment
         mView = inflater.inflate(R.layout.fragment_now_playing, container, false);
         // Views
-        mImageMovie = mView.findViewById(R.id.movie_img_id);
-        mTitleMovie = mView.findViewById(R.id.movie_title_id);
+        //mImageMovie = mView.findViewById(R.id.movie_img_id);
+        //mTitleMovie = mView.findViewById(R.id.movie_title_id);
 
 
         getNowPlaying();
@@ -72,62 +75,28 @@ public class NowPlayingFragment extends Fragment {
         final String url = "https://api.themoviedb.org/3/movie/now_playing?api_key=07d93ad59393a99fe6bc8c1b8f0de23b&language=en-US&page=1";
 
 
-        GsonRequest<Movie> request = new GsonRequest<Movie>(url,
-                                                            Movie.class,
+        GsonRequest<MovieResults> request = new GsonRequest<>(url,
+                                                            MovieResults.class,
                                                             createMyReqSuccessListener(),
                                                             createMyReqErrorListener());
-        /*JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, url, null,
-                new Response.Listener<JSONObject>() {
-                    @Override
-                    public void onResponse(JSONObject response) {
-                        try {
-                            JSONArray objArray = response.getJSONArray("results");
-                            for (int i = 0; i < objArray.length(); i++) {
-                                Movie movie = new Movie(
-                                        objArray.getJSONObject(i).getInt("vote_count"),
-                                        objArray.getJSONObject(i).getInt("id"),
-                                        objArray.getJSONObject(i).getBoolean("video"),
-                                        objArray.getJSONObject(i).getDouble("vote_average"),
-                                        objArray.getJSONObject(i).getString("title"),
-                                        objArray.getJSONObject(i).getDouble("popularity"),
-                                        objArray.getJSONObject(i).getString("poster_path"),
-                                        objArray.getJSONObject(i).getString("original_language"),
-                                        objArray.getJSONObject(i).getString("original_title"),
-                                        (List<Integer>) objArray.getJSONObject(i).get("genre_ids"),
-                                        objArray.getJSONObject(i).getString("backdrop_path"),
-                                        objArray.getJSONObject(i).getBoolean("adult"),
-                                        objArray.getJSONObject(i).getString("overview"),
-                                        objArray.getJSONObject(i).getString("release_date"));
-                                NowPlaying.add(movie);
-                                //NowPlaying.no
-                                //notifyDataSetChanged();
-                            }
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        error.printStackTrace();
-                    }
-                });*/
 
         requestQueue.add(request);
 
-        RecyclerView mRecyclerView = mView.findViewById(R.id.rv_NowPlaying);
-        NowPlayingRecyclerAdapter mAdapter = new NowPlayingRecyclerAdapter(getContext(), NowPlaying);
-        mRecyclerView.setAdapter(mAdapter);
-        mRecyclerView.setLayoutManager(new GridLayoutManager(getContext(), 2));
+
     }
 
-    private Response.Listener<Movie> createMyReqSuccessListener() {
-        return new Response.Listener<Movie>() {
+
+    private Response.Listener<MovieResults> createMyReqSuccessListener() {
+        return new Response.Listener<MovieResults>() {
             @Override
-            public void onResponse(Movie response) {
+            public void onResponse(MovieResults response) {
                 try {
-                    NowPlaying.add(response);
+                    nowPlayingList = response.movieList;
+                    mRecyclerView = mView.findViewById(R.id.rv_NowPlaying);
+                    mAdapter = new NowPlayingRecyclerAdapter(getContext(), nowPlayingList);
+                    mRecyclerView.setAdapter(mAdapter);
+                    mRecyclerView.setLayoutManager(new GridLayoutManager(getContext(), 3));
+                    //mAdapter.notifyDataSetChanged();
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
