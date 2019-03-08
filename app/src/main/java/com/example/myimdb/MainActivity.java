@@ -12,7 +12,8 @@ import android.widget.TextView;
 public class MainActivity extends AppCompatActivity {
 
     private TextView mTextMessage;
-    private boolean isFragmentDisplayed = false;
+    private boolean isNowPlayingFragmentDisplayed = false;
+    private boolean isHomeFragmentDisplayed = false;
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -21,14 +22,25 @@ public class MainActivity extends AppCompatActivity {
         public boolean onNavigationItemSelected(@NonNull MenuItem item) {
             switch (item.getItemId()) {
                 case R.id.navigation_home:
-                    mTextMessage.setText(R.string.title_home);
+                    if (isNowPlayingFragmentDisplayed){
+                        displayHome();
+                        /*FragmentManager fragmentManager = getSupportFragmentManager();
+                        fragmentManager.popBackStack();
+*/
+                    }
+                    displayHome();
                     return true;
                 case R.id.navigation_nowplaying:
-                    //mTextMessage.setText(R.string.title_nowplaying);
+                    if (isHomeFragmentDisplayed){
+                        displayNowPlaying();
+                        /*FragmentManager fragmentManager = getSupportFragmentManager();
+                        fragmentManager.popBackStack();*/
+
+                    }
                     displayNowPlaying();
                     return true;
                 case R.id.navigation_search:
-                    mTextMessage.setText(R.string.title_search);
+                    //mTextMessage.setText(R.string.title_search);
                     return true;
             }
             return false;
@@ -41,8 +53,8 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         getSupportActionBar().hide();
 
-        mTextMessage = (TextView) findViewById(R.id.message);
-        BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
+
+        BottomNavigationView navigation = findViewById(R.id.navigation);
         navigation.setSelectedItemId(R.id.navigation_home);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
     }
@@ -55,12 +67,37 @@ public class MainActivity extends AppCompatActivity {
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
 
+        // Set transition animations
+        fragmentTransaction.setCustomAnimations(R.anim.exit_to_left, R.anim.enter_from_left);
+
         // Add the NowPlayingFragment
-        fragmentTransaction.add(R.id.fragment_container,
-                nowPlayingFragment).addToBackStack(null).commit();
+        fragmentTransaction.replace(R.id.fragment_container,
+                nowPlayingFragment);
+        fragmentTransaction.addToBackStack(null).commit();
 
         // Set boolean flag to indicate fragment is open.
-        isFragmentDisplayed = true;
+        isNowPlayingFragmentDisplayed = true;
+    }
+
+
+    // Display Home Screen
+    public void displayHome() {
+        // Instantiate the fragment.
+        HomeFragment homeFragment = HomeFragment.newInstance();
+        // Get the FragmentManager and start a transaction.
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+
+        // Set transition animations
+        fragmentTransaction.setCustomAnimations(R.anim.exit_to_right, R.anim.enter_from_right);
+
+        // Add the NowPlayingFragment
+        fragmentTransaction.replace(R.id.fragment_container,
+                homeFragment);
+        fragmentTransaction.addToBackStack(null).commit();
+
+        // Set boolean flag to indicate fragment is open.
+        isHomeFragmentDisplayed = true;
     }
 
 }

@@ -29,14 +29,14 @@ public class NowPlayingRecyclerAdapter extends RecyclerView.Adapter<NowPlayingRe
     }
 
     class NowPlayingViewHolder extends RecyclerView.ViewHolder {
-        //public final TextView title;
+        public final TextView title;
         public final ImageView movieImage;
 
         final NowPlayingRecyclerAdapter mAdapter;
 
         public NowPlayingViewHolder(View movieView, NowPlayingRecyclerAdapter adapter) {
             super(movieView);
-            //title = movieView.findViewById(R.id.movie_title_id);
+            title = movieView.findViewById(R.id.movie_title_id);
             movieImage = movieView.findViewById(R.id.movie_img_id);
             this.mAdapter = adapter;
         }
@@ -54,17 +54,17 @@ public class NowPlayingRecyclerAdapter extends RecyclerView.Adapter<NowPlayingRe
     public void onBindViewHolder(@NonNull NowPlayingViewHolder holder, int position) {
 
         final Movie currentItem = mMovieList.get(position);
-        //holder.title.setText(currentItem.getTitle());
+        holder.title.setText(currentItem.getTitle());
         String imagePath = "https://image.tmdb.org/t/p/original/" + currentItem.getPoster_path();
 
 
-        if (imagePath != null){
+        if (currentItem.getPoster_path() != null){
             Glide.with(context)
                     .load(imagePath)
                     .into(holder.movieImage);
         } else {
             Glide.with(context)
-                    .load(imagePath)
+                    .load(R.drawable.ic_no_image_available)
                     .into(holder.movieImage);
         }
 
