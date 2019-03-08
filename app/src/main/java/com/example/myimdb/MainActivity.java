@@ -3,6 +3,7 @@ package com.example.myimdb;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
@@ -22,21 +23,27 @@ public class MainActivity extends AppCompatActivity {
         public boolean onNavigationItemSelected(@NonNull MenuItem item) {
             switch (item.getItemId()) {
                 case R.id.navigation_home:
+                    /*if (isHomeFragmentDisplayed){
+                        return true;
+                    }
                     if (isNowPlayingFragmentDisplayed){
                         displayHome();
-                        /*FragmentManager fragmentManager = getSupportFragmentManager();
+                        *//*FragmentManager fragmentManager = getSupportFragmentManager();
                         fragmentManager.popBackStack();
-*/
-                    }
+*//*
+                    }*/
                     displayHome();
                     return true;
                 case R.id.navigation_nowplaying:
+                    /*if (isNowPlayingFragmentDisplayed){
+                        return true;
+                    }
                     if (isHomeFragmentDisplayed){
                         displayNowPlaying();
-                        /*FragmentManager fragmentManager = getSupportFragmentManager();
-                        fragmentManager.popBackStack();*/
+                        *//*FragmentManager fragmentManager = getSupportFragmentManager();
+                        fragmentManager.popBackStack();*//*
 
-                    }
+                    }*/
                     displayNowPlaying();
                     return true;
                 case R.id.navigation_search:
@@ -63,7 +70,9 @@ public class MainActivity extends AppCompatActivity {
     public void displayNowPlaying() {
         // Instantiate the fragment.
         NowPlayingFragment nowPlayingFragment = NowPlayingFragment.newInstance();
-        // Get the FragmentManager and start a transaction.
+
+        switchFragment(nowPlayingFragment, true, true);
+        /*// Get the FragmentManager and start a transaction.
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
 
@@ -73,10 +82,11 @@ public class MainActivity extends AppCompatActivity {
         // Add the NowPlayingFragment
         fragmentTransaction.replace(R.id.fragment_container,
                 nowPlayingFragment);
-        fragmentTransaction.addToBackStack(null).commit();
+        fragmentTransaction.commit();*/
 
         // Set boolean flag to indicate fragment is open.
         isNowPlayingFragmentDisplayed = true;
+        isHomeFragmentDisplayed = false;
     }
 
 
@@ -84,20 +94,48 @@ public class MainActivity extends AppCompatActivity {
     public void displayHome() {
         // Instantiate the fragment.
         HomeFragment homeFragment = HomeFragment.newInstance();
+
+        switchFragment(homeFragment, true, false);
+        /*// Get the FragmentManager and start a transaction.
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+
+        // Set transition animations
+        if (isNowPlayingFragmentDisplayed)
+            fragmentTransaction.setCustomAnimations(R.anim.exit_to_right, R.anim.enter_from_right);
+        fragmentTransaction.setCustomAnimations(R.anim.exit_to_left, R.anim.enter_from_left);
+
+        // Add the NowPlayingFragment
+        fragmentTransaction.replace(R.id.fragment_container,
+                homeFragment);
+        fragmentTransaction.commit();*/
+
+        // Set boolean flag to indicate fragment is open.
+        isHomeFragmentDisplayed = true;
+        isNowPlayingFragmentDisplayed = false;
+    }
+
+    public void switchFragment(Fragment fragment, boolean isToAddToBackStack, boolean isAnimationToLeft) {
+
         // Get the FragmentManager and start a transaction.
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
 
         // Set transition animations
-        fragmentTransaction.setCustomAnimations(R.anim.exit_to_right, R.anim.enter_from_right);
+        if (isAnimationToLeft) {
+            fragmentTransaction.setCustomAnimations(R.anim.enter_from_left, R.anim.exit_to_right, R.anim.enter_from_right, R.anim.exit_to_left);
+        } else {
+            fragmentTransaction.setCustomAnimations(R.anim.enter_from_right, R.anim.exit_to_left, R.anim.enter_from_left, R.anim.exit_to_left);
+        }
 
-        // Add the NowPlayingFragment
+
+
+        // Replace the fragment
         fragmentTransaction.replace(R.id.fragment_container,
-                homeFragment);
-        fragmentTransaction.addToBackStack(null).commit();
-
-        // Set boolean flag to indicate fragment is open.
-        isHomeFragmentDisplayed = true;
+                fragment);
+        if (isToAddToBackStack)
+            fragmentTransaction.addToBackStack(null);
+        fragmentTransaction.commit();
     }
 
 }
