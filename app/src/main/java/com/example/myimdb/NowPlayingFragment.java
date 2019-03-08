@@ -37,6 +37,9 @@ public class NowPlayingFragment extends Fragment {
 
     private RecyclerView mRecyclerView;
     private NowPlayingRecyclerAdapter mAdapter;
+    private int mListCount;
+    private RequestQueue mRequestQueue;
+    private String mUrl;
 
     private View mView;
 
@@ -71,16 +74,21 @@ public class NowPlayingFragment extends Fragment {
 
     private void getNowPlaying(){
 
-        RequestQueue requestQueue = Volley.newRequestQueue(getActivity().getApplicationContext());
-        final String url = "https://api.themoviedb.org/3/movie/now_playing?api_key=07d93ad59393a99fe6bc8c1b8f0de23b&language=en-US&page=1";
+        mRequestQueue = Volley.newRequestQueue(getActivity().getApplicationContext());
+        mListCount = 1;
 
+        if (mRecyclerView == null) {
+            mUrl = "https://api.themoviedb.org/3/movie/now_playing?api_key=07d93ad59393a99fe6bc8c1b8f0de23b&language=en-US&page=1";
 
-        GsonRequest<MovieResults> request = new GsonRequest<>(url,
-                                                            MovieResults.class,
-                                                            createMyReqSuccessListener(),
-                                                            createMyReqErrorListener());
+            GsonRequest<MovieResults> request = new GsonRequest<>(mUrl,
+                    MovieResults.class,
+                    createMyReqSuccessListener(),
+                    createMyReqErrorListener());
 
-        requestQueue.add(request);
+            mRequestQueue.add(request);
+            ++mListCount;
+
+        }
 
 
     }
@@ -91,11 +99,32 @@ public class NowPlayingFragment extends Fragment {
             @Override
             public void onResponse(MovieResults response) {
                 try {
-                    nowPlayingList = response.movieList;
+                    nowPlayingList.addAll(response.movieList);
                     mRecyclerView = mView.findViewById(R.id.rv_NowPlaying);
                     mAdapter = new NowPlayingRecyclerAdapter(getContext(), nowPlayingList);
                     mRecyclerView.setAdapter(mAdapter);
                     mRecyclerView.setLayoutManager(new GridLayoutManager(getContext(), 3));
+
+                    mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+                        @Override
+                        public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                            super.onScrollStateChanged(recyclerView, newState);
+
+                            if (!recyclerView.canScrollVertically(1)) {
+                                //do something
+                                mUrl = "https://api.themoviedb.org/3/movie/now_playing?api_key=07d93ad59393a99fe6bc8c1b8f0de23b&language=en-US&page=" + mListCount;
+
+                                GsonRequest<MovieResults> request = new GsonRequest<>(mUrl,
+                                        MovieResults.class,
+                                        createMyReqSuccessListener(),
+                                        createMyReqErrorListener());
+
+                                mRequestQueue.add(request);
+                                ++mListCount;
+                            }
+                        }
+                    });
+
                     //mAdapter.notifyDataSetChanged();
                 } catch (Exception e) {
                     e.printStackTrace();
