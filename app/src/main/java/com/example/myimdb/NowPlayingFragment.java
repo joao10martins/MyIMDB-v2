@@ -87,7 +87,6 @@ public class NowPlayingFragment extends Fragment {
 
             mRequestQueue.add(request);
             ++mListCount;
-
         }
 
 
@@ -98,12 +97,18 @@ public class NowPlayingFragment extends Fragment {
         return new Response.Listener<MovieResults>() {
             @Override
             public void onResponse(MovieResults response) {
+                mRecyclerView = mView.findViewById(R.id.rv_NowPlaying);
                 try {
                     nowPlayingList.addAll(response.movieList);
-                    mRecyclerView = mView.findViewById(R.id.rv_NowPlaying);
-                    mAdapter = new NowPlayingRecyclerAdapter(getContext(), nowPlayingList);
-                    mRecyclerView.setAdapter(mAdapter);
-                    mRecyclerView.setLayoutManager(new GridLayoutManager(getContext(), 3));
+                    if (mAdapter == null) {
+                        mAdapter = new NowPlayingRecyclerAdapter(getContext(), nowPlayingList);
+                        mRecyclerView.setAdapter(mAdapter); // problemas aqui ao dar refresh(não mantém a posição do scroll)
+                        mRecyclerView.setLayoutManager(new GridLayoutManager(getContext(), 3));
+                    } else {
+                        mAdapter.notifyDataSetChanged();
+                    }
+
+                    
 
                     mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
                         @Override
