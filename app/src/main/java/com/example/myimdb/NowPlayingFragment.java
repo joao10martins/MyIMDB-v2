@@ -108,7 +108,7 @@ public class NowPlayingFragment extends Fragment {
                         mAdapter.notifyDataSetChanged();
                     }
 
-                    
+
 
                     mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
                         @Override

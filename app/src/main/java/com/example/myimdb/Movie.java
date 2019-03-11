@@ -19,6 +19,8 @@ public class Movie {
     private boolean adult;
     private String overview;
     private String release_date;
+    @
+    private String genresDescription;
 
 
     public Movie(
@@ -53,6 +55,9 @@ public class Movie {
         this.release_date = release_date;
     }
 
+    public String getGenresDescription() { return genresDescription; }
+
+    public void setGenresDescription(String genresDescription) { this.genresDescription = genresDescription; }
 
     public int getVote_count() { return vote_count; }
 

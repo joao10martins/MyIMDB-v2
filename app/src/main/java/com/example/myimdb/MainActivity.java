@@ -23,36 +23,39 @@ public class MainActivity extends AppCompatActivity {
         public boolean onNavigationItemSelected(@NonNull MenuItem item) {
             switch (item.getItemId()) {
                 case R.id.navigation_home:
-                    /*if (isHomeFragmentDisplayed){
+                    if (isHomeFragmentDisplayed){
                         return true;
                     }
                     if (isNowPlayingFragmentDisplayed){
                         displayHome();
-                        *//*FragmentManager fragmentManager = getSupportFragmentManager();
-                        fragmentManager.popBackStack();
-*//*
-                    }*/
-                    displayHome();
+                        /*FragmentManager fragmentManager = getSupportFragmentManager();
+                        fragmentManager.popBackStack();*/
+
+                    }
+                    //displayHome();
                     return true;
                 case R.id.navigation_nowplaying:
-                    /*if (isNowPlayingFragmentDisplayed){
+                    if (isNowPlayingFragmentDisplayed){
                         return true;
                     }
                     if (isHomeFragmentDisplayed){
                         displayNowPlaying();
-                        *//*FragmentManager fragmentManager = getSupportFragmentManager();
-                        fragmentManager.popBackStack();*//*
+                        /*FragmentManager fragmentManager = getSupportFragmentManager();
+                        fragmentManager.popBackStack();*/
 
-                    }*/
-                    displayNowPlaying();
+                    }
+                    //displayNowPlaying();
                     return true;
                 case R.id.navigation_search:
                     //mTextMessage.setText(R.string.title_search);
+                    displaySearch();
                     return true;
             }
             return false;
         }
     };
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,6 +67,18 @@ public class MainActivity extends AppCompatActivity {
         BottomNavigationView navigation = findViewById(R.id.navigation);
         navigation.setSelectedItemId(R.id.navigation_home);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
+
+
+        // Get the FragmentManager and start a transaction.
+        HomeFragment homeFragment = HomeFragment.newInstance();
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+
+        // Replace the fragment
+        fragmentTransaction.replace(R.id.fragment_container, homeFragment);
+        fragmentTransaction.addToBackStack(null);
+        fragmentTransaction.commit();
+        isHomeFragmentDisplayed = true;
     }
 
     // Display Now Playing Movies
@@ -72,17 +87,6 @@ public class MainActivity extends AppCompatActivity {
         NowPlayingFragment nowPlayingFragment = NowPlayingFragment.newInstance();
 
         switchFragment(nowPlayingFragment, true, true);
-        /*// Get the FragmentManager and start a transaction.
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-
-        // Set transition animations
-        fragmentTransaction.setCustomAnimations(R.anim.exit_to_left, R.anim.enter_from_left);
-
-        // Add the NowPlayingFragment
-        fragmentTransaction.replace(R.id.fragment_container,
-                nowPlayingFragment);
-        fragmentTransaction.commit();*/
 
         // Set boolean flag to indicate fragment is open.
         isNowPlayingFragmentDisplayed = true;
@@ -96,19 +100,6 @@ public class MainActivity extends AppCompatActivity {
         HomeFragment homeFragment = HomeFragment.newInstance();
 
         switchFragment(homeFragment, true, false);
-        /*// Get the FragmentManager and start a transaction.
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-
-        // Set transition animations
-        if (isNowPlayingFragmentDisplayed)
-            fragmentTransaction.setCustomAnimations(R.anim.exit_to_right, R.anim.enter_from_right);
-        fragmentTransaction.setCustomAnimations(R.anim.exit_to_left, R.anim.enter_from_left);
-
-        // Add the NowPlayingFragment
-        fragmentTransaction.replace(R.id.fragment_container,
-                homeFragment);
-        fragmentTransaction.commit();*/
 
         // Set boolean flag to indicate fragment is open.
         isHomeFragmentDisplayed = true;
@@ -136,6 +127,19 @@ public class MainActivity extends AppCompatActivity {
         if (isToAddToBackStack)
             fragmentTransaction.addToBackStack(null);
         fragmentTransaction.commit();
+    }
+
+
+    // TODO
+    private void displaySearch() {
+        // Instantiate the fragment.
+        SearchFragment searchFragment = SearchFragment.newInstance();
+
+        switchFragment(searchFragment, true, false);
+
+        // Set boolean flag to indicate fragment is open.
+        isHomeFragmentDisplayed = true;
+        isNowPlayingFragmentDisplayed = false;
     }
 
 }
