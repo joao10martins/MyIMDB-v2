@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import static android.content.Context.MODE_PRIVATE;
 
@@ -139,15 +140,22 @@ public class SearchFragment extends Fragment {
             @Override
             public void onResponse(MovieResults response) {
                 mRecyclerView = mView.findViewById(R.id.rvSearch);
+                StringBuilder sb = new StringBuilder();
+
                 try {
                     mMovieList.addAll(response.movieList);
+                    //TODO: iterar mMoviesList
+                    for(Movie movie : mMovieList){
+                        // iterar genres_ids da API
+                        // Set genres description
+                        movie.setGenresDescription("");
+                        for (int genreId : movie.getGenre_ids()){
+                            //sb.append(mGenreMap.get(genreId).getName() + ", ");
+                            movie.setGenresDescription(movie.getGenresDescription().concat(mGenreMap.get(genreId).getName()) + ", ");
+                        }
+                    }
+
                     if (mAdapter == null) {
-
-                        //TODO: iterar mMoviesList
-                            // iterar genres_ids da API
-                                //
-                            //TODO: set genresDescription
-
                         mAdapter = new SearchRecyclerAdapter(getContext(), mMovieList);
                         mRecyclerView.setAdapter(mAdapter); // problemas aqui ao dar refresh(não mantém a posição do scroll)
                         mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));

@@ -37,7 +37,7 @@ public class SearchRecyclerAdapter extends RecyclerView.Adapter<SearchRecyclerAd
         this.context = context;
         mInflater = LayoutInflater.from(context);
         this.mMovieList = movieList;
-        this.mGenreList = genreList;
+        //this.mGenreList = genreList;
 
         //this.nowPlayingListener = null;
     }
@@ -68,42 +68,16 @@ public class SearchRecyclerAdapter extends RecyclerView.Adapter<SearchRecyclerAd
 
     @Override
     public void onBindViewHolder(@NonNull SearchViewHolder holder, int position) {
-        //getGenreList();
-        StringBuilder sb = new StringBuilder();
+
         final Movie currentItem = mMovieList.get(position);
-        //List<Integer> genreIdsList = currentItem.getGenre_ids();
-
-        //final MovieGenre genre = mGenreList.get(position);
-
-        holder.title.setText(currentItem.getTitle());
-
-        // holder.genre.setText(currentItem.getGenresDescription);
-        for (int i=0; i < currentItem.getGenre_ids().size(); i++){
-            //String prefix = "";
-            for (MovieGenre genre : mGenreList){
-                if (genre.getId() == currentItem.getGenre_ids().get(i)){
-                    //sb.append(prefix);
-                    //prefix=",";
-                    sb.append(genre.getName() + ", ");
-                    //holder.genre.setText(genre.getName());
-                }
-            }
-        }
+        String imagePath = "https://image.tmdb.org/t/p/original/" + currentItem.getPoster_path();
+        StringBuilder sb = new StringBuilder(currentItem.getGenresDescription());
         sb.deleteCharAt(sb.length()-1); // Delete whitespace.
         sb.deleteCharAt(sb.length()-1); // Delete last comma.
+
+
+        holder.title.setText(currentItem.getTitle());
         holder.genre.setText(sb);
-
-        /*if (currentItem.getGenre_ids().contains(genre.getId())){
-            holder.genre.setText(genre.getName());
-        }*/
-
-
-        //if (currentItem.getGenre_ids().contains(mGenreList)){
-            //holder.genre.setText(genre.getName());
-        //}
-
-        String imagePath = "https://image.tmdb.org/t/p/original/" + currentItem.getPoster_path();
-
 
         if (currentItem.getPoster_path() != null){
             Glide.with(context)

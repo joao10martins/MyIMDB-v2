@@ -1,5 +1,7 @@
 package com.example.myimdb;
 
+import com.google.gson.annotations.Expose;
+
 import java.util.List;
 
 
@@ -19,7 +21,7 @@ public class Movie {
     private boolean adult;
     private String overview;
     private String release_date;
-    @
+
     private String genresDescription;
 
 
