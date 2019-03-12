@@ -23,7 +23,7 @@
                 android:layout_height="wrap_content"
                 android:ems="10"
                 android:hint="Search movie..."
-                android:inputType="number|text"
+                android:inputType="text"
                 android:textColor="@color/colorPrimaryDark"
                 app:layout_constraintBaseline_toBaselineOf="@+id/btnSearch"
                 app:layout_constraintBottom_toBottomOf="parent"

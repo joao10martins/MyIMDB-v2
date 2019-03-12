@@ -71,13 +71,10 @@ public class SearchRecyclerAdapter extends RecyclerView.Adapter<SearchRecyclerAd
 
         final Movie currentItem = mMovieList.get(position);
         String imagePath = "https://image.tmdb.org/t/p/original/" + currentItem.getPoster_path();
-        StringBuilder sb = new StringBuilder(currentItem.getGenresDescription());
-        sb.deleteCharAt(sb.length()-1); // Delete whitespace.
-        sb.deleteCharAt(sb.length()-1); // Delete last comma.
 
 
         holder.title.setText(currentItem.getTitle());
-        holder.genre.setText(sb);
+        holder.genre.setText(currentItem.getGenresDescription());
 
         if (currentItem.getPoster_path() != null){
             Glide.with(context)
@@ -99,45 +96,5 @@ public class SearchRecyclerAdapter extends RecyclerView.Adapter<SearchRecyclerAd
     }
 
 
-
-
-    /*// Get List of all the existing Genres in the API.
-    private void getGenreList() {
-        mRequestQueue = Volley.newRequestQueue(context);
-        mUrl = "https://api.themoviedb.org/3/genre/movie/list?api_key=07d93ad59393a99fe6bc8c1b8f0de23b&language=en-US";
-
-        GsonRequest<MovieGenreResults> request = new GsonRequest<>(mUrl,
-                MovieGenreResults.class,
-                getGenreSuccessListener(),
-                getGenreErrorListener());
-
-        mRequestQueue.add(request);
-    }
-
-
-    private Response.Listener<MovieGenreResults> getGenreSuccessListener() {
-        return new Response.Listener<MovieGenreResults>() {
-            @Override
-            public void onResponse(MovieGenreResults response) {
-                try {
-                    mGenreList.addAll(response.genreList);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        };
-    }
-
-
-
-    private Response.ErrorListener getGenreErrorListener() {
-        return new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                // Do whatever you want to do with error.getMessage();
-                error.printStackTrace();
-            }
-        };
-    }*/
 
 }

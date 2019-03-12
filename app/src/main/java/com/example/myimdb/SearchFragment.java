@@ -10,6 +10,10 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ImageButton;
+import android.widget.TextView;
 
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -37,6 +41,9 @@ public class SearchFragment extends Fragment {
     private List<MovieGenre> mGenreList = new ArrayList<>();
     private HashMap<Integer , MovieGenre> mGenreMap = new HashMap<>();
     private SearchRecyclerAdapter mAdapter;
+    private int mListCount;
+    private String mSearch_query;
+    private Movie mMovie;
 
 
     private String sharedPrefsFile = "com.example.myimdb";
@@ -60,15 +67,8 @@ public class SearchFragment extends Fragment {
         mView = inflater.inflate(R.layout.fragment_search, container, false);
         // Initialize the list of Genres.
         getGenreList();
-        // Save the list of Genre to SharedPrefs
-        /*mPreferences = this.getActivity().getSharedPreferences(sharedPrefsFile, MODE_PRIVATE);
-        SharedPreferences.Editor editor = this.getActivity().getSharedPreferences(sharedPrefsFile, MODE_PRIVATE).edit();
-        for (MovieGenre genre : mGenreList){
-            editor.putInt("id", genre.getId());
-            editor.putString("name", genre.getName());
-        }
-        editor.apply();*/
-        test();
+        // Search movie
+        searchQuery();
 
 
         return mView;
@@ -83,7 +83,7 @@ public class SearchFragment extends Fragment {
         GsonRequest<MovieGenreResults> request = new GsonRequest<>(mUrl,
                 MovieGenreResults.class,
                 getGenreSuccessListener(),
-                getGenreErrorListener());
+                getErrorListener());
 
         mRequestQueue.add(request);
     }
@@ -109,7 +109,7 @@ public class SearchFragment extends Fragment {
 
 
 
-    private Response.ErrorListener getGenreErrorListener() {
+    private Response.ErrorListener getErrorListener() {
         return new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
@@ -122,16 +122,29 @@ public class SearchFragment extends Fragment {
 
 
     // Test query
-    private void test() {
+    private void searchQuery() {
+        mListCount = 1;
         mRequestQueue = Volley.newRequestQueue(getActivity().getApplicationContext());
-        mUrl = "https://api.themoviedb.org/3/search/movie?api_key=07d93ad59393a99fe6bc8c1b8f0de23b&language=en-US&query=the&page=1&include_adult=false";
+        final EditText query_text = mView.findViewById(R.id.search_movie);
 
-        GsonRequest<MovieResults> request = new GsonRequest<>(mUrl,
-                MovieResults.class,
-                getMovieSuccessListener(),
-                getGenreErrorListener());
+        ImageButton btnSearch = mView.findViewById(R.id.btnSearch);
+        btnSearch.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mSearch_query = query_text.getText().toString();
+                mUrl = "https://api.themoviedb.org/3/search/movie?api_key=07d93ad59393a99fe6bc8c1b8f0de23b&language=en-US&query=" + mSearch_query + "&page=1&include_adult=false";
 
-        mRequestQueue.add(request);
+                GsonRequest<MovieResults> request = new GsonRequest<>(mUrl,
+                        MovieResults.class,
+                        getMovieSuccessListener(),
+                        getErrorListener());
+
+                mRequestQueue.add(request);
+                ++mListCount;
+            }
+        });
+
+
     }
 
 
@@ -140,28 +153,54 @@ public class SearchFragment extends Fragment {
             @Override
             public void onResponse(MovieResults response) {
                 mRecyclerView = mView.findViewById(R.id.rvSearch);
-                StringBuilder sb = new StringBuilder();
-
                 try {
                     mMovieList.addAll(response.movieList);
-                    //TODO: iterar mMoviesList
+                    //iterar mMoviesList
                     for(Movie movie : mMovieList){
                         // iterar genres_ids da API
                         // Set genres description
                         movie.setGenresDescription("");
                         for (int genreId : movie.getGenre_ids()){
-                            //sb.append(mGenreMap.get(genreId).getName() + ", ");
                             movie.setGenresDescription(movie.getGenresDescription().concat(mGenreMap.get(genreId).getName()) + ", ");
+                        }
+                        // Remove white space if it exists.
+                        if (movie.getGenresDescription().endsWith(" ")){
+                            movie.setGenresDescription(movie.getGenresDescription().substring(0, movie.getGenresDescription().length()-1));
+                        }
+                        // Remove last comma, if it exists.
+                        if (movie.getGenresDescription().endsWith(",")){
+                            movie.setGenresDescription(movie.getGenresDescription().substring(0, movie.getGenresDescription().length()-1));
                         }
                     }
 
                     if (mAdapter == null) {
                         mAdapter = new SearchRecyclerAdapter(getContext(), mMovieList);
-                        mRecyclerView.setAdapter(mAdapter); // problemas aqui ao dar refresh(não mantém a posição do scroll)
+                        mRecyclerView.setAdapter(mAdapter);
                         mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
                     } else {
                         mAdapter.notifyDataSetChanged();
                     }
+
+
+                    mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+                        @Override
+                        public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                            super.onScrollStateChanged(recyclerView, newState);
+
+                            if (!recyclerView.canScrollVertically(1)) {
+                                //do something
+                                mUrl = "https://api.themoviedb.org/3/search/movie?api_key=07d93ad59393a99fe6bc8c1b8f0de23b&language=en-US&query=" + mSearch_query + "&page=" + mListCount + "&include_adult=false";
+
+                                GsonRequest<MovieResults> request = new GsonRequest<>(mUrl,
+                                        MovieResults.class,
+                                        getMovieSuccessListener(),
+                                        getErrorListener());
+
+                                mRequestQueue.add(request);
+                                ++mListCount;
+                            }
+                        }
+                    });
                 } catch (Exception e) {
                     e.printStackTrace();
                 }

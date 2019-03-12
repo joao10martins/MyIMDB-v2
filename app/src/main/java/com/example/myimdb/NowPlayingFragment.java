@@ -102,7 +102,7 @@ public class NowPlayingFragment extends Fragment {
                     nowPlayingList.addAll(response.movieList);
                     if (mAdapter == null) {
                         mAdapter = new NowPlayingRecyclerAdapter(getContext(), nowPlayingList);
-                        mRecyclerView.setAdapter(mAdapter); // problemas aqui ao dar refresh(não mantém a posição do scroll)
+                        mRecyclerView.setAdapter(mAdapter);
                         mRecyclerView.setLayoutManager(new GridLayoutManager(getContext(), 3));
                     } else {
                         mAdapter.notifyDataSetChanged();
