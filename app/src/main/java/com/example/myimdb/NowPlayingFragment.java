@@ -3,6 +3,8 @@ package com.example.myimdb;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -165,7 +167,36 @@ public class NowPlayingFragment extends Fragment implements NowPlayingRecyclerAd
         return new Response.Listener<MovieDetails>() {
             @Override
             public void onResponse(MovieDetails response) {
+                // TODO: send response data to Details fragment
+                // and replace fragment with details fragment
 
+                // Pack the response data in a Bundle.
+                Bundle bundle = new Bundle();
+                bundle.putString("original_title", response.getOriginal_title());
+                bundle.putString("backdrop_path", response.getBackdrop_path());
+                bundle.putString("overview", response.getOverview());
+                bundle.putString("poster_path", response.getPoster_path());
+                bundle.putString("release_date", response.getRelease_date());
+                bundle.putInt("runtime", response.getRuntime());
+                bundle.putDouble("vote_average", response.getVote_average());
+                bundle.putInt("vote_count", response.getVote_count());
+
+                // Send the response data stored within the Bundle to the Fragment.
+                DetailsFragment detailsFragment = DetailsFragment.newInstance();
+                detailsFragment.setArguments(bundle);
+
+
+                // Replace fragment after work is done.
+                // Get the FragmentManager and start a transaction.
+                FragmentManager fragmentManager = getFragmentManager();
+                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+
+
+                // Replace the fragment
+                fragmentTransaction.replace(R.id.fragment_container,
+                        detailsFragment);
+                fragmentTransaction.addToBackStack(null);
+                fragmentTransaction.commit();
             }
         };
     }
