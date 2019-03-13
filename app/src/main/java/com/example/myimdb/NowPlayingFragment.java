@@ -30,7 +30,7 @@ import java.util.List;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class NowPlayingFragment extends Fragment {
+public class NowPlayingFragment extends Fragment implements NowPlayingRecyclerAdapter.OnMovieClick {
     private ImageView mImageMovie;
     private TextView mTitleMovie;
     private List<Movie> nowPlayingList = new ArrayList<>();
@@ -83,7 +83,7 @@ public class NowPlayingFragment extends Fragment {
             GsonRequest<MovieResults> request = new GsonRequest<>(mUrl,
                     MovieResults.class,
                     createMyReqSuccessListener(),
-                    createMyReqErrorListener());
+                    getErrorListener());
 
             mRequestQueue.add(request);
             ++mListCount;
@@ -101,7 +101,7 @@ public class NowPlayingFragment extends Fragment {
                 try {
                     nowPlayingList.addAll(response.movieList);
                     if (mAdapter == null) {
-                        mAdapter = new NowPlayingRecyclerAdapter(getContext(), nowPlayingList);
+                        mAdapter = new NowPlayingRecyclerAdapter(getContext(), nowPlayingList, NowPlayingFragment.this);
                         mRecyclerView.setAdapter(mAdapter);
                         mRecyclerView.setLayoutManager(new GridLayoutManager(getContext(), 3));
                     } else {
@@ -122,7 +122,7 @@ public class NowPlayingFragment extends Fragment {
                                 GsonRequest<MovieResults> request = new GsonRequest<>(mUrl,
                                         MovieResults.class,
                                         createMyReqSuccessListener(),
-                                        createMyReqErrorListener());
+                                        getErrorListener());
 
                                 mRequestQueue.add(request);
                                 ++mListCount;
@@ -139,12 +139,33 @@ public class NowPlayingFragment extends Fragment {
     }
 
 
-    private Response.ErrorListener createMyReqErrorListener() {
+    private Response.ErrorListener getErrorListener() {
         return new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
                 // Do whatever you want to do with error.getMessage();
                 error.printStackTrace();
+            }
+        };
+    }
+
+    @Override
+    public void onItemClick(int movieId) {
+        mUrl = "https://api.themoviedb.org/3/movie/" + movieId + "?api_key=07d93ad59393a99fe6bc8c1b8f0de23b&language=en-US";
+
+        GsonRequest<MovieDetails> request = new GsonRequest<>(mUrl,
+                MovieDetails.class,
+                getDetailsSuccessListener(),
+                getErrorListener());
+
+        mRequestQueue.add(request);
+    }
+
+    private Response.Listener<MovieDetails> getDetailsSuccessListener() {
+        return new Response.Listener<MovieDetails>() {
+            @Override
+            public void onResponse(MovieDetails response) {
+
             }
         };
     }

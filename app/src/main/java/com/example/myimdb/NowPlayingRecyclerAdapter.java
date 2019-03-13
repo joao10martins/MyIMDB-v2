@@ -6,6 +6,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -13,18 +14,22 @@ import com.bumptech.glide.Glide;
 
 import java.util.List;
 
-public class NowPlayingRecyclerAdapter extends RecyclerView.Adapter<NowPlayingRecyclerAdapter.NowPlayingViewHolder> {
+public class NowPlayingRecyclerAdapter extends RecyclerView.Adapter<NowPlayingRecyclerAdapter.NowPlayingViewHolder>  {
     private final List<Movie> mMovieList;
     private LayoutInflater mInflater;
     private Context context;
 
+    private OnMovieClick mListener;
+
     //private NowPlayingListener nowPlayingListener;
 
     public NowPlayingRecyclerAdapter(Context context,
-                                     List<Movie> movieList) {
+                                     List<Movie> movieList,
+                                     OnMovieClick listener) {
         this.context = context;
         mInflater = LayoutInflater.from(context);
         this.mMovieList = movieList;
+        this.mListener = listener;
         //this.nowPlayingListener = null;
     }
 
@@ -69,12 +74,25 @@ public class NowPlayingRecyclerAdapter extends RecyclerView.Adapter<NowPlayingRe
         }
 
 
+        //holder.movieImage.setTag(currentItem.getId());
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+               mListener.onItemClick(currentItem.getId());
+            }
+        });
+
 
     }
 
     @Override
     public int getItemCount() {
         return mMovieList.size();
+    }
+
+
+    public interface OnMovieClick {
+        void onItemClick(int movieId);
     }
 
 

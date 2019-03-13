@@ -11,10 +11,8 @@
         android:id="@+id/details_movie_background_img"
         android:layout_width="match_parent"
         android:layout_height="260dp"
-        android:layout_marginStart="0dp"
-        android:layout_marginTop="0dp"
-        android:layout_marginEnd="0dp"
         android:background="@color/colorPrimary"
+        android:contentDescription="Background Thumbnail"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -26,19 +24,23 @@
         android:layout_marginStart="24dp"
         android:layout_marginTop="240dp"
         android:background="@color/colorAccent"
+        android:contentDescription="Thumbnail"
+        android:elevation="4dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/details_movie_background_img" />
 
 
     <TextView
         android:id="@+id/details_title"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
+        android:layout_marginEnd="16dp"
         android:fontFamily="@font/archivo_black"
         android:textColor="@color/colorAccent"
         android:textSize="18sp"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/details_movie_thumbnail"
         app:layout_constraintTop_toBottomOf="@+id/details_movie_background_img"
         tools:text="Details Title" />
@@ -49,6 +51,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginTop="16dp"
+        android:cropToPadding="true"
         android:src="@drawable/ic_star_black_24dp"
         android:tint="@color/colorAccent"
         app:layout_constraintStart_toEndOf="@+id/details_movie_thumbnail"
@@ -95,18 +98,75 @@
         android:layout_marginTop="64dp"
         android:textColor="@color/colorAccent"
         android:fontFamily="@font/archivo_black"
-        android:text="Overview"
+        android:text="@string/details_overview_label"
         app:layout_constraintStart_toStartOf="@+id/details_movie_thumbnail"
         app:layout_constraintTop_toBottomOf="@+id/details_movie_thumbnail" />
 
     <TextView
         android:id="@+id/txt_overview"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="0dp"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
         android:layout_marginTop="8dp"
-        android:text="Movie Overview Text"
+        android:layout_marginEnd="24dp"
+        android:layout_marginBottom="24dp"
+        android:text="@string/details_movie_overview_text"
+        android:textColor="@color/colorLightGrey"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="@+id/label_overview"
         app:layout_constraintTop_toBottomOf="@+id/label_overview" />
+
+    <TextView
+        android:id="@+id/txt_vote_average"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="18dp"
+        android:text="@string/details_rating"
+        android:textColor="@color/colorLightGrey"
+        app:layout_constraintStart_toEndOf="@+id/details_vote_average_img"
+        app:layout_constraintTop_toBottomOf="@+id/details_title" />
+
+    <TextView
+        android:id="@+id/vote_average_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/details_rating_ending"
+        android:textColor="@color/colorLightGrey"
+        app:layout_constraintBaseline_toBaselineOf="@+id/txt_vote_average"
+        app:layout_constraintStart_toEndOf="@+id/txt_vote_average" />
+
+    <TextView
+        android:id="@+id/txt_number_of_votes"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="14dp"
+        android:text="@string/details_votes"
+        android:textColor="@color/colorLightGrey"
+        app:layout_constraintStart_toEndOf="@+id/details_number_of_votes_img"
+        app:layout_constraintTop_toBottomOf="@+id/txt_vote_average" />
+
+    <TextView
+        android:id="@+id/txt_release_date"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="12dp"
+        android:text="@string/details_release_date"
+        android:textColor="@color/colorLightGrey"
+        app:layout_constraintStart_toEndOf="@+id/details_release_date_img"
+        app:layout_constraintTop_toBottomOf="@+id/txt_number_of_votes" />
+
+    <TextView
+        android:id="@+id/txt_duration"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="12dp"
+        android:text="@string/details_duration"
+        android:textColor="@color/colorLightGrey"
+        app:layout_constraintStart_toEndOf="@+id/details_duration_img"
+        app:layout_constraintTop_toBottomOf="@+id/txt_release_date" />
 
 </android.support.constraint.ConstraintLayout>

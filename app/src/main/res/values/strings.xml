@@ -12,5 +12,12 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="item_now_playing">Now Playing</string>
     <string name="cardview_item_movie_title">Movie Title</string>
+    <string name="details_movie_overview_text">Movie Overview Text</string>
+    <string name="details_overview_label">Overview</string>
+    <string name="details_rating">Rating</string>
+    <string name="details_rating_ending">/10</string>
+    <string name="details_votes">Votes</string>
+    <string name="details_release_date">Release date</string>
+    <string name="details_duration">Duration</string>
 
 </resources>

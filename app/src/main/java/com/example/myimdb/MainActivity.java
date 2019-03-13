@@ -76,7 +76,6 @@ public class MainActivity extends AppCompatActivity {
 
         // Replace the fragment
         fragmentTransaction.replace(R.id.fragment_container, homeFragment);
-        fragmentTransaction.addToBackStack(null);
         fragmentTransaction.commit();
         isHomeFragmentDisplayed = true;
     }

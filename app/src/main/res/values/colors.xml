@@ -5,4 +5,5 @@
     <color name="colorAccent">#FFC107</color>
     <color name="colorAccentOpaque">#99FFC107</color>
     <color name="onItemChecked">#0E0E0E</color>
+    <color name="colorLightGrey">#636363</color>
 </resources>
