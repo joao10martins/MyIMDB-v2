@@ -1,8 +1,11 @@
 package com.example.myimdb;
 
 
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -16,6 +19,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -37,17 +41,22 @@ import static android.content.Context.MODE_PRIVATE;
 public class SearchFragment extends Fragment implements SearchRecyclerAdapter.OnMovieClick{
 
     private View mView;
+    private boolean isSearchQueryUpdated = false;
     private RequestQueue mRequestQueue;
     private String mUrl;
     private RecyclerView mRecyclerView;
+
     //private List<MovieGenre> mGenreList = new ArrayList<>();
     private HashMap<Integer , MovieGenre> mGenreMap = new HashMap<>();
     private SearchRecyclerAdapter mAdapter;
     private int mListCount;
     private String mSearch_query;
 
+    private CheckKeyboardFocus mListener;
+
 
     private List<Movie> mMovieList = new ArrayList<>();
+    private int mButtonClickCount;
 
 
     public SearchFragment() {
@@ -58,21 +67,56 @@ public class SearchFragment extends Fragment implements SearchRecyclerAdapter.On
         return new SearchFragment();
     }
 
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        if (context instanceof CheckKeyboardFocus) {
+            //init the listener
+            mListener = (CheckKeyboardFocus) context;
+        } else {
+            throw new RuntimeException(context.toString()
+                    + " must implement InteractionListener");
+        }
+    }
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         mView = inflater.inflate(R.layout.fragment_search, container, false);
-        // Initialize the list of Genres.
-        getGenreList();
-        // Search movie
-        searchQuery();
+
 
 
         return mView;
     }
 
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+
+        // Initialize the list of Genres.
+        getGenreList();
+        // Search movie
+        searchQuery();
+
+        mView.findViewById(R.id.search_movie).setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+
+                if (hasFocus) {
+                    mListener.checkKeyboardFocus(hasFocus);
+                } else {
+                    mListener.checkKeyboardFocus(!hasFocus);
+                }
+
+
+
+            }
+        });
+
+    }
 
     // Get List of all the existing Genres in the API.
     private void getGenreList() {
@@ -123,32 +167,51 @@ public class SearchFragment extends Fragment implements SearchRecyclerAdapter.On
     // Test query
     private void searchQuery() {
         mListCount = 1;
+        mButtonClickCount = 1;
         mRequestQueue = Volley.newRequestQueue(getActivity().getApplicationContext());
         final EditText query_text = mView.findViewById(R.id.search_movie);
 
-        /*query_text.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View v, boolean hasFocus) {
-                if (!hasFocus) {
-                    MainActivity.
-                }
-            }
-        });*/
+
 
         ImageButton btnSearch = mView.findViewById(R.id.btnSearch);
         btnSearch.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 mSearch_query = query_text.getText().toString();
-                mUrl = "https://api.themoviedb.org/3/search/movie?api_key=07d93ad59393a99fe6bc8c1b8f0de23b&language=en-US&query=" + mSearch_query + "&page=1&include_adult=false";
 
-                GsonRequest<MovieResults> request = new GsonRequest<>(mUrl,
-                        MovieResults.class,
-                        getMovieSuccessListener(),
-                        getErrorListener());
+                if (mSearch_query.isEmpty() || mSearch_query.trim().isEmpty())
+                    Toast.makeText(getActivity(), "Please enter a valid input", Toast.LENGTH_SHORT).show();
+                if (mAdapter == null && mButtonClickCount == 1 && !mSearch_query.isEmpty() && !mSearch_query.trim().isEmpty()) {
 
-                mRequestQueue.add(request);
-                ++mListCount;
+
+                    mUrl = "https://api.themoviedb.org/3/search/movie?api_key=07d93ad59393a99fe6bc8c1b8f0de23b&language=en-US&query=" + mSearch_query + "&page=1&include_adult=false";
+
+                    GsonRequest<MovieResults> request = new GsonRequest<>(mUrl,
+                            MovieResults.class,
+                            getMovieSuccessListener(),
+                            getErrorListener());
+
+                    mRequestQueue.add(request);
+                    ++mListCount;
+                    ++mButtonClickCount;
+                }
+                if(mAdapter != null && mButtonClickCount > 1){
+                    mMovieList.clear();
+                    //mSearch_query = query_text.getText().toString();
+
+                    mUrl = "https://api.themoviedb.org/3/search/movie?api_key=07d93ad59393a99fe6bc8c1b8f0de23b&language=en-US&query=" + mSearch_query + "&page=1&include_adult=false";
+
+                    GsonRequest<MovieResults> request = new GsonRequest<>(mUrl,
+                            MovieResults.class,
+                            getMovieSuccessListener(),
+                            getErrorListener());
+
+                    mRequestQueue.add(request);
+                    ++mListCount;
+                }
+
+                //mRecyclerView.removeAllViews();
+
             }
         });
 
@@ -266,4 +329,16 @@ public class SearchFragment extends Fragment implements SearchRecyclerAdapter.On
             }
         };
     }
+
+
+    public interface CheckKeyboardFocus {
+        void checkKeyboardFocus(boolean isKeyboardOpen);
+    }
+
+
+
+
+
+
+
 }

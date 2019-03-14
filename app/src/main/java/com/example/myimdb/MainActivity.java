@@ -7,13 +7,20 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
+import android.view.KeyEvent;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.EditText;
 import android.widget.TextView;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements SearchFragment.CheckKeyboardFocus {
 
+    private EditText mSearch;
     private boolean isNowPlayingFragmentDisplayed = false;
     private boolean isHomeFragmentDisplayed = false;
+    private boolean isSearchFocused = false;
+
+    private BottomNavigationView mBottomNavigationView;
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -41,6 +48,7 @@ public class MainActivity extends AppCompatActivity {
                     return true;
                 case R.id.navigation_search:
                     displaySearch();
+                    //checkKeyboardFocus(mSearch);
                     return true;
             }
             return false;
@@ -54,6 +62,10 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         getSupportActionBar().hide();
+
+
+
+        mBottomNavigationView = findViewById(R.id.navigation);
 
 
         BottomNavigationView navigation = findViewById(R.id.navigation);
@@ -123,14 +135,49 @@ public class MainActivity extends AppCompatActivity {
 
     // TODO
     private void displaySearch() {
+
+
         // Instantiate the fragment.
         SearchFragment searchFragment = SearchFragment.newInstance();
 
         switchFragment(searchFragment, true, false);
+
 
         // Set boolean flag to indicate fragment is open.
         isHomeFragmentDisplayed = true;
         isNowPlayingFragmentDisplayed = false;
     }
 
+
+    /*@Override
+    public void onBackPressed() {
+
+
+
+
+            super.onBackPressed();
+            mBottomNavigationView.setVisibility(View.VISIBLE);
+
+
+    }*/
+
+
+
+
+    @Override
+    public void checkKeyboardFocus(boolean isKeyboardOpen) {
+        if (isKeyboardOpen) {
+            isSearchFocused = true;
+            mBottomNavigationView.setVisibility(View.INVISIBLE);
+            mSearch.setFocusable(false);
+        } else {
+            //mSearch.setFocusable(false);
+            mBottomNavigationView.setVisibility(View.VISIBLE);
+        }
+        /*if (isSearchFocused == true){
+            mBottomNavigationView.setVisibility(View.VISIBLE);
+            //onBackPressed();
+        }*/
+
+    }
 }
