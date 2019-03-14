@@ -59,7 +59,7 @@ public class DetailsFragment extends Fragment {
         Bundle bundle = getArguments();
         // Set the View's images.
         String imageBackpath = "https://image.tmdb.org/t/p/original/" + bundle.getString("backdrop_path"); // Background Image.
-        if (imageBackpath != null){
+        if (bundle.getString("backdrop_path") != null){
             Glide.with(getActivity().getApplicationContext())
                     .load(imageBackpath)
                     .into(mBackpathImage);
@@ -70,7 +70,7 @@ public class DetailsFragment extends Fragment {
         }
 
         String imagePoster = "https://image.tmdb.org/t/p/original/" + bundle.getString("poster_path"); // Thumbnail Image.
-        if (imagePoster != null){
+        if (bundle.getString("poster_path") != null){
             Glide.with(getActivity().getApplicationContext())
                     .load(imagePoster)
                     .into(mPosterpathImage);
@@ -85,17 +85,47 @@ public class DetailsFragment extends Fragment {
         mOriginalTitle.setText(bundle.getString("original_title"));
         // String formatters can be an alternative to the '/10' label
         // and to the usages of 'String.valueOf()'
-        mRating.setText(String.valueOf(bundle.getDouble("vote_average")));
-        mVoteCount.setText(String.valueOf(bundle.getInt("vote_count")));
-        mReleaseDate.setText(bundle.getString("release_date"));
+        if (bundle.getDouble("vote_average") == 0) {
+            mRating.setText("N/A");
+        } else {
+            mRating.setText(String.valueOf(bundle.getDouble("vote_average")));
+        }
+
+
+        if (bundle.getInt("vote_count") == 0) {
+            mVoteCount.setText("N/A");
+        } else {
+            mVoteCount.setText(String.valueOf(bundle.getInt("vote_count")));
+        }
+
+
+        if (bundle.getString("release_date").equals("")) {
+            mReleaseDate.setText("N/A");
+        } else {
+            mReleaseDate.setText(bundle.getString("release_date"));
+        }
+
+
         // Formatting the duration layout
-        int hours = bundle.getInt("runtime") / 60;
-        String mins = String.valueOf(bundle.getInt("runtime") % 60);
-        mins = mins.length() == 1 ? "0" + mins : mins;  // if the mins has length == 1(i.e  4mins, add '0' behind it)
-        String formattedDuration = hours + "h" + mins + "min";
-        mDuration.setText(formattedDuration);
-        mOverview.setText(bundle.getString("overview"));
-        mOverview.setMovementMethod(new ScrollingMovementMethod());
+        if (bundle.getInt("runtime") == 0) {
+            mDuration.setText("N/A");
+        } else {
+            int hours = bundle.getInt("runtime") / 60;
+            String mins = String.valueOf(bundle.getInt("runtime") % 60);
+            mins = mins.length() == 1 ? "0" + mins : mins;  // if the mins has length == 1(i.e  4mins, add '0' behind it)
+            String formattedDuration = hours + "h" + mins + "min";
+            mDuration.setText(formattedDuration);
+        }
+
+
+        if (bundle.getString("overview").equals("")) {
+            mOverview.setText("No overview available for display.");
+        } else {
+            mOverview.setText(bundle.getString("overview"));
+            mOverview.setMovementMethod(new ScrollingMovementMethod());
+        }
+
+
 
         return mView;
     }

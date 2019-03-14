@@ -4,6 +4,8 @@ package com.example.myimdb;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -32,22 +34,19 @@ import static android.content.Context.MODE_PRIVATE;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class SearchFragment extends Fragment {
+public class SearchFragment extends Fragment implements SearchRecyclerAdapter.OnMovieClick{
 
     private View mView;
     private RequestQueue mRequestQueue;
     private String mUrl;
     private RecyclerView mRecyclerView;
-    private List<MovieGenre> mGenreList = new ArrayList<>();
+    //private List<MovieGenre> mGenreList = new ArrayList<>();
     private HashMap<Integer , MovieGenre> mGenreMap = new HashMap<>();
     private SearchRecyclerAdapter mAdapter;
     private int mListCount;
     private String mSearch_query;
-    private Movie mMovie;
 
 
-    private String sharedPrefsFile = "com.example.myimdb";
-    private SharedPreferences mPreferences;
     private List<Movie> mMovieList = new ArrayList<>();
 
 
@@ -127,6 +126,15 @@ public class SearchFragment extends Fragment {
         mRequestQueue = Volley.newRequestQueue(getActivity().getApplicationContext());
         final EditText query_text = mView.findViewById(R.id.search_movie);
 
+        /*query_text.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (!hasFocus) {
+                    MainActivity.
+                }
+            }
+        });*/
+
         ImageButton btnSearch = mView.findViewById(R.id.btnSearch);
         btnSearch.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -174,7 +182,7 @@ public class SearchFragment extends Fragment {
                     }
 
                     if (mAdapter == null) {
-                        mAdapter = new SearchRecyclerAdapter(getContext(), mMovieList);
+                        mAdapter = new SearchRecyclerAdapter(getContext(), mMovieList, SearchFragment.this);
                         mRecyclerView.setAdapter(mAdapter);
                         mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
                     } else {
@@ -208,4 +216,54 @@ public class SearchFragment extends Fragment {
         };
     }
 
+    @Override
+    public void onItemClick(int movieId) {
+        mUrl = "https://api.themoviedb.org/3/movie/" + movieId + "?api_key=07d93ad59393a99fe6bc8c1b8f0de23b&language=en-US";
+
+        GsonRequest<MovieDetails> request = new GsonRequest<>(mUrl,
+                MovieDetails.class,
+                getDetailsSuccessListener(),
+                getErrorListener());
+
+        mRequestQueue.add(request);
+    }
+
+
+    private Response.Listener<MovieDetails> getDetailsSuccessListener() {
+        return new Response.Listener<MovieDetails>() {
+            @Override
+            public void onResponse(MovieDetails response) {
+                // TODO: send response data to Details fragment
+                // and replace fragment with details fragment
+
+                // Pack the response data in a Bundle.
+                Bundle bundle = new Bundle();
+                bundle.putString("original_title", response.getOriginal_title());
+                bundle.putString("backdrop_path", response.getBackdrop_path());
+                bundle.putString("overview", response.getOverview());
+                bundle.putString("poster_path", response.getPoster_path());
+                bundle.putString("release_date", response.getRelease_date());
+                bundle.putInt("runtime", response.getRuntime());
+                bundle.putDouble("vote_average", response.getVote_average());
+                bundle.putInt("vote_count", response.getVote_count());
+
+                // Send the response data stored within the Bundle to the Fragment.
+                DetailsFragment detailsFragment = DetailsFragment.newInstance();
+                detailsFragment.setArguments(bundle);
+
+
+                // Replace fragment after work is done.
+                // Get the FragmentManager and start a transaction.
+                FragmentManager fragmentManager = getFragmentManager();
+                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+
+
+                // Replace the fragment
+                fragmentTransaction.replace(R.id.fragment_container,
+                        detailsFragment);
+                fragmentTransaction.addToBackStack(null);
+                fragmentTransaction.commit();
+            }
+        };
+    }
 }

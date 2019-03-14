@@ -12,7 +12,6 @@ import android.widget.TextView;
 
 public class MainActivity extends AppCompatActivity {
 
-    private TextView mTextMessage;
     private boolean isNowPlayingFragmentDisplayed = false;
     private boolean isHomeFragmentDisplayed = false;
 
@@ -28,11 +27,7 @@ public class MainActivity extends AppCompatActivity {
                     }
                     if (isNowPlayingFragmentDisplayed){
                         displayHome();
-                        /*FragmentManager fragmentManager = getSupportFragmentManager();
-                        fragmentManager.popBackStack();*/
-
                     }
-                    //displayHome();
                     return true;
                 case R.id.navigation_nowplaying:
                     if (isNowPlayingFragmentDisplayed){
@@ -40,14 +35,11 @@ public class MainActivity extends AppCompatActivity {
                     }
                     if (isHomeFragmentDisplayed){
                         displayNowPlaying();
-                        /*FragmentManager fragmentManager = getSupportFragmentManager();
-                        fragmentManager.popBackStack();*/
 
                     }
                     //displayNowPlaying();
                     return true;
                 case R.id.navigation_search:
-                    //mTextMessage.setText(R.string.title_search);
                     displaySearch();
                     return true;
             }

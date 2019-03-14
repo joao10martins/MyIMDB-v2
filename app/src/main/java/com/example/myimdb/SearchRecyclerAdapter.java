@@ -25,6 +25,7 @@ public class SearchRecyclerAdapter extends RecyclerView.Adapter<SearchRecyclerAd
     private LayoutInflater mInflater;
     private Context context;
 
+    private OnMovieClick mListener;
 
     private List<MovieGenre> mGenreList;
     @SuppressLint("UseSparseArrays")
@@ -33,13 +34,13 @@ public class SearchRecyclerAdapter extends RecyclerView.Adapter<SearchRecyclerAd
     //private NowPlayingListener nowPlayingListener;
 
     public SearchRecyclerAdapter(Context context,
-                                     List<Movie> movieList) {
+                                     List<Movie> movieList,
+                                     OnMovieClick listener) {
         this.context = context;
         mInflater = LayoutInflater.from(context);
         this.mMovieList = movieList;
-        //this.mGenreList = genreList;
+        this.mListener = listener;
 
-        //this.nowPlayingListener = null;
     }
 
     class SearchViewHolder extends RecyclerView.ViewHolder {
@@ -87,6 +88,12 @@ public class SearchRecyclerAdapter extends RecyclerView.Adapter<SearchRecyclerAd
         }
 
 
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mListener.onItemClick(currentItem.getId());
+            }
+        });
 
     }
 
@@ -96,5 +103,9 @@ public class SearchRecyclerAdapter extends RecyclerView.Adapter<SearchRecyclerAd
     }
 
 
+
+    public interface OnMovieClick {
+        void onItemClick(int movieId);
+    }
 
 }
