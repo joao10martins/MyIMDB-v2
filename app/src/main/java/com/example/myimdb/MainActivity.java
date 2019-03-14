@@ -1,5 +1,7 @@
 package com.example.myimdb;
 
+import android.content.Context;
+import android.graphics.Rect;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
@@ -10,6 +12,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.KeyEvent;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.TextView;
 
@@ -19,6 +24,7 @@ public class MainActivity extends AppCompatActivity implements SearchFragment.Ch
     private boolean isNowPlayingFragmentDisplayed = false;
     private boolean isHomeFragmentDisplayed = false;
     private boolean isSearchFocused = false;
+    private View mView;
 
     private BottomNavigationView mBottomNavigationView;
 
@@ -138,10 +144,35 @@ public class MainActivity extends AppCompatActivity implements SearchFragment.Ch
 
 
         // Instantiate the fragment.
-        SearchFragment searchFragment = SearchFragment.newInstance();
+        final SearchFragment searchFragment = SearchFragment.newInstance();
 
         switchFragment(searchFragment, true, false);
 
+
+
+
+        /*Hide button when keyboard is open*/
+        searchFragment.getView().getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                Rect r = new Rect();
+                searchFragment.getView().getWindowVisibleDisplayFrame(r);
+
+                int heightDiff = searchFragment.getView().getRootView().getHeight() - (r.bottom - r.top);
+
+                if (heightDiff > 244) { // if more than 100 pixels, its probably a keyboard...
+                    //ok now we know the keyboard is up...
+                    mBottomNavigationView.setVisibility(View.GONE);
+
+
+                } else {
+                    //ok now we know the keyboard is down...
+                    mBottomNavigationView.setVisibility(View.VISIBLE);
+
+
+                }
+            }
+        });
 
         // Set boolean flag to indicate fragment is open.
         isHomeFragmentDisplayed = true;
@@ -167,12 +198,11 @@ public class MainActivity extends AppCompatActivity implements SearchFragment.Ch
     @Override
     public void checkKeyboardFocus(boolean isKeyboardOpen) {
         if (isKeyboardOpen) {
-            isSearchFocused = true;
-            mBottomNavigationView.setVisibility(View.INVISIBLE);
-            mSearch.setFocusable(false);
+            return;
         } else {
             //mSearch.setFocusable(false);
-            mBottomNavigationView.setVisibility(View.VISIBLE);
+            return;
+           // mBottomNavigationView.setVisibility(View.VISIBLE);
         }
         /*if (isSearchFocused == true){
             mBottomNavigationView.setVisibility(View.VISIBLE);

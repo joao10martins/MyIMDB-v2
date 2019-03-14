@@ -15,6 +15,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -88,6 +89,8 @@ public class SearchFragment extends Fragment implements SearchRecyclerAdapter.On
 
 
 
+
+
         return mView;
     }
 
@@ -105,11 +108,9 @@ public class SearchFragment extends Fragment implements SearchRecyclerAdapter.On
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
 
-                if (hasFocus) {
+                if (hasFocus)
                     mListener.checkKeyboardFocus(hasFocus);
-                } else {
-                    mListener.checkKeyboardFocus(!hasFocus);
-                }
+
 
 
 
