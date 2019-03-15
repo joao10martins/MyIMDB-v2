@@ -1,6 +1,7 @@
 package com.example.myimdb;
 
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -27,6 +28,10 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.Volley;
 
+import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEvent;
+import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEventListener;
+import net.yslibrary.android.keyboardvisibilityevent.Unregistrar;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -42,6 +47,9 @@ import static android.content.Context.MODE_PRIVATE;
 public class SearchFragment extends Fragment implements SearchRecyclerAdapter.OnMovieClick{
 
     private View mView;
+    private Context mContext;
+    private Unregistrar mUnregistrar;
+
     private boolean isSearchQueryUpdated = false;
     private RequestQueue mRequestQueue;
     private String mUrl;
@@ -53,7 +61,7 @@ public class SearchFragment extends Fragment implements SearchRecyclerAdapter.On
     private int mListCount;
     private String mSearch_query;
 
-    private CheckKeyboardFocus mListener;
+    private CheckKeyboardState mListener;
 
 
     private List<Movie> mMovieList = new ArrayList<>();
@@ -71,15 +79,14 @@ public class SearchFragment extends Fragment implements SearchRecyclerAdapter.On
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        if (context instanceof CheckKeyboardFocus) {
+        if (context instanceof CheckKeyboardState) {
             //init the listener
-            mListener = (CheckKeyboardFocus) context;
+            mListener = (CheckKeyboardState) context;
         } else {
             throw new RuntimeException(context.toString()
                     + " must implement InteractionListener");
         }
     }
-
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -98,25 +105,21 @@ public class SearchFragment extends Fragment implements SearchRecyclerAdapter.On
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        mContext = getActivity();
+
+        registerKeyboardListener();
 
         // Initialize the list of Genres.
         getGenreList();
         // Search movie
         searchQuery();
+    }
 
-        mView.findViewById(R.id.search_movie).setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View v, boolean hasFocus) {
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
 
-                if (hasFocus)
-                    mListener.checkKeyboardFocus(hasFocus);
-
-
-
-
-            }
-        });
-
+        mUnregistrar.unregister();
     }
 
     // Get List of all the existing Genres in the API.
@@ -331,15 +334,23 @@ public class SearchFragment extends Fragment implements SearchRecyclerAdapter.On
         };
     }
 
+    /* Keyboard state*/
 
-    public interface CheckKeyboardFocus {
-        void checkKeyboardFocus(boolean isKeyboardOpen);
+    private void registerKeyboardListener() {
+        // get Unregistrar
+        mUnregistrar = KeyboardVisibilityEvent.registerEventListener(
+                (Activity) mContext,
+                new KeyboardVisibilityEventListener() {
+                    @Override
+                    public void onVisibilityChanged(boolean isOpen) {
+                        // some code depending on keyboard visiblity status
+                        mListener.onKeyboardStateChanged(isOpen);
+                    }
+                });
     }
 
-
-
-
-
-
+    public interface CheckKeyboardState {
+        void onKeyboardStateChanged(boolean isOpen);
+    }
 
 }

@@ -40,6 +40,9 @@ dependencies {
     // To be able to call webservices
     implementation 'com.android.volley:volley:1.1.1'
     implementation 'com.squareup.okhttp3:okhttp:3.13.1'
+
+    // To listen for Keyboard events
+    implementation 'net.yslibrary.keyboardvisibilityevent:keyboardvisibilityevent:2.2.1'
 }
 
 
