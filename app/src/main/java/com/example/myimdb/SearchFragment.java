@@ -50,7 +50,7 @@ public class SearchFragment extends Fragment implements SearchRecyclerAdapter.On
     private Context mContext;
     private Unregistrar mUnregistrar;
 
-    private boolean isSearchQueryUpdated = false;
+
     private RequestQueue mRequestQueue;
     private String mUrl;
     private RecyclerView mRecyclerView;
@@ -334,8 +334,8 @@ public class SearchFragment extends Fragment implements SearchRecyclerAdapter.On
         };
     }
 
-    /* Keyboard state*/
 
+    /* Keyboard state*/
     private void registerKeyboardListener() {
         // get Unregistrar
         mUnregistrar = KeyboardVisibilityEvent.registerEventListener(

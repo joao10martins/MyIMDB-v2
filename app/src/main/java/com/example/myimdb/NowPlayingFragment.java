@@ -1,7 +1,10 @@
 package com.example.myimdb;
 
 
+import android.content.Context;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -33,9 +36,9 @@ import java.util.List;
  * A simple {@link Fragment} subclass.
  */
 public class NowPlayingFragment extends Fragment implements NowPlayingRecyclerAdapter.OnMovieClick {
-    private ImageView mImageMovie;
-    private TextView mTitleMovie;
+    private OnNowPlayingListener mListener;
     private List<Movie> nowPlayingList = new ArrayList<>();
+    private Context mContext;
 
     private RecyclerView mRecyclerView;
     private NowPlayingRecyclerAdapter mAdapter;
@@ -61,12 +64,64 @@ public class NowPlayingFragment extends Fragment implements NowPlayingRecyclerAd
         //mTitleMovie = mView.findViewById(R.id.movie_title_id);
 
 
-        getNowPlaying();
+
+
 
 
 
 
         return mView;
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        mContext = getActivity();
+
+        getNowPlaying();
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        if (context instanceof NowPlayingFragment.OnNowPlayingListener) {
+            //init the listener
+            mListener = (NowPlayingFragment.OnNowPlayingListener) context;
+        } else {
+            throw new RuntimeException(context.toString()
+                    + " must implement InteractionListener");
+        }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (mRecyclerView != null && nowPlayingList.size() > 0) {
+            mRecyclerView.setAdapter(mAdapter);
+            mRecyclerView.setLayoutManager(new GridLayoutManager(getContext(), 3));
+
+            mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+                @Override
+                public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                    super.onScrollStateChanged(recyclerView, newState);
+
+                    if (!recyclerView.canScrollVertically(1)) {
+                        //do something
+                        mUrl = "https://api.themoviedb.org/3/movie/now_playing?api_key=07d93ad59393a99fe6bc8c1b8f0de23b&language=en-US&page=" + mListCount;
+
+                        GsonRequest<MovieResults> request = new GsonRequest<>(mUrl,
+                                MovieResults.class,
+                                createMyReqSuccessListener(),
+                                getErrorListener());
+
+                        mRequestQueue.add(request);
+                        ++mListCount;
+                    }
+                }
+            });
+        }
+
     }
 
     public static NowPlayingFragment newInstance() {
@@ -79,7 +134,7 @@ public class NowPlayingFragment extends Fragment implements NowPlayingRecyclerAd
         mRequestQueue = Volley.newRequestQueue(getActivity().getApplicationContext());
         mListCount = 1;
 
-        if (mRecyclerView == null) {
+        if (nowPlayingList.size() == 0) { //eroor
             mUrl = "https://api.themoviedb.org/3/movie/now_playing?api_key=07d93ad59393a99fe6bc8c1b8f0de23b&language=en-US&page=1";
 
             GsonRequest<MovieResults> request = new GsonRequest<>(mUrl,
@@ -90,6 +145,7 @@ public class NowPlayingFragment extends Fragment implements NowPlayingRecyclerAd
             mRequestQueue.add(request);
             ++mListCount;
         }
+
 
 
     }
@@ -151,6 +207,7 @@ public class NowPlayingFragment extends Fragment implements NowPlayingRecyclerAd
         };
     }
 
+
     @Override
     public void onItemClick(int movieId) {
         mUrl = "https://api.themoviedb.org/3/movie/" + movieId + "?api_key=07d93ad59393a99fe6bc8c1b8f0de23b&language=en-US";
@@ -186,7 +243,10 @@ public class NowPlayingFragment extends Fragment implements NowPlayingRecyclerAd
                 detailsFragment.setArguments(bundle);
 
 
-                // Replace fragment after work is done.
+                // Send detailsFragment to Main
+                mListener.onSwitchFragment(detailsFragment);
+
+                /*// Replace fragment after work is done.
                 // Get the FragmentManager and start a transaction.
                 FragmentManager fragmentManager = getFragmentManager();
                 FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
@@ -196,11 +256,15 @@ public class NowPlayingFragment extends Fragment implements NowPlayingRecyclerAd
                 fragmentTransaction.replace(R.id.fragment_container,
                         detailsFragment);
                 fragmentTransaction.addToBackStack(null);
-                fragmentTransaction.commit();
+                fragmentTransaction.commit();*/
             }
         };
     }
 
+
+    public interface OnNowPlayingListener {
+        void onSwitchFragment(Fragment fragment);
+    }
 
 }
 
