@@ -19,7 +19,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.TextView;
 
-public class MainActivity extends AppCompatActivity implements SearchFragment.CheckKeyboardState {
+public class MainActivity extends AppCompatActivity implements SearchFragment.CheckKeyboardState, NowPlayingFragment.OnNowPlayingListener {
 
     /* Constants */
     private static final String TAG = MainActivity.class.getCanonicalName();
@@ -101,7 +101,7 @@ public class MainActivity extends AppCompatActivity implements SearchFragment.Ch
         // Instantiate the fragment.
         NowPlayingFragment nowPlayingFragment = NowPlayingFragment.newInstance();
 
-        switchFragment(nowPlayingFragment, false, true);
+        switchFragment(nowPlayingFragment, true, true);
 
         // Set boolean flag to indicate fragment is open.
         isNowPlayingFragmentDisplayed = true;
@@ -149,12 +149,21 @@ public class MainActivity extends AppCompatActivity implements SearchFragment.Ch
 
 
 
-        // Replace the fragment
-        fragmentTransaction.replace(R.id.fragment_container,
-                fragment);
-        if (isToAddToBackStack)
+        // Add test
+        /*if(!isHomeFragmentDisplayed && isNowPlayingFragmentDisplayed){
+            fragmentTransaction.add(R.id.fragment_container, fragment);
+        } else {*/
+            // Replace the fragment
+            fragmentTransaction.replace(R.id.fragment_container, fragment);
+        //}
+
+
+        if (isToAddToBackStack) {
             fragmentTransaction.addToBackStack(null);
-        fragmentTransaction.commit();
+            fragmentTransaction.commit();
+        } else {
+            fragmentTransaction.commit();
+        }
     }
 
 
@@ -165,7 +174,7 @@ public class MainActivity extends AppCompatActivity implements SearchFragment.Ch
         // Instantiate the fragment.
         final SearchFragment searchFragment = SearchFragment.newInstance();
 
-        switchFragment(searchFragment, false, false);
+        switchFragment(searchFragment, true, false);
 
 
 
@@ -176,7 +185,7 @@ public class MainActivity extends AppCompatActivity implements SearchFragment.Ch
         isHomeFragmentDisplayed = false;
         isNowPlayingFragmentDisplayed = false;
         isSearchFragmentDisplayed = true;
-        isDetailsFragmentDisplayed = true;
+        isDetailsFragmentDisplayed = false;
     }
 
 
@@ -188,5 +197,10 @@ public class MainActivity extends AppCompatActivity implements SearchFragment.Ch
     public void onKeyboardStateChanged(boolean isOpen) {
 
         mBottomNavigationView.setVisibility(isOpen ? View.GONE : View.VISIBLE);
+    }
+
+    @Override
+    public void onSwitchFragment(Fragment fragment) {
+        switchFragment(fragment, true, false);
     }
 }
