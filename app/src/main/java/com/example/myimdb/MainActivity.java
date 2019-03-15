@@ -25,14 +25,14 @@ public class MainActivity extends AppCompatActivity implements SearchFragment.Ch
     private static final String TAG = MainActivity.class.getCanonicalName();
 
     /* Properties */
+    private View mView;
 
     /* Variables */
-
-    private EditText mSearch;
     private boolean isNowPlayingFragmentDisplayed = false;
     private boolean isHomeFragmentDisplayed = false;
-    private boolean isSearchFocused = false;
-    private View mView;
+    private boolean isSearchFragmentDisplayed = false;
+    private boolean isDetailsFragmentDisplayed = false;
+
 
     private BottomNavigationView mBottomNavigationView;
 
@@ -46,7 +46,7 @@ public class MainActivity extends AppCompatActivity implements SearchFragment.Ch
                     if (isHomeFragmentDisplayed){
                         return true;
                     }
-                    if (isNowPlayingFragmentDisplayed){
+                    if (isNowPlayingFragmentDisplayed  || isSearchFragmentDisplayed){
                         displayHome();
                     }
                     return true;
@@ -54,15 +54,18 @@ public class MainActivity extends AppCompatActivity implements SearchFragment.Ch
                     if (isNowPlayingFragmentDisplayed){
                         return true;
                     }
-                    if (isHomeFragmentDisplayed){
+                    if (isHomeFragmentDisplayed || isSearchFragmentDisplayed || isDetailsFragmentDisplayed){
                         displayNowPlaying();
 
                     }
-                    //displayNowPlaying();
                     return true;
                 case R.id.navigation_search:
-                    displaySearch();
-                    //checkKeyboardFocus(mSearch);
+                    if (isSearchFragmentDisplayed){
+                        return true;
+                    }
+                    if (isHomeFragmentDisplayed || isNowPlayingFragmentDisplayed || isDetailsFragmentDisplayed){
+                        displaySearch();
+                    }
                     return true;
             }
             return false;
@@ -78,39 +81,8 @@ public class MainActivity extends AppCompatActivity implements SearchFragment.Ch
         getSupportActionBar().hide();
 
         mBottomNavigationView = findViewById(R.id.navigation);
-        /*Hide button when keyboard is open*/
-
-
-        /*final View rootView = getWindow().getDecorView().findViewById(R.id.search_movie);
-        rootView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-            @Override
-            public void onGlobalLayout() {
-                Rect r = new Rect();
-                rootView.getRootView().getWindowVisibleDisplayFrame(r);
-
-                int heightDiff = rootView.getRootView().getRootView().getHeight() - (r.bottom - r.top);
-
-                if (heightDiff > 244) { // if more than 100 pixels, its probably a keyboard...
-                    //ok now we know the keyboard is up...
-                    mBottomNavigationView.setVisibility(View.GONE);
-
-
-                } else {
-                    //ok now we know the keyboard is down...
-                    mBottomNavigationView.setVisibility(View.VISIBLE);
-
-
-                }
-            }
-        });*/
-
-
-
-
-
-        BottomNavigationView navigation = findViewById(R.id.navigation);
-        navigation.setSelectedItemId(R.id.navigation_home);
-        navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
+        mBottomNavigationView.setSelectedItemId(R.id.navigation_home);
+        mBottomNavigationView.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
 
 
         // Get the FragmentManager and start a transaction.
@@ -129,11 +101,12 @@ public class MainActivity extends AppCompatActivity implements SearchFragment.Ch
         // Instantiate the fragment.
         NowPlayingFragment nowPlayingFragment = NowPlayingFragment.newInstance();
 
-        switchFragment(nowPlayingFragment, true, true);
+        switchFragment(nowPlayingFragment, false, true);
 
         // Set boolean flag to indicate fragment is open.
         isNowPlayingFragmentDisplayed = true;
         isHomeFragmentDisplayed = false;
+        isSearchFragmentDisplayed = false;
     }
 
 
@@ -142,11 +115,23 @@ public class MainActivity extends AppCompatActivity implements SearchFragment.Ch
         // Instantiate the fragment.
         HomeFragment homeFragment = HomeFragment.newInstance();
 
-        switchFragment(homeFragment, true, false);
+        if (isNowPlayingFragmentDisplayed){
+            switchFragment(homeFragment, false, false);
+            // Set boolean flag to indicate fragment is open.
+            isHomeFragmentDisplayed = true;
+            isNowPlayingFragmentDisplayed = false;
+            isSearchFragmentDisplayed = false;
+        }
+        if (isSearchFragmentDisplayed){
+            switchFragment(homeFragment, false, true);
+            // Set boolean flag to indicate fragment is open.
+            isHomeFragmentDisplayed = true;
+            isNowPlayingFragmentDisplayed = false;
+            isSearchFragmentDisplayed = false;
+        }
 
-        // Set boolean flag to indicate fragment is open.
-        isHomeFragmentDisplayed = true;
-        isNowPlayingFragmentDisplayed = false;
+
+
     }
 
     public void switchFragment(Fragment fragment, boolean isToAddToBackStack, boolean isAnimationToLeft) {
@@ -180,7 +165,7 @@ public class MainActivity extends AppCompatActivity implements SearchFragment.Ch
         // Instantiate the fragment.
         final SearchFragment searchFragment = SearchFragment.newInstance();
 
-        switchFragment(searchFragment, true, false);
+        switchFragment(searchFragment, false, false);
 
 
 
@@ -188,12 +173,14 @@ public class MainActivity extends AppCompatActivity implements SearchFragment.Ch
 
 
         // Set boolean flag to indicate fragment is open.
-        isHomeFragmentDisplayed = true;
+        isHomeFragmentDisplayed = false;
         isNowPlayingFragmentDisplayed = false;
+        isSearchFragmentDisplayed = true;
+        isDetailsFragmentDisplayed = true;
     }
 
 
-    
+
 
     /* Interface listener implementation */
 
