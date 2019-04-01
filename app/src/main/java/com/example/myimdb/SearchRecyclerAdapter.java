@@ -10,15 +10,12 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.Volley;
 import com.bumptech.glide.Glide;
+import com.example.myimdb.model.Movie;
+import com.example.myimdb.model.MovieGenre;
 
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class SearchRecyclerAdapter extends RecyclerView.Adapter<SearchRecyclerAdapter.SearchViewHolder> {
     private final List<Movie> mMovieList;

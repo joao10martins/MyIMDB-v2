@@ -19,6 +19,14 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.example.myimdb.model.Movie;
+
+import io.realm.OrderedCollectionChangeSet;
+import io.realm.OrderedRealmCollectionChangeListener;
+import io.realm.Realm;
+import io.realm.RealmConfiguration;
+import io.realm.RealmResults;
+
 public class MainActivity extends AppCompatActivity implements SearchFragment.CheckKeyboardState, NowPlayingFragment.OnNowPlayingListener {
 
     /* Constants */
@@ -32,6 +40,9 @@ public class MainActivity extends AppCompatActivity implements SearchFragment.Ch
     private boolean isHomeFragmentDisplayed = false;
     private boolean isSearchFragmentDisplayed = false;
     private boolean isDetailsFragmentDisplayed = false;
+
+    /* Realm */
+    Realm mRealm;
 
 
     private BottomNavigationView mBottomNavigationView;
@@ -80,6 +91,10 @@ public class MainActivity extends AppCompatActivity implements SearchFragment.Ch
         setContentView(R.layout.activity_main);
         getSupportActionBar().hide();
 
+        mRealm = Realm.getDefaultInstance();
+
+
+
         mBottomNavigationView = findViewById(R.id.navigation);
         mBottomNavigationView.setSelectedItemId(R.id.navigation_home);
         mBottomNavigationView.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
@@ -107,6 +122,24 @@ public class MainActivity extends AppCompatActivity implements SearchFragment.Ch
         isNowPlayingFragmentDisplayed = true;
         isHomeFragmentDisplayed = false;
         isSearchFragmentDisplayed = false;
+
+
+        // TEST
+        // Query Realm for all movies
+        final RealmResults<Movie> movies = mRealm.where(Movie.class).findAll();
+
+        // Realm transaction (hopefully saves data persistently)
+        mRealm.beginTransaction();
+        mRealm.commitTransaction();
+
+        // Listeners will be notified when data changes
+        movies.addChangeListener(new OrderedRealmCollectionChangeListener<RealmResults<Movie>>() {
+            @Override
+            public void onChange(RealmResults<Movie> movies, OrderedCollectionChangeSet changeSet) {
+                // Query results are updated in real time with fine grained notifications.
+                changeSet.getInsertions();
+            }
+        });
     }
 
 
@@ -140,6 +173,7 @@ public class MainActivity extends AppCompatActivity implements SearchFragment.Ch
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
 
+
         // Set transition animations
         if (isAnimationToLeft) {
             fragmentTransaction.setCustomAnimations(R.anim.enter_from_left, R.anim.exit_to_right, R.anim.enter_from_right, R.anim.exit_to_left);
@@ -154,6 +188,8 @@ public class MainActivity extends AppCompatActivity implements SearchFragment.Ch
             fragmentTransaction.add(R.id.fragment_container, fragment);
         } else {*/
             // Replace the fragment
+            //fragmentManager.saveFragmentInstanceState(fragment);
+
             fragmentTransaction.replace(R.id.fragment_container, fragment);
         //}
 
