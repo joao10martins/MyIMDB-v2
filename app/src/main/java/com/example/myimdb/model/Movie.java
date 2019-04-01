@@ -1,11 +1,14 @@
-package com.example.myimdb;
+package com.example.myimdb.model;
 
 import com.google.gson.annotations.Expose;
 
 import java.util.List;
 
+import io.realm.RealmList;
+import io.realm.RealmObject;
 
-public class Movie {
+
+public class Movie extends RealmObject {
 
     private int vote_count;
     private int id;
@@ -16,7 +19,7 @@ public class Movie {
     private String poster_path;
     private String original_language;
     private String original_title;
-    private List<Integer> genre_ids;
+    private RealmList<Integer> genre_ids;
     private String backdrop_path;
     private boolean adult;
     private String overview;
@@ -24,6 +27,8 @@ public class Movie {
 
     private String genresDescription;
 
+
+    public Movie(){}
 
     public Movie(
             int vote_count,
@@ -35,7 +40,7 @@ public class Movie {
             String poster_path,
             String original_language,
             String original_title,
-            List<Integer> genre_ids,
+            RealmList<Integer> genre_ids,
             String backdrop_path,
             boolean adult,
             String overview,
@@ -97,9 +102,9 @@ public class Movie {
 
     public void setOriginal_title(String original_title) { this.original_title = original_title; }
 
-    public List<Integer> getGenre_ids() { return genre_ids; }
+    public RealmList<Integer> getGenre_ids() { return genre_ids; }
 
-    public void setGenre_ids(List<Integer> genre_ids) { this.genre_ids = genre_ids; }
+    public void setGenre_ids(RealmList<Integer> genre_ids) { this.genre_ids = genre_ids; }
 
     public String getBackdrop_path() { return backdrop_path; }
 

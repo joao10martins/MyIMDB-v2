@@ -1,11 +1,15 @@
-package com.example.myimdb;
+package com.example.myimdb.model;
 
+import com.example.myimdb.model.Movie;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
 
-public class MovieResults {
+import io.realm.RealmList;
+import io.realm.RealmObject;
+
+public class MovieResults extends RealmObject {
 
     @SerializedName("results")
-    public List<Movie> movieList;
+    public RealmList<Movie> movieList;
 }
