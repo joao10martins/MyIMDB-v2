@@ -68,7 +68,10 @@ public class NowPlayingFragment extends Fragment implements NowPlayingRecyclerAd
         //mTitleMovie = mView.findViewById(R.id.movie_title_id);
 
 
+        mRealm = Realm.getDefaultInstance();
 
+        final RealmResults<MovieRealm> movies = mRealm.where(MovieRealm.class).findAll();
+        System.out.println("༼ つ ◕_◕ ༽つ THE MOVIES ARE HERE, COME GET'EM ༼ つ ◕_◕ ༽つ" + movies);
 
 
 
@@ -168,6 +171,7 @@ public class NowPlayingFragment extends Fragment implements NowPlayingRecyclerAd
                 mRecyclerView = mView.findViewById(R.id.rv_NowPlaying);
                 try {
                     nowPlayingList.addAll(response.movieList);
+                    saveMovieListToDb(nowPlayingList); // PLEASE WORK ༼ つ ◕_◕ ༽つ
                     if (mAdapter == null) {
                         mAdapter = new NowPlayingRecyclerAdapter(getContext(), nowPlayingList, NowPlayingFragment.this);
                         mRecyclerView.setAdapter(mAdapter);
@@ -288,7 +292,7 @@ public class NowPlayingFragment extends Fragment implements NowPlayingRecyclerAd
             }, new Realm.Transaction.OnSuccess() {
                 @Override
                 public void onSuccess() {
-                    // GREAT SUCCESS
+                    // GREAT SUCCESS (•̀ᴗ•́)و ̑̑
                 }
             }, new Realm.Transaction.OnError() {
                 @Override
@@ -324,13 +328,19 @@ public class NowPlayingFragment extends Fragment implements NowPlayingRecyclerAd
                 changeSet.getInsertions();
             }
         });*/
-    }
 
 
     public interface OnNowPlayingListener {
         void onSwitchFragment(Fragment fragment);
     }
 
+
 }
+
+
+
+
+
+
 
 
