@@ -14,8 +14,10 @@ import com.example.myimdb.model.Movie;
 
 import java.util.List;
 
+import io.realm.RealmList;
+
 public class NowPlayingRecyclerAdapter extends RecyclerView.Adapter<NowPlayingRecyclerAdapter.NowPlayingViewHolder>  {
-    private final List<Movie> mMovieList;
+    private final RealmList<MovieRealm> mMovieList;
     private LayoutInflater mInflater;
     private Context context;
 
