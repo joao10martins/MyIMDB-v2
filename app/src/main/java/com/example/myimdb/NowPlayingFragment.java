@@ -18,10 +18,16 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.Volley;
 import com.example.myimdb.model.Movie;
 import com.example.myimdb.model.MovieDetails;
+import com.example.myimdb.model.MovieRealm;
 import com.example.myimdb.model.MovieResults;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import io.realm.OrderedCollectionChangeSet;
+import io.realm.OrderedRealmCollectionChangeListener;
+import io.realm.Realm;
+import io.realm.RealmResults;
 
 
 /**
@@ -39,6 +45,10 @@ public class NowPlayingFragment extends Fragment implements NowPlayingRecyclerAd
     private String mUrl;
 
     private View mView;
+
+
+    /* Realm */
+    Realm mRealm;
 
     public NowPlayingFragment() {
         // Required empty public constructor
@@ -58,6 +68,23 @@ public class NowPlayingFragment extends Fragment implements NowPlayingRecyclerAd
         getNowPlaying();
 
 
+        mRealm = Realm.getDefaultInstance();
+        // TEST
+        // Query Realm for all movies
+        final RealmResults<MovieRealm> movies = mRealm.where(MovieRealm.class).findAll();
+
+        // Realm transaction (hopefully saves data persistently)
+        mRealm.beginTransaction();
+        mRealm.commitTransaction();
+
+        // Listeners will be notified when data changes
+        movies.addChangeListener(new OrderedRealmCollectionChangeListener<RealmResults<MovieRealm>>() {
+            @Override
+            public void onChange(RealmResults<MovieRealm> movies, OrderedCollectionChangeSet changeSet) {
+                // Query results are updated in real time with fine grained notifications.
+                changeSet.getInsertions();
+            }
+        });
 
 
 

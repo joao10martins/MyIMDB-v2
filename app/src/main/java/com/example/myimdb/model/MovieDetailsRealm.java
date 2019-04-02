@@ -1,6 +1,8 @@
 package com.example.myimdb.model;
 
-public class MovieDetails {
+import io.realm.RealmObject;
+
+public class MovieDetailsRealm extends RealmObject {
 
     private String backdrop_path;
     private String original_title;
@@ -12,7 +14,10 @@ public class MovieDetails {
     private int vote_count;
 
 
-    public MovieDetails (String backdrop_path, String original_title, String overview, String poster_path, String release_date, int runtime, double vote_average, int vote_count) {
+    public MovieDetailsRealm(){}
+
+
+    public MovieDetailsRealm (String backdrop_path, String original_title, String overview, String poster_path, String release_date, int runtime, double vote_average, int vote_count) {
         this.backdrop_path = backdrop_path;
         this.original_title = original_title;
         this.overview = overview;

@@ -20,6 +20,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.example.myimdb.model.Movie;
+import com.example.myimdb.model.MovieRealm;
 
 import io.realm.OrderedCollectionChangeSet;
 import io.realm.OrderedRealmCollectionChangeListener;
@@ -91,7 +92,7 @@ public class MainActivity extends AppCompatActivity implements SearchFragment.Ch
         setContentView(R.layout.activity_main);
         getSupportActionBar().hide();
 
-        mRealm = Realm.getDefaultInstance();
+        //mRealm = Realm.getDefaultInstance();
 
 
 
@@ -123,23 +124,6 @@ public class MainActivity extends AppCompatActivity implements SearchFragment.Ch
         isHomeFragmentDisplayed = false;
         isSearchFragmentDisplayed = false;
 
-
-        // TEST
-        // Query Realm for all movies
-        final RealmResults<Movie> movies = mRealm.where(Movie.class).findAll();
-
-        // Realm transaction (hopefully saves data persistently)
-        mRealm.beginTransaction();
-        mRealm.commitTransaction();
-
-        // Listeners will be notified when data changes
-        movies.addChangeListener(new OrderedRealmCollectionChangeListener<RealmResults<Movie>>() {
-            @Override
-            public void onChange(RealmResults<Movie> movies, OrderedCollectionChangeSet changeSet) {
-                // Query results are updated in real time with fine grained notifications.
-                changeSet.getInsertions();
-            }
-        });
     }
 
 

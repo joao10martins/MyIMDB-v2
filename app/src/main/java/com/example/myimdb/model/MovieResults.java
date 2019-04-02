@@ -5,11 +5,8 @@ import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
 
-import io.realm.RealmList;
-import io.realm.RealmObject;
-
-public class MovieResults extends RealmObject {
+public class MovieResults {
 
     @SerializedName("results")
-    public RealmList<Movie> movieList;
+    public List<Movie> movieList;
 }
