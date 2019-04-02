@@ -14,8 +14,7 @@ public class MovieRealm extends RealmObject {
     private double vote_average;
     private String title;
     private String poster_path;
-    private String original_title;
-    private List<Integer> genre_ids;
+    //private RealmList<Integer> genre_ids;
     private String backdrop_path;
     private String overview;
     private String release_date;
@@ -30,7 +29,7 @@ public class MovieRealm extends RealmObject {
             double vote_average,
             String title,
             String poster_path,
-            List<Integer> genre_ids,
+            //RealmList<Integer> genre_ids,
             String backdrop_path,
             String overview,
             String release_date
@@ -40,7 +39,7 @@ public class MovieRealm extends RealmObject {
         this.vote_average = vote_average;
         this.title = title;
         this.poster_path = poster_path;
-        this.genre_ids = genre_ids;
+        //this.genre_ids = genre_ids;
         this.backdrop_path = backdrop_path;
         this.overview = overview;
         this.release_date = release_date;
@@ -70,9 +69,9 @@ public class MovieRealm extends RealmObject {
 
     public void setPoster_path(String poster_path) { this.poster_path = poster_path; }
 
-    public List<Integer> getGenre_ids() { return genre_ids; }
+    //public RealmList<Integer> getGenre_ids() { return genre_ids; }
 
-    public void setGenre_ids(List<Integer> genre_ids) { this.genre_ids = genre_ids; }
+    //public void setGenre_ids(RealmList<Integer> genre_ids) { this.genre_ids = genre_ids; }
 
     public String getBackdrop_path() { return backdrop_path; }
 

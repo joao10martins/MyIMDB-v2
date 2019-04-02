@@ -16,6 +16,7 @@ import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.Volley;
+import com.example.myimdb.map.MovieMapper;
 import com.example.myimdb.model.Movie;
 import com.example.myimdb.model.MovieDetails;
 import com.example.myimdb.model.MovieRealm;
@@ -27,6 +28,7 @@ import java.util.List;
 import io.realm.OrderedCollectionChangeSet;
 import io.realm.OrderedRealmCollectionChangeListener;
 import io.realm.Realm;
+import io.realm.RealmList;
 import io.realm.RealmResults;
 
 
@@ -65,26 +67,9 @@ public class NowPlayingFragment extends Fragment implements NowPlayingRecyclerAd
         //mImageMovie = mView.findViewById(R.id.movie_img_id);
         //mTitleMovie = mView.findViewById(R.id.movie_title_id);
 
-        getNowPlaying();
 
 
-        mRealm = Realm.getDefaultInstance();
-        // TEST
-        // Query Realm for all movies
-        final RealmResults<MovieRealm> movies = mRealm.where(MovieRealm.class).findAll();
 
-        // Realm transaction (hopefully saves data persistently)
-        mRealm.beginTransaction();
-        mRealm.commitTransaction();
-
-        // Listeners will be notified when data changes
-        movies.addChangeListener(new OrderedRealmCollectionChangeListener<RealmResults<MovieRealm>>() {
-            @Override
-            public void onChange(RealmResults<MovieRealm> movies, OrderedCollectionChangeSet changeSet) {
-                // Query results are updated in real time with fine grained notifications.
-                changeSet.getInsertions();
-            }
-        });
 
 
 
@@ -97,6 +82,7 @@ public class NowPlayingFragment extends Fragment implements NowPlayingRecyclerAd
         super.onViewCreated(view, savedInstanceState);
 
         mContext = getActivity();
+        getNowPlaying();
 
 
     }
@@ -113,12 +99,7 @@ public class NowPlayingFragment extends Fragment implements NowPlayingRecyclerAd
         }
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
 
-
-    }
 
     public static NowPlayingFragment newInstance() {
         return new NowPlayingFragment();
@@ -130,41 +111,50 @@ public class NowPlayingFragment extends Fragment implements NowPlayingRecyclerAd
         mRequestQueue = Volley.newRequestQueue(getActivity().getApplicationContext());
         mListCount = 1;
 
-        if (nowPlayingList.size() == 0) { //eroor
-            mUrl = "https://api.themoviedb.org/3/movie/now_playing?api_key=07d93ad59393a99fe6bc8c1b8f0de23b&language=en-US&page=1";
+        try {
+            if (nowPlayingList.size() == 0) { //eroor
+                mUrl = "https://api.themoviedb.org/3/movie/now_playing?api_key=07d93ad59393a99fe6bc8c1b8f0de23b&language=en-US&page=1";
 
-            GsonRequest<MovieResults> request = new GsonRequest<>(mUrl,
-                    MovieResults.class,
-                    createMyReqSuccessListener(),
-                    getErrorListener());
+                GsonRequest<MovieResults> request = new GsonRequest<>(mUrl,
+                        MovieResults.class,
+                        createMyReqSuccessListener(),
+                        getErrorListener());
 
-            mRequestQueue.add(request);
-            ++mListCount;
-        }
-        if (mRecyclerView != null && nowPlayingList.size() > 0) {
-            mRecyclerView.setAdapter(mAdapter);
-            mRecyclerView.setLayoutManager(new GridLayoutManager(getContext(), 3));
+                mRequestQueue.add(request);
+                ++mListCount;
+            }
+            if (mRecyclerView != null && nowPlayingList.size() > 0) {
+                mAdapter = new NowPlayingRecyclerAdapter(getContext(), nowPlayingList, NowPlayingFragment.this);
+                mRecyclerView.setAdapter(mAdapter);
+                mRecyclerView.setLayoutManager(new GridLayoutManager(getContext(), 3));
+            } else {
+                mAdapter.notifyDataSetChanged();
+            }
 
-            mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
-                @Override
-                public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
-                    super.onScrollStateChanged(recyclerView, newState);
+                mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+                    @Override
+                    public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                        super.onScrollStateChanged(recyclerView, newState);
 
-                    if (!recyclerView.canScrollVertically(1)) {
-                        //do something
-                        mUrl = "https://api.themoviedb.org/3/movie/now_playing?api_key=07d93ad59393a99fe6bc8c1b8f0de23b&language=en-US&page=" + mListCount;
+                        if (!recyclerView.canScrollVertically(1)) {
+                            //do something
+                            mUrl = "https://api.themoviedb.org/3/movie/now_playing?api_key=07d93ad59393a99fe6bc8c1b8f0de23b&language=en-US&page=" + mListCount;
 
-                        GsonRequest<MovieResults> request = new GsonRequest<>(mUrl,
-                                MovieResults.class,
-                                createMyReqSuccessListener(),
-                                getErrorListener());
+                            GsonRequest<MovieResults> request = new GsonRequest<>(mUrl,
+                                    MovieResults.class,
+                                    createMyReqSuccessListener(),
+                                    getErrorListener());
 
-                        mRequestQueue.add(request);
-                        ++mListCount;
+                            mRequestQueue.add(request);
+                            ++mListCount;
+                        }
                     }
-                }
-            });
+                });
+
+        } catch (Exception e) {
+            e.printStackTrace();
         }
+
 
 
 
@@ -279,6 +269,61 @@ public class NowPlayingFragment extends Fragment implements NowPlayingRecyclerAd
                 fragmentTransaction.commit();*/
             }
         };
+    }
+
+    // ༼ つ ◕_◕ ༽つ PLS WORK WITHOUT PROBLEMS ༼ つ ◕_◕ ༽つ
+    private void saveMovieListToDb(final List<Movie> list){
+        // TEST
+        final MovieMapper movieMapper = new MovieMapper();
+
+        try (Realm realm = Realm.getDefaultInstance()) {
+            realm.executeTransactionAsync(new Realm.Transaction() {
+                @Override
+                public void execute(Realm realm) {
+                    List<MovieRealm> movies = movieMapper.toMovieRealmList(list);
+                    RealmList<MovieRealm> _movies = new RealmList<>();
+                    _movies.addAll(movies);
+                    realm.insertOrUpdate(_movies);
+                }
+            }, new Realm.Transaction.OnSuccess() {
+                @Override
+                public void onSuccess() {
+                    // GREAT SUCCESS
+                }
+            }, new Realm.Transaction.OnError() {
+                @Override
+                public void onError(Throwable error) {
+                    // sad reactions only
+                }
+            });
+
+
+        } catch (Exception e) {
+            // Wow such exception
+        } finally {
+            // Wow such finally
+        }
+
+
+    }
+
+
+        // Query Realm for all movies
+        //final RealmResults<MovieRealm> movies = mRealm.where(MovieRealm.class).findAll();
+
+        // Realm transaction (hopefully saves data persistently)
+        /*mRealm.beginTransaction();
+        mRealm.insertOrUpdate(movies);
+        mRealm.commitTransaction();*/
+
+        // Listeners will be notified when data changes
+        /*movies.addChangeListener(new OrderedRealmCollectionChangeListener<RealmList<MovieRealm>>() {
+            @Override
+            public void onChange(RealmResults<MovieRealm> movies, OrderedCollectionChangeSet changeSet) {
+                // Query results are updated in real time with fine grained notifications.
+                changeSet.getInsertions();
+            }
+        });*/
     }
 
 
