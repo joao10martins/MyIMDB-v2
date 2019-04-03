@@ -175,6 +175,7 @@ public class MainActivity extends AppCompatActivity implements SearchFragment.Ch
             //fragmentManager.saveFragmentInstanceState(fragment);
 
             fragmentTransaction.replace(R.id.fragment_container, fragment);
+            //fragmentTransaction.add(R.id.fragment_container, fragment);
         //}
 
 

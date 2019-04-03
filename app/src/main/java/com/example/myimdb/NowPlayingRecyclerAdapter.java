@@ -44,7 +44,7 @@ public class NowPlayingRecyclerAdapter extends RealmRecyclerViewAdapter<MovieRea
         /*mInflater = LayoutInflater.from(context);
         this.mMovieList = movieList;*/
         this.mListener = listener;
-        setHasStableIds(true);
+        setHasStableIds(false);
     }
 
 
@@ -118,9 +118,9 @@ public class NowPlayingRecyclerAdapter extends RealmRecyclerViewAdapter<MovieRea
 
     /*@Override
     public int getItemCount() {
-        return mMovieList.size();
-    }
-*/
+        return getData().size();
+    }*/
+
 
     public interface OnMovieClick {
         void onItemClick(int movieId);

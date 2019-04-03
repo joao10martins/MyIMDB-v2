@@ -70,13 +70,8 @@ public class NowPlayingFragment extends Fragment implements NowPlayingRecyclerAd
 
         mRealm = Realm.getDefaultInstance();
 
-        final RealmResults<MovieRealm> movies = mRealm.where(MovieRealm.class).findAll();
-        System.out.println("༼ つ ◕_◕ ༽つ THE MOVIES ARE HERE, COME GET'EM ༼ つ ◕_◕ ༽つ" + movies);
-
-
-
-
-
+        //final RealmResults<MovieRealm> movies = mRealm.where(MovieRealm.class).findAll();
+        //System.out.println("༼ つ ◕_◕ ༽つ THE MOVIES ARE HERE, COME GET'EM ༼ つ ◕_◕ ༽つ" + movies);
         return mView;
     }
 
@@ -85,9 +80,10 @@ public class NowPlayingFragment extends Fragment implements NowPlayingRecyclerAd
         super.onViewCreated(view, savedInstanceState);
 
         mContext = getActivity();
+
+        mRecyclerView = mView.findViewById(R.id.rv_NowPlaying);
+
         getNowPlaying();
-
-
     }
 
     @Override
@@ -126,10 +122,15 @@ public class NowPlayingFragment extends Fragment implements NowPlayingRecyclerAd
                 mRequestQueue.add(request);
                 ++mListCount;
             }
+
             if (mRecyclerView != null && nowPlayingList.size() > 0) {
+
+
                 mAdapter = new NowPlayingRecyclerAdapter(mRealm.where(MovieRealm.class).findAllAsync(), getContext(), NowPlayingFragment.this); // test
                 //mAdapter = new NowPlayingRecyclerAdapter(getContext(), nowPlayingList, NowPlayingFragment.this);
                 mRecyclerView.setAdapter(mAdapter);
+                //mAdapter.notifyDataSetChanged();
+
                 mRecyclerView.setLayoutManager(new GridLayoutManager(getContext(), 3));
             } else {
                 mAdapter.notifyDataSetChanged();
@@ -159,9 +160,6 @@ public class NowPlayingFragment extends Fragment implements NowPlayingRecyclerAd
             e.printStackTrace();
         }
 
-
-
-
     }
 
 
@@ -169,7 +167,7 @@ public class NowPlayingFragment extends Fragment implements NowPlayingRecyclerAd
         return new Response.Listener<MovieResults>() {
             @Override
             public void onResponse(MovieResults response) {
-                mRecyclerView = mView.findViewById(R.id.rv_NowPlaying);
+               //mRecyclerView = mView.findViewById(R.id.rv_NowPlaying);
                 try {
                     nowPlayingList.addAll(response.movieList);
                     saveMovieListToDb(nowPlayingList); // PLEASE WORK ༼ つ ◕_◕ ༽つ
@@ -260,7 +258,7 @@ public class NowPlayingFragment extends Fragment implements NowPlayingRecyclerAd
 
 
                 // Send detailsFragment to Main
-                mListener.onSwitchFragment(detailsFragment);
+               mListener.onSwitchFragment(detailsFragment);
 
                 /*// Replace fragment after work is done.
                 // Get the FragmentManager and start a transaction.
