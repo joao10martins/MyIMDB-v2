@@ -127,7 +127,8 @@ public class NowPlayingFragment extends Fragment implements NowPlayingRecyclerAd
                 ++mListCount;
             }
             if (mRecyclerView != null && nowPlayingList.size() > 0) {
-                mAdapter = new NowPlayingRecyclerAdapter(getContext(), nowPlayingList, NowPlayingFragment.this);
+                mAdapter = new NowPlayingRecyclerAdapter(mRealm.where(MovieRealm.class).findAllAsync(), getContext(), NowPlayingFragment.this); // test
+                //mAdapter = new NowPlayingRecyclerAdapter(getContext(), nowPlayingList, NowPlayingFragment.this);
                 mRecyclerView.setAdapter(mAdapter);
                 mRecyclerView.setLayoutManager(new GridLayoutManager(getContext(), 3));
             } else {
@@ -173,7 +174,8 @@ public class NowPlayingFragment extends Fragment implements NowPlayingRecyclerAd
                     nowPlayingList.addAll(response.movieList);
                     saveMovieListToDb(nowPlayingList); // PLEASE WORK ༼ つ ◕_◕ ༽つ
                     if (mAdapter == null) {
-                        mAdapter = new NowPlayingRecyclerAdapter(getContext(), nowPlayingList, NowPlayingFragment.this);
+                        mAdapter = new NowPlayingRecyclerAdapter(mRealm.where(MovieRealm.class).findAllAsync(), getContext(), NowPlayingFragment.this); // test
+                        //mAdapter = new NowPlayingRecyclerAdapter(getContext(), nowPlayingList, NowPlayingFragment.this);
                         mRecyclerView.setAdapter(mAdapter);
                         mRecyclerView.setLayoutManager(new GridLayoutManager(getContext(), 3));
                     } else {

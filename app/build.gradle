@@ -44,6 +44,9 @@ dependencies {
 
     // To listen for Keyboard events
     implementation 'net.yslibrary.keyboardvisibilityevent:keyboardvisibilityevent:2.2.1'
+
+    // Realm adapters
+    implementation 'io.realm:android-adapters:2.1.1'
 }
 
 

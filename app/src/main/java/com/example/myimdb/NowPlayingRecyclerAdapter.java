@@ -11,13 +11,20 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.example.myimdb.model.Movie;
+import com.example.myimdb.model.MovieRealm;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
+import io.realm.OrderedRealmCollection;
 import io.realm.RealmList;
+import io.realm.RealmRecyclerViewAdapter;
 
-public class NowPlayingRecyclerAdapter extends RecyclerView.Adapter<NowPlayingRecyclerAdapter.NowPlayingViewHolder>  {
-    private final RealmList<MovieRealm> mMovieList;
+public class NowPlayingRecyclerAdapter extends RealmRecyclerViewAdapter<MovieRealm, NowPlayingRecyclerAdapter.NowPlayingViewHolder>  {
+
+
+    //private final RealmList<MovieRealm> mMovieList;
     private LayoutInflater mInflater;
     private Context context;
 
@@ -25,7 +32,23 @@ public class NowPlayingRecyclerAdapter extends RecyclerView.Adapter<NowPlayingRe
 
     //private NowPlayingListener nowPlayingListener;
 
-    public NowPlayingRecyclerAdapter(Context context,
+    NowPlayingRecyclerAdapter(OrderedRealmCollection<MovieRealm> data,
+                              Context context,
+                              OnMovieClick listener) {
+        super(data, true);
+        // Only set this if the model class has a primary key that is also a integer or long.
+        // In that case, {@code getItemId(int)} must also be overridden to return the key.
+        // See https://developer.android.com/reference/android/support/v7/widget/RecyclerView.Adapter.html#hasStableIds()
+        // See https://developer.android.com/reference/android/support/v7/widget/RecyclerView.Adapter.html#getItemId(int)
+        this.context = context;
+        /*mInflater = LayoutInflater.from(context);
+        this.mMovieList = movieList;*/
+        this.mListener = listener;
+        setHasStableIds(true);
+    }
+
+
+    /*public NowPlayingRecyclerAdapter(Context context,
                                      List<Movie> movieList,
                                      OnMovieClick listener) {
         this.context = context;
@@ -33,11 +56,12 @@ public class NowPlayingRecyclerAdapter extends RecyclerView.Adapter<NowPlayingRe
         this.mMovieList = movieList;
         this.mListener = listener;
         //this.nowPlayingListener = null;
-    }
+    }*/
 
     class NowPlayingViewHolder extends RecyclerView.ViewHolder {
         public final TextView title;
         public final ImageView movieImage;
+        public MovieRealm data;
 
         final NowPlayingRecyclerAdapter mAdapter;
 
@@ -53,14 +77,19 @@ public class NowPlayingRecyclerAdapter extends RecyclerView.Adapter<NowPlayingRe
     @NonNull
     @Override
     public NowPlayingViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View mMovieView = mInflater.inflate(R.layout.cardview_item_movie, parent, false);
+        //test
+        View mMovieView = LayoutInflater.from(parent.getContext()).inflate(R.layout.cardview_item_movie, parent, false);
+
+        //View mMovieView = mInflater.inflate(R.layout.cardview_item_movie, parent, false);
         return new NowPlayingViewHolder(mMovieView, this);
     }
 
     @Override
     public void onBindViewHolder(@NonNull NowPlayingViewHolder holder, int position) {
 
-        final Movie currentItem = mMovieList.get(position);
+        final MovieRealm currentItem = getItem(position);
+        holder.data = currentItem;
+        final int currentItemId = currentItem.getId();
         holder.title.setText(currentItem.getTitle());
         String imagePath = "https://image.tmdb.org/t/p/original/" + currentItem.getPoster_path();
 
@@ -87,11 +116,11 @@ public class NowPlayingRecyclerAdapter extends RecyclerView.Adapter<NowPlayingRe
 
     }
 
-    @Override
+    /*@Override
     public int getItemCount() {
         return mMovieList.size();
     }
-
+*/
 
     public interface OnMovieClick {
         void onItemClick(int movieId);
