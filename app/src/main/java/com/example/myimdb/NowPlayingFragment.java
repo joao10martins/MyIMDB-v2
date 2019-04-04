@@ -45,6 +45,7 @@ public class NowPlayingFragment extends Fragment implements NowPlayingRecyclerAd
     private int mListCount;
     private RequestQueue mRequestQueue;
     private String mUrl;
+    private int mTotalPages;
 
     private View mView;
 
@@ -63,12 +64,16 @@ public class NowPlayingFragment extends Fragment implements NowPlayingRecyclerAd
 
         // Inflate the layout for this fragment
         mView = inflater.inflate(R.layout.fragment_now_playing, container, false);
-        // Views
-        //mImageMovie = mView.findViewById(R.id.movie_img_id);
-        //mTitleMovie = mView.findViewById(R.id.movie_title_id);
 
 
         mRealm = Realm.getDefaultInstance();
+        /*mRealm.executeTransaction(new Realm.Transaction() {
+            @Override
+            public void execute(Realm realm) {
+                RealmResults<MovieRealm> rows = realm.where(MovieRealm.class).findAll();
+                rows.deleteAllFromRealm();
+            }
+        });*/
 
         //final RealmResults<MovieRealm> movies = mRealm.where(MovieRealm.class).findAll();
         //System.out.println("༼ つ ◕_◕ ༽つ THE MOVIES ARE HERE, COME GET'EM ༼ つ ◕_◕ ༽つ" + movies);
@@ -111,7 +116,7 @@ public class NowPlayingFragment extends Fragment implements NowPlayingRecyclerAd
         mListCount = 1;
 
         try {
-            if (nowPlayingList.size() == 0) { //eroor
+            if (nowPlayingList.size() == 0 || mRealm.where(MovieRealm.class).findAllAsync() == null) { // Executes if it is being called for the first time(has no data yet)
                 mUrl = "https://api.themoviedb.org/3/movie/now_playing?api_key=07d93ad59393a99fe6bc8c1b8f0de23b&language=en-US&page=1";
 
                 GsonRequest<MovieResults> request = new GsonRequest<>(mUrl,
@@ -123,7 +128,7 @@ public class NowPlayingFragment extends Fragment implements NowPlayingRecyclerAd
                 ++mListCount;
             }
 
-            if (mRecyclerView != null && nowPlayingList.size() > 0) {
+            if (mRecyclerView != null && mRealm.where(MovieRealm.class).findAllAsync() != null) { // Executes in case data already exists, to avoid making unnecessary requests to the API
 
 
                 mAdapter = new NowPlayingRecyclerAdapter(mRealm.where(MovieRealm.class).findAllAsync(), getContext(), NowPlayingFragment.this); // test
@@ -143,15 +148,19 @@ public class NowPlayingFragment extends Fragment implements NowPlayingRecyclerAd
 
                         if (!recyclerView.canScrollVertically(1)) {
                             //do something
-                            mUrl = "https://api.themoviedb.org/3/movie/now_playing?api_key=07d93ad59393a99fe6bc8c1b8f0de23b&language=en-US&page=" + mListCount;
+                            if (mListCount > mTotalPages) {
+                                return;
+                            } else {
+                                mUrl = "https://api.themoviedb.org/3/movie/now_playing?api_key=07d93ad59393a99fe6bc8c1b8f0de23b&language=en-US&page=" + mListCount;
 
-                            GsonRequest<MovieResults> request = new GsonRequest<>(mUrl,
-                                    MovieResults.class,
-                                    createMyReqSuccessListener(),
-                                    getErrorListener());
+                                GsonRequest<MovieResults> request = new GsonRequest<>(mUrl,
+                                        MovieResults.class,
+                                        createMyReqSuccessListener(),
+                                        getErrorListener());
 
-                            mRequestQueue.add(request);
-                            ++mListCount;
+                                mRequestQueue.add(request);
+                                ++mListCount;
+                            }
                         }
                     }
                 });
@@ -167,8 +176,8 @@ public class NowPlayingFragment extends Fragment implements NowPlayingRecyclerAd
         return new Response.Listener<MovieResults>() {
             @Override
             public void onResponse(MovieResults response) {
-               //mRecyclerView = mView.findViewById(R.id.rv_NowPlaying);
                 try {
+                    mTotalPages = response.totalPages;
                     nowPlayingList.addAll(response.movieList);
                     saveMovieListToDb(nowPlayingList); // PLEASE WORK ༼ つ ◕_◕ ༽つ
                     if (mAdapter == null) {
@@ -189,15 +198,19 @@ public class NowPlayingFragment extends Fragment implements NowPlayingRecyclerAd
 
                             if (!recyclerView.canScrollVertically(1)) {
                                 //do something
-                                mUrl = "https://api.themoviedb.org/3/movie/now_playing?api_key=07d93ad59393a99fe6bc8c1b8f0de23b&language=en-US&page=" + mListCount;
+                                if (mListCount > mTotalPages) {
+                                    return;
+                                } else {
+                                    mUrl = "https://api.themoviedb.org/3/movie/now_playing?api_key=07d93ad59393a99fe6bc8c1b8f0de23b&language=en-US&page=" + mListCount;
 
-                                GsonRequest<MovieResults> request = new GsonRequest<>(mUrl,
-                                        MovieResults.class,
-                                        createMyReqSuccessListener(),
-                                        getErrorListener());
+                                    GsonRequest<MovieResults> request = new GsonRequest<>(mUrl,
+                                            MovieResults.class,
+                                            createMyReqSuccessListener(),
+                                            getErrorListener());
 
-                                mRequestQueue.add(request);
-                                ++mListCount;
+                                    mRequestQueue.add(request);
+                                    ++mListCount;
+                                }
                             }
                         }
                     });
@@ -258,7 +271,7 @@ public class NowPlayingFragment extends Fragment implements NowPlayingRecyclerAd
 
 
                 // Send detailsFragment to Main
-               mListener.onSwitchFragment(detailsFragment);
+                mListener.onSwitchFragment(detailsFragment);
 
                 /*// Replace fragment after work is done.
                 // Get the FragmentManager and start a transaction.
