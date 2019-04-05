@@ -57,12 +57,15 @@ public class SearchFragment extends Fragment implements SearchRecyclerAdapter.On
     private RecyclerView mRecyclerView;
 
     //private List<MovieGenre> mGenreList = new ArrayList<>();
-    private HashMap<Integer , MovieGenre> mGenreMap = new HashMap<>();
+    private HashMap<Integer , MovieGenreRealm> mGenreMap = new HashMap<>();
     private SearchRecyclerAdapter mAdapter;
     private int mListCount;
     private String mSearch_query;
 
     private CheckKeyboardState mListener;
+
+    /* Realm */
+    Realm mRealm;
 
 
     private List<Movie> mMovieList = new ArrayList<>();
@@ -95,7 +98,8 @@ public class SearchFragment extends Fragment implements SearchRecyclerAdapter.On
         // Inflate the layout for this fragment
         mView = inflater.inflate(R.layout.fragment_search, container, false);
 
-
+        // get db
+        mRealm = Realm.getDefaultInstance();
 
 
 
@@ -128,7 +132,7 @@ public class SearchFragment extends Fragment implements SearchRecyclerAdapter.On
     private void getGenreList() {
         mRequestQueue = Volley.newRequestQueue(getActivity().getApplicationContext());
         try {
-            if (mGenreMap.isEmpty()) /*|| mRealm.where... (realm query here)*/ {
+            if (mGenreMap.isEmpty() || mRealm.where(MovieGenreRealm.class).findAllAsync() == null) {
                 mUrl = "https://api.themoviedb.org/3/genre/movie/list?api_key=07d93ad59393a99fe6bc8c1b8f0de23b&language=en-US";
 
                 GsonRequest<MovieGenreResults> request = new GsonRequest<>(mUrl,
@@ -153,11 +157,10 @@ public class SearchFragment extends Fragment implements SearchRecyclerAdapter.On
             @Override
             public void onResponse(MovieGenreResults response) {
                 try {
-
-                    for (MovieGenre movieGenre : response.genreList) {
+                    saveGenresToDb(response.genreList);
+                    for (MovieGenreRealm movieGenre : mRealm.where(MovieGenreRealm.class).findAllAsync()) {
                         mGenreMap.put(movieGenre.getId(), movieGenre);
                     }
-
                     //mGenreList.addAll(response.genreList);
                 } catch (Exception e) {
                     e.printStackTrace();
