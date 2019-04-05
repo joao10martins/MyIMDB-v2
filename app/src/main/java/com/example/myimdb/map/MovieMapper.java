@@ -26,5 +26,9 @@ public class MovieMapper {
         }
         return myMovieRealmList;
     }
+
+
+    // TODO:
+    // create funtion to parse SearchMovie to SearchMovieRealm
 }
 

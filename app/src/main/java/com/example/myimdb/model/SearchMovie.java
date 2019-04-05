@@ -9,12 +9,23 @@ public class SearchMovie {
     private String release_date;
     private List<Integer> genre_ids;
 
+
+    private String genresDescription;
+
     public SearchMovie(int id, String title, String poster_path, String release_date, List<Integer> genre_ids){
         this.id = id;
         this.title = title;
         this.poster_path = poster_path;
         this.release_date = release_date;
         this.genre_ids = genre_ids;
+    }
+
+    public String getGenresDescription() {
+        return genresDescription;
+    }
+
+    public void setGenresDescription(String genresDescription) {
+        this.genresDescription = genresDescription;
     }
 
     public int getId() {

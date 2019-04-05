@@ -13,12 +13,13 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.example.myimdb.model.Movie;
 import com.example.myimdb.model.MovieGenre;
+import com.example.myimdb.model.SearchMovie;
 
 import java.util.HashMap;
 import java.util.List;
 
 public class SearchRecyclerAdapter extends RecyclerView.Adapter<SearchRecyclerAdapter.SearchViewHolder> {
-    private final List<Movie> mMovieList;
+    private final List<SearchMovie> mMovieList;
     private LayoutInflater mInflater;
     private Context context;
 
@@ -31,7 +32,7 @@ public class SearchRecyclerAdapter extends RecyclerView.Adapter<SearchRecyclerAd
     //private NowPlayingListener nowPlayingListener;
 
     public SearchRecyclerAdapter(Context context,
-                                     List<Movie> movieList,
+                                     List<SearchMovie> movieList,
                                      OnMovieClick listener) {
         this.context = context;
         mInflater = LayoutInflater.from(context);
@@ -67,7 +68,7 @@ public class SearchRecyclerAdapter extends RecyclerView.Adapter<SearchRecyclerAd
     @Override
     public void onBindViewHolder(@NonNull SearchViewHolder holder, int position) {
 
-        final Movie currentItem = mMovieList.get(position);
+        final SearchMovie currentItem = mMovieList.get(position);
         String imagePath = "https://image.tmdb.org/t/p/original/" + currentItem.getPoster_path();
 
 

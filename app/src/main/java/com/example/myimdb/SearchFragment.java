@@ -31,6 +31,8 @@ import com.example.myimdb.model.MovieGenreRealm;
 import com.example.myimdb.model.MovieGenreResults;
 import com.example.myimdb.model.MovieRealm;
 import com.example.myimdb.model.MovieResults;
+import com.example.myimdb.model.SearchMovie;
+import com.example.myimdb.model.SearchMovieResults;
 
 import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEvent;
 import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEventListener;
@@ -70,7 +72,7 @@ public class SearchFragment extends Fragment implements SearchRecyclerAdapter.On
     Realm mRealm;
 
 
-    private List<Movie> mMovieList = new ArrayList<>();
+    private List<SearchMovie> mMovieList = new ArrayList<>();
     private int mButtonClickCount;
 
 
@@ -207,8 +209,8 @@ public class SearchFragment extends Fragment implements SearchRecyclerAdapter.On
 
                     mUrl = "https://api.themoviedb.org/3/search/movie?api_key=07d93ad59393a99fe6bc8c1b8f0de23b&language=en-US&query=" + mSearch_query + "&page=1&include_adult=false";
 
-                    GsonRequest<MovieResults> request = new GsonRequest<>(mUrl,
-                            MovieResults.class,
+                    GsonRequest<SearchMovieResults> request = new GsonRequest<>(mUrl,
+                            SearchMovieResults.class,
                             getMovieSuccessListener(),
                             getErrorListener());
 
@@ -222,8 +224,8 @@ public class SearchFragment extends Fragment implements SearchRecyclerAdapter.On
 
                     mUrl = "https://api.themoviedb.org/3/search/movie?api_key=07d93ad59393a99fe6bc8c1b8f0de23b&language=en-US&query=" + mSearch_query + "&page=1&include_adult=false";
 
-                    GsonRequest<MovieResults> request = new GsonRequest<>(mUrl,
-                            MovieResults.class,
+                    GsonRequest<SearchMovieResults> request = new GsonRequest<>(mUrl,
+                            SearchMovieResults.class,
                             getMovieSuccessListener(),
                             getErrorListener());
 
@@ -240,15 +242,15 @@ public class SearchFragment extends Fragment implements SearchRecyclerAdapter.On
     }
 
 
-    private Response.Listener<MovieResults> getMovieSuccessListener() {
-        return new Response.Listener<MovieResults>() {
+    private Response.Listener<SearchMovieResults> getMovieSuccessListener() {
+        return new Response.Listener<SearchMovieResults>() {
             @Override
-            public void onResponse(MovieResults response) {
+            public void onResponse(SearchMovieResults response) {
                 try {
-                    mMovieList.addAll(response.movieList);
+                    mMovieList.addAll(response.searchMovieList);
                     //saveMovieListToDb(mMovieList);
                     //iterar mMoviesList
-                    for(Movie movie : mMovieList){
+                    for(SearchMovie movie : mMovieList){
                         // iterar genres_ids da API
                         // Set genres description
                         movie.setGenresDescription("");
@@ -283,8 +285,8 @@ public class SearchFragment extends Fragment implements SearchRecyclerAdapter.On
                                 //do something
                                 mUrl = "https://api.themoviedb.org/3/search/movie?api_key=07d93ad59393a99fe6bc8c1b8f0de23b&language=en-US&query=" + mSearch_query + "&page=" + mListCount + "&include_adult=false";
 
-                                GsonRequest<MovieResults> request = new GsonRequest<>(mUrl,
-                                        MovieResults.class,
+                                GsonRequest<SearchMovieResults> request = new GsonRequest<>(mUrl,
+                                        SearchMovieResults.class,
                                         getMovieSuccessListener(),
                                         getErrorListener());
 
@@ -384,7 +386,7 @@ public class SearchFragment extends Fragment implements SearchRecyclerAdapter.On
     }
 
 
-    private void saveMovieListToDb(final List<Movie> list){
+    private void saveMovieListToDb(final List<SearchMovie> list){
         // TEST
         final MovieMapper movieMapper = new MovieMapper();
 
@@ -392,8 +394,8 @@ public class SearchFragment extends Fragment implements SearchRecyclerAdapter.On
             realm.executeTransactionAsync(new Realm.Transaction() {
                 @Override
                 public void execute(Realm realm) {
-                    List<MovieRealm> movies = movieMapper.toMovieRealmList(list);
-                    RealmList<MovieRealm> _movies = new RealmList<>();
+                    List<MovieRealm> movies = movieMapper.toMovieRealmList(list); // SearchRealm
+                    RealmList<MovieRealm> _movies = new RealmList<>();  // SearchRealm
                     _movies.addAll(movies);
                     realm.insertOrUpdate(_movies);
                 }
