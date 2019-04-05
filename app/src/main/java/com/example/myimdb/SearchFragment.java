@@ -22,9 +22,11 @@ import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.Volley;
+import com.example.myimdb.map.GenreMapper;
 import com.example.myimdb.model.Movie;
 import com.example.myimdb.model.MovieDetails;
 import com.example.myimdb.model.MovieGenre;
+import com.example.myimdb.model.MovieGenreRealm;
 import com.example.myimdb.model.MovieGenreResults;
 import com.example.myimdb.model.MovieResults;
 
@@ -35,6 +37,9 @@ import net.yslibrary.android.keyboardvisibilityevent.Unregistrar;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+
+import io.realm.Realm;
+import io.realm.RealmList;
 
 
 /**
@@ -102,6 +107,7 @@ public class SearchFragment extends Fragment implements SearchRecyclerAdapter.On
         super.onViewCreated(view, savedInstanceState);
 
         mContext = getActivity();
+        mRecyclerView = mView.findViewById(R.id.rvSearch);
 
         registerKeyboardListener();
 
@@ -121,14 +127,24 @@ public class SearchFragment extends Fragment implements SearchRecyclerAdapter.On
     // Get List of all the existing Genres in the API.
     private void getGenreList() {
         mRequestQueue = Volley.newRequestQueue(getActivity().getApplicationContext());
-        mUrl = "https://api.themoviedb.org/3/genre/movie/list?api_key=07d93ad59393a99fe6bc8c1b8f0de23b&language=en-US";
+        try {
+            if (mGenreMap.isEmpty()) /*|| mRealm.where... (realm query here)*/ {
+                mUrl = "https://api.themoviedb.org/3/genre/movie/list?api_key=07d93ad59393a99fe6bc8c1b8f0de23b&language=en-US";
 
-        GsonRequest<MovieGenreResults> request = new GsonRequest<>(mUrl,
-                MovieGenreResults.class,
-                getGenreSuccessListener(),
-                getErrorListener());
+                GsonRequest<MovieGenreResults> request = new GsonRequest<>(mUrl,
+                        MovieGenreResults.class,
+                        getGenreSuccessListener(),
+                        getErrorListener());
 
-        mRequestQueue.add(request);
+                mRequestQueue.add(request);
+            }
+
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+
     }
 
 
@@ -223,7 +239,6 @@ public class SearchFragment extends Fragment implements SearchRecyclerAdapter.On
         return new Response.Listener<MovieResults>() {
             @Override
             public void onResponse(MovieResults response) {
-                mRecyclerView = mView.findViewById(R.id.rvSearch);
                 try {
                     mMovieList.addAll(response.movieList);
                     //iterar mMoviesList
@@ -328,6 +343,37 @@ public class SearchFragment extends Fragment implements SearchRecyclerAdapter.On
                 fragmentTransaction.commit();
             }
         };
+    }
+
+
+    /* Save Genres to Realm DB */
+    private void saveGenresToDb(final List<MovieGenre> list){
+        final GenreMapper genreMapper = new GenreMapper();
+        try(Realm realm = Realm.getDefaultInstance()){
+            realm.executeTransactionAsync(new Realm.Transaction() {
+                @Override
+                public void execute(Realm realm) {
+                    List<MovieGenreRealm> genresList = genreMapper.toGenreRealmList(list);
+                    //HashMap<Integer, MovieGenreRealm> genresMap = genreMapper.toGenreRealmMap(genresList); // Map is not supported by Realm.
+                    RealmList<MovieGenreRealm> _genresList = new RealmList<>();
+                    _genresList.addAll(genresList);
+                    realm.insertOrUpdate(_genresList);
+                }
+            }, new Realm.Transaction.OnSuccess() {
+                @Override
+                public void onSuccess() {
+                    // GREAT SUCCESS (•̀ᴗ•́)و ̑̑
+                }
+            }, new Realm.Transaction.OnError() {
+                @Override
+                public void onError(Throwable error) {
+                    // sad reactions only
+                }
+            });
+        } catch (Exception e){
+            // Wow such exception
+            e.printStackTrace();
+        }
     }
 
 

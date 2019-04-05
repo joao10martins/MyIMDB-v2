@@ -129,12 +129,9 @@ public class NowPlayingFragment extends Fragment implements NowPlayingRecyclerAd
             }
 
             if (mRecyclerView != null && mRealm.where(MovieRealm.class).findAllAsync() != null) { // Executes in case data already exists, to avoid making unnecessary requests to the API
-
-
-                mAdapter = new NowPlayingRecyclerAdapter(mRealm.where(MovieRealm.class).findAllAsync(), getContext(), NowPlayingFragment.this); // test
+                mAdapter = new NowPlayingRecyclerAdapter(mRealm.where(MovieRealm.class).findAllAsync(), getContext(), NowPlayingFragment.this);
                 //mAdapter = new NowPlayingRecyclerAdapter(getContext(), nowPlayingList, NowPlayingFragment.this);
                 mRecyclerView.setAdapter(mAdapter);
-                //mAdapter.notifyDataSetChanged();
 
                 mRecyclerView.setLayoutManager(new GridLayoutManager(getContext(), 3));
             } else {
@@ -313,10 +310,9 @@ public class NowPlayingFragment extends Fragment implements NowPlayingRecyclerAd
                     // sad reactions only
                 }
             });
-
-
         } catch (Exception e) {
             // Wow such exception
+            e.printStackTrace();
         } finally {
             // Wow such finally
         }
