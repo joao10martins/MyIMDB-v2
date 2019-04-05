@@ -23,11 +23,13 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.Volley;
 import com.example.myimdb.map.GenreMapper;
+import com.example.myimdb.map.MovieMapper;
 import com.example.myimdb.model.Movie;
 import com.example.myimdb.model.MovieDetails;
 import com.example.myimdb.model.MovieGenre;
 import com.example.myimdb.model.MovieGenreRealm;
 import com.example.myimdb.model.MovieGenreResults;
+import com.example.myimdb.model.MovieRealm;
 import com.example.myimdb.model.MovieResults;
 
 import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEvent;
@@ -201,7 +203,7 @@ public class SearchFragment extends Fragment implements SearchRecyclerAdapter.On
                 if (mSearch_query.isEmpty() || mSearch_query.trim().isEmpty())
                     Toast.makeText(getActivity(), "Please enter a valid input", Toast.LENGTH_SHORT).show();
                 if (mAdapter == null && mButtonClickCount == 1 && !mSearch_query.isEmpty() && !mSearch_query.trim().isEmpty()) {
-
+                    // neste ponto, verificar conexão de internet e dependendo disso, fazer o request à API ou ao Realm.
 
                     mUrl = "https://api.themoviedb.org/3/search/movie?api_key=07d93ad59393a99fe6bc8c1b8f0de23b&language=en-US&query=" + mSearch_query + "&page=1&include_adult=false";
 
@@ -244,6 +246,7 @@ public class SearchFragment extends Fragment implements SearchRecyclerAdapter.On
             public void onResponse(MovieResults response) {
                 try {
                     mMovieList.addAll(response.movieList);
+                    //saveMovieListToDb(mMovieList);
                     //iterar mMoviesList
                     for(Movie movie : mMovieList){
                         // iterar genres_ids da API
@@ -377,6 +380,39 @@ public class SearchFragment extends Fragment implements SearchRecyclerAdapter.On
         } catch (Exception e){
             // Wow such exception
             e.printStackTrace();
+        }
+    }
+
+
+    private void saveMovieListToDb(final List<Movie> list){
+        // TEST
+        final MovieMapper movieMapper = new MovieMapper();
+
+        try (Realm realm = Realm.getDefaultInstance()) {
+            realm.executeTransactionAsync(new Realm.Transaction() {
+                @Override
+                public void execute(Realm realm) {
+                    List<MovieRealm> movies = movieMapper.toMovieRealmList(list);
+                    RealmList<MovieRealm> _movies = new RealmList<>();
+                    _movies.addAll(movies);
+                    realm.insertOrUpdate(_movies);
+                }
+            }, new Realm.Transaction.OnSuccess() {
+                @Override
+                public void onSuccess() {
+                    // GREAT SUCCESS (•̀ᴗ•́)و ̑̑
+                }
+            }, new Realm.Transaction.OnError() {
+                @Override
+                public void onError(Throwable error) {
+                    // sad reactions only
+                }
+            });
+        } catch (Exception e) {
+            // Wow such exception
+            e.printStackTrace();
+        } finally {
+            // Wow such finally
         }
     }
 

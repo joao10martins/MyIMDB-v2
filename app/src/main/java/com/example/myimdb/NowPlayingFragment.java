@@ -319,8 +319,6 @@ public class NowPlayingFragment extends Fragment implements NowPlayingRecyclerAd
         } finally {
             // Wow such finally
         }
-
-
     }
 
 
