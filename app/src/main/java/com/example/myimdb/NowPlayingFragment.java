@@ -6,6 +6,8 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -268,19 +270,20 @@ public class NowPlayingFragment extends Fragment implements NowPlayingRecyclerAd
 
 
                 // Send detailsFragment to Main
-                mListener.onSwitchFragment(detailsFragment);
+                //mListener.onSwitchFragment(detailsFragment);
 
-                /*// Replace fragment after work is done.
+                // Replace fragment after work is done.
                 // Get the FragmentManager and start a transaction.
                 FragmentManager fragmentManager = getFragmentManager();
                 FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
 
 
                 // Replace the fragment
+                fragmentTransaction.setCustomAnimations(R.anim.fade_in, R.anim.fade_out);
                 fragmentTransaction.replace(R.id.fragment_container,
                         detailsFragment);
                 fragmentTransaction.addToBackStack(null);
-                fragmentTransaction.commit();*/
+                fragmentTransaction.commit();
             }
         };
     }

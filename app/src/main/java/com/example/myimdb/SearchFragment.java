@@ -340,6 +340,7 @@ public class SearchFragment extends Fragment implements SearchRecyclerAdapter.On
 
 
                 // Replace the fragment
+                fragmentTransaction.setCustomAnimations(R.anim.fade_in, R.anim.fade_out);
                 fragmentTransaction.replace(R.id.fragment_container,
                         detailsFragment);
                 fragmentTransaction.addToBackStack(null);
