@@ -15,9 +15,11 @@ public class MyApplication extends Application {
         super.onCreate();
 
         // Init Stetho
-        Stetho.initialize(Stetho.newInitializerBuilder(this)
-            .enableWebKitInspector(Stetho.defaultInspectorModulesProvider(this))
-            .build());
+        /*Stetho.initialize(
+                Stetho.newInitializerBuilder(this)
+                        .enableDumpapp(Stetho.defaultDumperPluginsProvider(this))
+                        .enableWebKitInspector(RealmInspectorModulesProvider.builder(this).build())
+                        .build());*/
 
         // Initializing Realm (only has to be done once)
         Realm.init(this);

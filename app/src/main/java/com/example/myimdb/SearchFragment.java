@@ -257,25 +257,26 @@ public class SearchFragment extends Fragment implements SearchRecyclerAdapter.On
         return new Response.Listener<SearchMovieResults>() {
             @Override
             public void onResponse(SearchMovieResults response) {
-                mMovieList.addAll(response.searchMovieList);
-                saveSearchMovieListToDb(mMovieList);
                 try {
-                    //iterar mMoviesList
-                    for(SearchMovieRealm movie : mRealm.where(SearchMovieRealm.class).findAllAsync()){
+                    mMovieList.addAll(response.searchMovieList);
+                    for(SearchMovie movie : mMovieList) {
                         // iterar genres_ids da API
                         // Set genres description
                         movie.setGenresDescription("");
-                        for (int genreId : movie.getGenre_ids()){
+                        for (int genreId : movie.getGenre_ids()) {
                             movie.setGenresDescription(movie.getGenresDescription().concat(mGenreMap.get(genreId).getName()) + ", ");
                         }
                         // Remove white space if it exists.
-                        if (movie.getGenresDescription().endsWith(" ")){
-                            movie.setGenresDescription(movie.getGenresDescription().substring(0, movie.getGenresDescription().length()-1));
+                        if (movie.getGenresDescription().endsWith(" ")) {
+                            movie.setGenresDescription(movie.getGenresDescription().substring(0, movie.getGenresDescription().length() - 1));
                         }
                         // Remove last comma, if it exists.
-                        if (movie.getGenresDescription().endsWith(",")){
-                            movie.setGenresDescription(movie.getGenresDescription().substring(0, movie.getGenresDescription().length()-1));
+                        if (movie.getGenresDescription().endsWith(",")) {
+                            movie.setGenresDescription(movie.getGenresDescription().substring(0, movie.getGenresDescription().length() - 1));
                         }
+                    }
+                    if (!mRealm.where(SearchMovieRealm.class).findAllAsync().contains(mMovieList)){
+                        saveSearchMovieListToDb(mMovieList);
                     }
 
                     if (mAdapter == null) {
@@ -306,7 +307,8 @@ public class SearchFragment extends Fragment implements SearchRecyclerAdapter.On
                             }
                         }
                     });
-                } catch (Exception e) {
+
+                } catch(Exception e){
                     e.printStackTrace();
                 }
             }
@@ -414,6 +416,7 @@ public class SearchFragment extends Fragment implements SearchRecyclerAdapter.On
                 @Override
                 public void onSuccess() {
                     // GREAT SUCCESS (•̀ᴗ•́)و ̑̑
+
                 }
             }, new Realm.Transaction.OnError() {
                 @Override

@@ -55,7 +55,7 @@ public class MovieMapper {
                         searchMovie.getPoster_path(),
                         //movie.getGenre_ids(), //error here (types)
                         searchMovie.getRelease_date(),
-                        intListToIntRealmList(genres));
+                        searchMovie.getGenresDescription());
                 mySearchRealmList.add(mySearchRealm);
             }
         return mySearchRealmList;
