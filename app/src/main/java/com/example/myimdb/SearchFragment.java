@@ -231,6 +231,7 @@ public class SearchFragment extends Fragment implements SearchRecyclerAdapter.On
                 }
                 if(mAdapter != null && mButtonClickCount > 1){
                     mMovieList.clear();
+                    mRecyclerView.clea
                     //mSearch_query = query_text.getText().toString();
 
                     mUrl = "https://api.themoviedb.org/3/search/movie?api_key=07d93ad59393a99fe6bc8c1b8f0de23b&language=en-US&query=" + mSearch_query + "&page=1&include_adult=false";
@@ -258,55 +259,60 @@ public class SearchFragment extends Fragment implements SearchRecyclerAdapter.On
             @Override
             public void onResponse(SearchMovieResults response) {
                 try {
-                    mMovieList.addAll(response.searchMovieList);
-                    for(SearchMovie movie : mMovieList) {
-                        // iterar genres_ids da API
-                        // Set genres description
-                        movie.setGenresDescription("");
-                        for (int genreId : movie.getGenre_ids()) {
-                            movie.setGenresDescription(movie.getGenresDescription().concat(mGenreMap.get(genreId).getName()) + ", ");
-                        }
-                        // Remove white space if it exists.
-                        if (movie.getGenresDescription().endsWith(" ")) {
-                            movie.setGenresDescription(movie.getGenresDescription().substring(0, movie.getGenresDescription().length() - 1));
-                        }
-                        // Remove last comma, if it exists.
-                        if (movie.getGenresDescription().endsWith(",")) {
-                            movie.setGenresDescription(movie.getGenresDescription().substring(0, movie.getGenresDescription().length() - 1));
-                        }
-                    }
-                    if (!mRealm.where(SearchMovieRealm.class).findAllAsync().contains(mMovieList)){
-                        saveSearchMovieListToDb(mMovieList);
-                    }
+                    if(response.searchMovieList.size() != 0) {
+                        mMovieList.addAll(response.searchMovieList);
 
-                    if (mAdapter == null) {
-                        mAdapter = new SearchRecyclerAdapter(getContext(), mRealm.where(SearchMovieRealm.class).findAllAsync(), SearchFragment.this); //mudar adapter
-                        mRecyclerView.setAdapter(mAdapter);
-                        mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-                    } else {
-                        mAdapter.notifyDataSetChanged();
-                    }
-
-
-                    mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
-                        @Override
-                        public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
-                            super.onScrollStateChanged(recyclerView, newState);
-
-                            if (!recyclerView.canScrollVertically(1)) {
-                                //do something
-                                mUrl = "https://api.themoviedb.org/3/search/movie?api_key=07d93ad59393a99fe6bc8c1b8f0de23b&language=en-US&query=" + mSearch_query + "&page=" + mListCount + "&include_adult=false";
-
-                                GsonRequest<SearchMovieResults> request = new GsonRequest<>(mUrl,
-                                        SearchMovieResults.class,
-                                        getMovieSuccessListener(),
-                                        getErrorListener());
-
-                                mRequestQueue.add(request);
-                                ++mListCount;
+                        for (SearchMovie movie : mMovieList) {
+                            // iterar genres_ids da API
+                            // Set genres description
+                            movie.setGenresDescription("");
+                            for (int genreId : movie.getGenre_ids()) {
+                                movie.setGenresDescription(movie.getGenresDescription().concat(mGenreMap.get(genreId).getName()) + ", ");
+                            }
+                            // Remove white space if it exists.
+                            if (movie.getGenresDescription().endsWith(" ")) {
+                                movie.setGenresDescription(movie.getGenresDescription().substring(0, movie.getGenresDescription().length() - 1));
+                            }
+                            // Remove last comma, if it exists.
+                            if (movie.getGenresDescription().endsWith(",")) {
+                                movie.setGenresDescription(movie.getGenresDescription().substring(0, movie.getGenresDescription().length() - 1));
                             }
                         }
-                    });
+                        if (!mRealm.where(SearchMovieRealm.class).findAllAsync().contains(mMovieList)) {
+                            saveSearchMovieListToDb(mMovieList);
+                        }
+
+                        if (mAdapter == null) {
+                            mAdapter = new SearchRecyclerAdapter(getContext(), mRealm.where(SearchMovieRealm.class).findAllAsync(), SearchFragment.this); //mudar adapter
+                            mRecyclerView.setAdapter(mAdapter);
+                            mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+                        } else {
+                            mAdapter.notifyDataSetChanged();
+                        }
+
+
+                        mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+                            @Override
+                            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                                super.onScrollStateChanged(recyclerView, newState);
+
+                                if (!recyclerView.canScrollVertically(1)) {
+                                    //do something
+                                    mUrl = "https://api.themoviedb.org/3/search/movie?api_key=07d93ad59393a99fe6bc8c1b8f0de23b&language=en-US&query=" + mSearch_query + "&page=" + mListCount + "&include_adult=false";
+
+                                    GsonRequest<SearchMovieResults> request = new GsonRequest<>(mUrl,
+                                            SearchMovieResults.class,
+                                            getMovieSuccessListener(),
+                                            getErrorListener());
+
+                                    mRequestQueue.add(request);
+                                    ++mListCount;
+                                }
+                            }
+                        });
+                    } else {
+                        return;
+                    }
 
                 } catch(Exception e){
                     e.printStackTrace();
