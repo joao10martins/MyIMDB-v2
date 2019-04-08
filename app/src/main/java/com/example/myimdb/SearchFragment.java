@@ -249,9 +249,9 @@ public class SearchFragment extends Fragment implements SearchRecyclerAdapter.On
             public void onResponse(SearchMovieResults response) {
                 try {
                     mMovieList.addAll(response.searchMovieList);
-                    //saveMovieListToDb(mMovieList);
+                    saveSearchMovieListToDb(mMovieList);
                     //iterar mMoviesList
-                    for(SearchMovie movie : mMovieList){
+                    for(SearchMovieRealm movie : mRealm.where(SearchMovieRealm.class).findAllAsync()){
                         // iterar genres_ids da API
                         // Set genres description
                         movie.setGenresDescription("");
@@ -269,7 +269,7 @@ public class SearchFragment extends Fragment implements SearchRecyclerAdapter.On
                     }
 
                     if (mAdapter == null) {
-                        mAdapter = new SearchRecyclerAdapter(getContext(), mMovieList, SearchFragment.this);
+                        mAdapter = new SearchRecyclerAdapter(getContext(), mRealm.where(SearchMovieRealm.class).findAllAsync(), SearchFragment.this); //mudar adapter
                         mRecyclerView.setAdapter(mAdapter);
                         mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
                     } else {
@@ -395,8 +395,8 @@ public class SearchFragment extends Fragment implements SearchRecyclerAdapter.On
             realm.executeTransactionAsync(new Realm.Transaction() {
                 @Override
                 public void execute(Realm realm) {
-                    List<SearchMovieRealm> movies = movieMapper.toSearchRealmList(list); // SearchRealm
-                    RealmList<SearchMovieRealm> _movies = new RealmList<>();  // SearchRealm
+                    List<SearchMovieRealm> movies = movieMapper.toSearchRealmList(list);
+                    RealmList<SearchMovieRealm> _movies = new RealmList<>();
                     _movies.addAll(movies);
                     realm.insertOrUpdate(_movies);
                 }
@@ -409,6 +409,7 @@ public class SearchFragment extends Fragment implements SearchRecyclerAdapter.On
                 @Override
                 public void onError(Throwable error) {
                     // sad reactions only
+                    error.printStackTrace();
                 }
             });
         } catch (Exception e) {
