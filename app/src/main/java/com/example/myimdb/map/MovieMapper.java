@@ -2,15 +2,22 @@
 package com.example.myimdb.map;
 
 import com.example.myimdb.model.Movie;
+import com.example.myimdb.model.MovieGenreRealm;
 import com.example.myimdb.model.MovieRealm;
 import com.example.myimdb.model.SearchMovie;
+import com.example.myimdb.model.SearchMovieRealm;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import io.realm.Realm;
+import io.realm.RealmList;
+
 public class MovieMapper {
     List<MovieRealm> myMovieRealmList = new ArrayList<>();
     List<SearchMovieRealm> mySearchRealmList = new ArrayList<>();
+    Realm mRealm = Realm.getDefaultInstance();
+
 
     public List<MovieRealm> toMovieRealmList(List<Movie> responseList){
         for (Movie movie : responseList){
@@ -33,16 +40,22 @@ public class MovieMapper {
     // TODO:
     // create funtion to parse SearchMovie to SearchMovieRealm(need to create RealmModels)
     public List<SearchMovieRealm> toSearchRealmList(List<SearchMovie> responseList){
-        for (SearchMovie movie : responseList){
-            SearchMovieRealm mySearchRealm = new SearchMovieRealm(
-                    movie.getId(),
-                    movie.getTitle(),
-                    movie.getPoster_path(),
-                    //movie.getGenre_ids(), //error here (types)
-                    movie.getRelease_date(),
-                    movie.getGenresDescription());
-            mySearchRealmList.add(mySearchRealm);
+        RealmList<Integer> genres = new RealmList<>();
+        for(MovieGenreRealm genre : mRealm.where(MovieGenreRealm.class).findAllAsync()) {
+            genres.add(genre.getId());
         }
+
+        for (SearchMovie searchMovie : responseList){
+
+                SearchMovieRealm mySearchRealm = new SearchMovieRealm(
+                        searchMovie.getId(),
+                        searchMovie.getTitle(),
+                        searchMovie.getPoster_path(),
+                        //movie.getGenre_ids(), //error here (types)
+                        searchMovie.getRelease_date(),
+                        genres);
+                mySearchRealmList.add(mySearchRealm);
+            }
         return mySearchRealmList;
     }
 }

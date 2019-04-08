@@ -32,6 +32,7 @@ import com.example.myimdb.model.MovieGenreResults;
 import com.example.myimdb.model.MovieRealm;
 import com.example.myimdb.model.MovieResults;
 import com.example.myimdb.model.SearchMovie;
+import com.example.myimdb.model.SearchMovieRealm;
 import com.example.myimdb.model.SearchMovieResults;
 
 import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEvent;
@@ -386,7 +387,7 @@ public class SearchFragment extends Fragment implements SearchRecyclerAdapter.On
     }
 
 
-    private void saveMovieListToDb(final List<SearchMovie> list){
+    private void saveSearchMovieListToDb(final List<SearchMovie> list){
         // TEST
         final MovieMapper movieMapper = new MovieMapper();
 
@@ -394,8 +395,8 @@ public class SearchFragment extends Fragment implements SearchRecyclerAdapter.On
             realm.executeTransactionAsync(new Realm.Transaction() {
                 @Override
                 public void execute(Realm realm) {
-                    List<MovieRealm> movies = movieMapper.toMovieRealmList(list); // SearchRealm
-                    RealmList<MovieRealm> _movies = new RealmList<>();  // SearchRealm
+                    List<SearchMovieRealm> movies = movieMapper.toSearchRealmList(list); // SearchRealm
+                    RealmList<SearchMovieRealm> _movies = new RealmList<>();  // SearchRealm
                     _movies.addAll(movies);
                     realm.insertOrUpdate(_movies);
                 }
