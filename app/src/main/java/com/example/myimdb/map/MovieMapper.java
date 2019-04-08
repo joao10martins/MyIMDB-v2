@@ -16,6 +16,7 @@ import io.realm.RealmList;
 public class MovieMapper {
     List<MovieRealm> myMovieRealmList = new ArrayList<>();
     List<SearchMovieRealm> mySearchRealmList = new ArrayList<>();
+    //RealmList<Integer> movieGenres = new RealmList<>();
     Realm mRealm = Realm.getDefaultInstance();
 
 
@@ -27,7 +28,7 @@ public class MovieMapper {
                     movie.getVote_average(),
                     movie.getTitle(),
                     movie.getPoster_path(),
-                    //movie.getGenre_ids(), //error here (types)
+                    //movie.getGenre_ids(), //error here (types) //TODO
                     movie.getBackdrop_path(),
                     movie.getOverview(),
                     movie.getRelease_date());
@@ -40,12 +41,13 @@ public class MovieMapper {
     // TODO:
     // create funtion to parse SearchMovie to SearchMovieRealm(need to create RealmModels)
     public List<SearchMovieRealm> toSearchRealmList(List<SearchMovie> responseList){
-        RealmList<Integer> genres = new RealmList<>();
+        /*RealmList<Integer> genres = new RealmList<>();
         for(MovieGenreRealm genre : mRealm.where(MovieGenreRealm.class).findAllAsync()) {
             genres.add(genre.getId());
-        }
+        }*/
 
         for (SearchMovie searchMovie : responseList){
+                List<Integer> genres = searchMovie.getGenre_ids();
 
                 SearchMovieRealm mySearchRealm = new SearchMovieRealm(
                         searchMovie.getId(),
@@ -53,10 +55,18 @@ public class MovieMapper {
                         searchMovie.getPoster_path(),
                         //movie.getGenre_ids(), //error here (types)
                         searchMovie.getRelease_date(),
-                        genres);
+                        intListToIntRealmList(genres));
                 mySearchRealmList.add(mySearchRealm);
             }
         return mySearchRealmList;
+    }
+
+
+
+    public RealmList<Integer> intListToIntRealmList(List<Integer> list){
+        RealmList<Integer> movieGenres = new RealmList<>();
+        movieGenres.addAll(list);
+        return movieGenres;
     }
 }
 

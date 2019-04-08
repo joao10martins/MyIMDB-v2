@@ -21,12 +21,14 @@ import android.widget.TextView;
 
 import com.example.myimdb.model.Movie;
 import com.example.myimdb.model.MovieRealm;
+import com.facebook.stetho.okhttp3.StethoInterceptor;
 
 import io.realm.OrderedCollectionChangeSet;
 import io.realm.OrderedRealmCollectionChangeListener;
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
 import io.realm.RealmResults;
+import okhttp3.OkHttpClient;
 
 public class MainActivity extends AppCompatActivity implements SearchFragment.CheckKeyboardState, NowPlayingFragment.OnNowPlayingListener {
 
@@ -93,6 +95,9 @@ public class MainActivity extends AppCompatActivity implements SearchFragment.Ch
         getSupportActionBar().hide();
 
         //mRealm = Realm.getDefaultInstance();
+        /*new OkHttpClient.Builder()
+                .addNetworkInterceptor(new StethoInterceptor())
+                .build();*/
 
 
 

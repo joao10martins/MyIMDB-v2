@@ -45,6 +45,7 @@ import java.util.List;
 
 import io.realm.Realm;
 import io.realm.RealmList;
+import io.realm.RealmResults;
 
 
 /**
@@ -63,6 +64,7 @@ public class SearchFragment extends Fragment implements SearchRecyclerAdapter.On
 
     //private List<MovieGenre> mGenreList = new ArrayList<>();
     private HashMap<Integer , MovieGenreRealm> mGenreMap = new HashMap<>();
+    private List<MovieGenre> genreList = new ArrayList<>();
     private SearchRecyclerAdapter mAdapter;
     private int mListCount;
     private String mSearch_query;
@@ -117,6 +119,13 @@ public class SearchFragment extends Fragment implements SearchRecyclerAdapter.On
 
         mContext = getActivity();
         mRecyclerView = mView.findViewById(R.id.rvSearch);
+        mRealm.executeTransaction(new Realm.Transaction() {
+            @Override
+            public void execute(Realm realm) {
+                RealmResults<SearchMovieRealm> rows = realm.where(SearchMovieRealm.class).findAll();
+                rows.deleteAllFromRealm();
+            }
+        });
 
         registerKeyboardListener();
 
@@ -161,8 +170,9 @@ public class SearchFragment extends Fragment implements SearchRecyclerAdapter.On
         return new Response.Listener<MovieGenreResults>() {
             @Override
             public void onResponse(MovieGenreResults response) {
+                genreList.addAll(response.genreList);
+                saveGenresToDb(genreList);
                 try {
-                    saveGenresToDb(response.genreList);
                     for (MovieGenreRealm movieGenre : mRealm.where(MovieGenreRealm.class).findAllAsync()) {
                         mGenreMap.put(movieGenre.getId(), movieGenre);
                     }
@@ -242,14 +252,14 @@ public class SearchFragment extends Fragment implements SearchRecyclerAdapter.On
 
     }
 
-
+    // TODO: mudar adapters para depois implementar as checkagens de conectividade à internet.
     private Response.Listener<SearchMovieResults> getMovieSuccessListener() {
         return new Response.Listener<SearchMovieResults>() {
             @Override
             public void onResponse(SearchMovieResults response) {
+                mMovieList.addAll(response.searchMovieList);
+                saveSearchMovieListToDb(mMovieList);
                 try {
-                    mMovieList.addAll(response.searchMovieList);
-                    saveSearchMovieListToDb(mMovieList);
                     //iterar mMoviesList
                     for(SearchMovieRealm movie : mRealm.where(SearchMovieRealm.class).findAllAsync()){
                         // iterar genres_ids da API

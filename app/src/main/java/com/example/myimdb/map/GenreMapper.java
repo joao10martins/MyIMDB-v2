@@ -11,6 +11,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
+import io.realm.RealmResults;
+
 public class GenreMapper {
     List<MovieGenreRealm> myGenreRealmList = new ArrayList<>();
     HashMap<Integer, MovieGenreRealm> genreRealmHashMap = new HashMap<>();
@@ -26,7 +28,7 @@ public class GenreMapper {
     }
 
 
-    public HashMap<Integer, MovieGenreRealm> toGenreRealmMap(List<MovieGenreRealm> genreRealmList){
+    public HashMap<Integer, MovieGenreRealm> toGenreRealmMap(RealmResults<MovieGenreRealm> genreRealmList){
         for (MovieGenreRealm realmGenre : genreRealmList) {
             genreRealmHashMap.put(realmGenre.getId(), realmGenre);
         }

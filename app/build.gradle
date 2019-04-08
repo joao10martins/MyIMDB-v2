@@ -47,6 +47,10 @@ dependencies {
 
     // Realm adapters
     implementation 'io.realm:android-adapters:2.1.1'
+
+    // Gradle dependency on Stetho
+    implementation 'com.facebook.stetho:stetho:1.5.1'
+    implementation 'com.facebook.stetho:stetho-okhttp3:1.5.1'
 }
 
 

@@ -13,13 +13,18 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.example.myimdb.model.Movie;
 import com.example.myimdb.model.MovieGenre;
+import com.example.myimdb.model.MovieRealm;
 import com.example.myimdb.model.SearchMovie;
+import com.example.myimdb.model.SearchMovieRealm;
 
 import java.util.HashMap;
 import java.util.List;
 
-public class SearchRecyclerAdapter extends RecyclerView.Adapter<SearchRecyclerAdapter.SearchViewHolder> {
-    private final List<SearchMovie> mMovieList;
+import io.realm.OrderedRealmCollection;
+import io.realm.RealmRecyclerViewAdapter;
+
+public class SearchRecyclerAdapter extends RealmRecyclerViewAdapter<SearchMovieRealm, SearchRecyclerAdapter.SearchViewHolder> {
+
     private LayoutInflater mInflater;
     private Context context;
 
@@ -31,20 +36,20 @@ public class SearchRecyclerAdapter extends RecyclerView.Adapter<SearchRecyclerAd
 
     //private NowPlayingListener nowPlayingListener;
 
-    public SearchRecyclerAdapter(Context context,
-                                     List<SearchMovie> movieList,
-                                     OnMovieClick listener) {
+    SearchRecyclerAdapter(Context context,
+                                 OrderedRealmCollection<SearchMovieRealm> data,
+                                 OnMovieClick listener) {
+        super(data, true);
         this.context = context;
-        mInflater = LayoutInflater.from(context);
-        this.mMovieList = movieList;
         this.mListener = listener;
-
+        setHasStableIds(false);
     }
 
     class SearchViewHolder extends RecyclerView.ViewHolder {
         final TextView title;
         final TextView genre;
         final ImageView movieImage;
+        public SearchMovieRealm data;
 
         final SearchRecyclerAdapter mAdapter;
 
@@ -61,14 +66,16 @@ public class SearchRecyclerAdapter extends RecyclerView.Adapter<SearchRecyclerAd
     @NonNull
     @Override
     public SearchViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View mMovieView = mInflater.inflate(R.layout.cardview_search_item_result, parent, false);
+        View mMovieView = LayoutInflater.from(parent.getContext()).inflate(R.layout.cardview_search_item_result, parent, false);
         return new SearchViewHolder(mMovieView, this);
     }
 
     @Override
     public void onBindViewHolder(@NonNull SearchViewHolder holder, int position) {
 
-        final SearchMovie currentItem = mMovieList.get(position);
+        final SearchMovieRealm currentItem = getItem(position);
+        holder.data = currentItem;
+        final int currentItemId = currentItem.getId();
         String imagePath = "https://image.tmdb.org/t/p/original/" + currentItem.getPoster_path();
 
 
@@ -95,10 +102,6 @@ public class SearchRecyclerAdapter extends RecyclerView.Adapter<SearchRecyclerAd
 
     }
 
-    @Override
-    public int getItemCount() {
-        return mMovieList.size();
-    }
 
 
 
