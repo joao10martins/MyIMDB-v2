@@ -20,13 +20,17 @@ import com.example.myimdb.model.SearchMovieRealm;
 import java.util.HashMap;
 import java.util.List;
 
+import io.realm.Case;
 import io.realm.OrderedRealmCollection;
+import io.realm.Realm;
+import io.realm.RealmQuery;
 import io.realm.RealmRecyclerViewAdapter;
 
 public class SearchRecyclerAdapter extends RealmRecyclerViewAdapter<SearchMovieRealm, SearchRecyclerAdapter.SearchViewHolder> {
 
     private LayoutInflater mInflater;
     private Context context;
+    Realm mRealm;
 
     private OnMovieClick mListener;
 
@@ -101,6 +105,17 @@ public class SearchRecyclerAdapter extends RealmRecyclerViewAdapter<SearchMovieR
         });
 
     }
+
+
+    public void filterResults(String text){
+        text = text == null ? null : text.toLowerCase().trim();
+        RealmQuery<SearchMovieRealm> query = mRealm.where(SearchMovieRealm.class);
+        if(!(text == null || "".equals(text))) {
+            query.contains("title", text, Case.INSENSITIVE);// TODO: change field
+        }
+        updateData(query.findAllAsync());
+    }
+
 
 
 

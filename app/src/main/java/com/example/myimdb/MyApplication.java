@@ -24,7 +24,7 @@ public class MyApplication extends Application {
         // Initializing Realm (only has to be done once)
         Realm.init(this);
         RealmConfiguration config = new RealmConfiguration.Builder()
-                .deleteRealmIfMigrationNeeded()
+                //.deleteRealmIfMigrationNeeded()
                 .build();
         Realm.setDefaultConfiguration(config);
 

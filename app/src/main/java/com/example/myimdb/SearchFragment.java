@@ -43,8 +43,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import io.realm.Case;
+import io.realm.OrderedRealmCollection;
 import io.realm.Realm;
 import io.realm.RealmList;
+import io.realm.RealmQuery;
 import io.realm.RealmResults;
 
 
@@ -231,7 +234,6 @@ public class SearchFragment extends Fragment implements SearchRecyclerAdapter.On
                 }
                 if(mAdapter != null && mButtonClickCount > 1){
                     mMovieList.clear();
-                    mRecyclerView.clea
                     //mSearch_query = query_text.getText().toString();
 
                     mUrl = "https://api.themoviedb.org/3/search/movie?api_key=07d93ad59393a99fe6bc8c1b8f0de23b&language=en-US&query=" + mSearch_query + "&page=1&include_adult=false";
@@ -278,14 +280,31 @@ public class SearchFragment extends Fragment implements SearchRecyclerAdapter.On
                                 movie.setGenresDescription(movie.getGenresDescription().substring(0, movie.getGenresDescription().length() - 1));
                             }
                         }
-                        if (!mRealm.where(SearchMovieRealm.class).findAllAsync().contains(mMovieList)) {
+                        //if (!mRealm.where(SearchMovieRealm.class).findAllAsync().contains(mMovieList)) {
                             saveSearchMovieListToDb(mMovieList);
-                        }
+                           /* RealmResults<SearchMovieRealm> searchList = mRealm.where(SearchMovieRealm.class).findAllAsync();
+                            mAdapter = new SearchRecyclerAdapter(getContext(), searchList.sort(mSearch_query), SearchFragment.this);
+                            mRecyclerView.setAdapter(mAdapter);
+                            mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));*/
+                        //}
+
+
+
 
                         if (mAdapter == null) {
-                            mAdapter = new SearchRecyclerAdapter(getContext(), mRealm.where(SearchMovieRealm.class).findAllAsync(), SearchFragment.this); //mudar adapter
+                            mAdapter = new SearchRecyclerAdapter(getContext(), mRealm.where(SearchMovieRealm.class).findAllAsync(), SearchFragment.this);
                             mRecyclerView.setAdapter(mAdapter);
                             mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+                        } else if (mAdapter != null && mButtonClickCount > 1){
+
+                            RealmResults<SearchMovieRealm> results = mRealm.where(SearchMovieRealm.class)
+                                                                           .like("title", "*"+mSearch_query.trim()+"*", Case.INSENSITIVE) // Finds any value that have 'mSearchQuery' in any position.
+                                                                           .findAllAsync();
+                            //OrderedRealmCollection<SearchMovieRealm> finalResults = results;
+                            mAdapter = new SearchRecyclerAdapter(getContext(), results, SearchFragment.this);
+                            mRecyclerView.setAdapter(mAdapter);
+                            mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+
                         } else {
                             mAdapter.notifyDataSetChanged();
                         }
