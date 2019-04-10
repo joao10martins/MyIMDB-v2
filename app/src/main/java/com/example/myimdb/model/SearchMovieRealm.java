@@ -4,8 +4,10 @@ import java.util.List;
 
 import io.realm.RealmList;
 import io.realm.RealmObject;
+import io.realm.annotations.PrimaryKey;
 
 public class SearchMovieRealm extends RealmObject {
+    @PrimaryKey
     private int id;
     private String title;
     private String poster_path;

@@ -71,6 +71,7 @@ public class SearchFragment extends Fragment implements SearchRecyclerAdapter.On
     private SearchRecyclerAdapter mAdapter;
     private int mListCount;
     private String mSearch_query;
+    private int mTotalPages;
 
     private CheckKeyboardState mListener;
 
@@ -134,8 +135,7 @@ public class SearchFragment extends Fragment implements SearchRecyclerAdapter.On
 
         // Initialize the list of Genres.
         getGenreList();
-        // Search movie
-        searchQuery();
+
     }
 
     @Override
@@ -246,9 +246,6 @@ public class SearchFragment extends Fragment implements SearchRecyclerAdapter.On
                     mRequestQueue.add(request);
                     ++mListCount;
                 }
-
-                //mRecyclerView.removeAllViews();
-
             }
         });
 
@@ -262,6 +259,8 @@ public class SearchFragment extends Fragment implements SearchRecyclerAdapter.On
             public void onResponse(SearchMovieResults response) {
                 try {
                     if(response.searchMovieList.size() != 0) {
+                        //mMovieList.clear();
+                        mTotalPages = response.totalPages;
                         mMovieList.addAll(response.searchMovieList);
 
                         for (SearchMovie movie : mMovieList) {
@@ -280,13 +279,13 @@ public class SearchFragment extends Fragment implements SearchRecyclerAdapter.On
                                 movie.setGenresDescription(movie.getGenresDescription().substring(0, movie.getGenresDescription().length() - 1));
                             }
                         }
-                        //if (!mRealm.where(SearchMovieRealm.class).findAllAsync().contains(mMovieList)) {
+                        if (!mRealm.where(SearchMovieRealm.class).findAllAsync().containsAll(mMovieList)) {
                             saveSearchMovieListToDb(mMovieList);
                            /* RealmResults<SearchMovieRealm> searchList = mRealm.where(SearchMovieRealm.class).findAllAsync();
                             mAdapter = new SearchRecyclerAdapter(getContext(), searchList.sort(mSearch_query), SearchFragment.this);
                             mRecyclerView.setAdapter(mAdapter);
                             mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));*/
-                        //}
+                        }
 
 
 
@@ -296,11 +295,10 @@ public class SearchFragment extends Fragment implements SearchRecyclerAdapter.On
                             mRecyclerView.setAdapter(mAdapter);
                             mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
                         } else if (mAdapter != null && mButtonClickCount > 1){
-
                             RealmResults<SearchMovieRealm> results = mRealm.where(SearchMovieRealm.class)
                                                                            .like("title", "*"+mSearch_query.trim()+"*", Case.INSENSITIVE) // Finds any value that have 'mSearchQuery' in any position.
                                                                            .findAllAsync();
-                            //OrderedRealmCollection<SearchMovieRealm> finalResults = results;
+
                             mAdapter = new SearchRecyclerAdapter(getContext(), results, SearchFragment.this);
                             mRecyclerView.setAdapter(mAdapter);
                             mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
@@ -309,23 +307,27 @@ public class SearchFragment extends Fragment implements SearchRecyclerAdapter.On
                             mAdapter.notifyDataSetChanged();
                         }
 
-
                         mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
                             @Override
                             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
                                 super.onScrollStateChanged(recyclerView, newState);
 
+
                                 if (!recyclerView.canScrollVertically(1)) {
                                     //do something
-                                    mUrl = "https://api.themoviedb.org/3/search/movie?api_key=07d93ad59393a99fe6bc8c1b8f0de23b&language=en-US&query=" + mSearch_query + "&page=" + mListCount + "&include_adult=false";
+                                    if (mListCount > mTotalPages) {
+                                        return;
+                                    } else {
+                                        mUrl = "https://api.themoviedb.org/3/search/movie?api_key=07d93ad59393a99fe6bc8c1b8f0de23b&language=en-US&query=" + mSearch_query + "&page=" + mListCount + "&include_adult=false";
 
-                                    GsonRequest<SearchMovieResults> request = new GsonRequest<>(mUrl,
-                                            SearchMovieResults.class,
-                                            getMovieSuccessListener(),
-                                            getErrorListener());
+                                        GsonRequest<SearchMovieResults> request = new GsonRequest<>(mUrl,
+                                                SearchMovieResults.class,
+                                                getMovieSuccessListener(),
+                                                getErrorListener());
 
-                                    mRequestQueue.add(request);
-                                    ++mListCount;
+                                        mRequestQueue.add(request);
+                                        ++mListCount;
+                                    }
                                 }
                             }
                         });
@@ -410,6 +412,8 @@ public class SearchFragment extends Fragment implements SearchRecyclerAdapter.On
                 @Override
                 public void onSuccess() {
                     // GREAT SUCCESS (•̀ᴗ•́)و ̑̑
+                    // Search movie
+                    searchQuery();
                 }
             }, new Realm.Transaction.OnError() {
                 @Override

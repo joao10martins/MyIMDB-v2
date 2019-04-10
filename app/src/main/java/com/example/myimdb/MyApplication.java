@@ -9,6 +9,7 @@ import io.realm.Realm;
 import io.realm.RealmConfiguration;
 import okhttp3.OkHttpClient;
 
+
 public class MyApplication extends Application {
     @Override
     public void onCreate() {
@@ -24,7 +25,7 @@ public class MyApplication extends Application {
         // Initializing Realm (only has to be done once)
         Realm.init(this);
         RealmConfiguration config = new RealmConfiguration.Builder()
-                //.deleteRealmIfMigrationNeeded()
+                .deleteRealmIfMigrationNeeded()
                 .build();
         Realm.setDefaultConfiguration(config);
 

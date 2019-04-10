@@ -107,18 +107,6 @@ public class SearchRecyclerAdapter extends RealmRecyclerViewAdapter<SearchMovieR
     }
 
 
-    public void filterResults(String text){
-        text = text == null ? null : text.toLowerCase().trim();
-        RealmQuery<SearchMovieRealm> query = mRealm.where(SearchMovieRealm.class);
-        if(!(text == null || "".equals(text))) {
-            query.contains("title", text, Case.INSENSITIVE);// TODO: change field
-        }
-        updateData(query.findAllAsync());
-    }
-
-
-
-
 
     public interface OnMovieClick {
         void onItemClick(int movieId);
