@@ -180,7 +180,7 @@ public class NowPlayingFragment extends Fragment implements NowPlayingRecyclerAd
                     nowPlayingList.addAll(response.movieList);
                     saveMovieListToDb(nowPlayingList); // PLEASE WORK ༼ つ ◕_◕ ༽つ
                     if (mAdapter == null) {
-                        mAdapter = new NowPlayingRecyclerAdapter(mRealm.where(MovieRealm.class).findAllAsync(), getContext(), NowPlayingFragment.this); // test
+                        mAdapter = new NowPlayingRecyclerAdapter(mRealm.where(MovieRealm.class).findAllAsync(), getContext(), NowPlayingFragment.this);
                         //mAdapter = new NowPlayingRecyclerAdapter(getContext(), nowPlayingList, NowPlayingFragment.this);
                         mRecyclerView.setAdapter(mAdapter);
                         mRecyclerView.setLayoutManager(new GridLayoutManager(getContext(), 3));
@@ -321,23 +321,6 @@ public class NowPlayingFragment extends Fragment implements NowPlayingRecyclerAd
         }
     }
 
-
-        // Query Realm for all movies
-        //final RealmResults<MovieRealm> movies = mRealm.where(MovieRealm.class).findAll();
-
-        // Realm transaction (hopefully saves data persistently)
-        /*mRealm.beginTransaction();
-        mRealm.insertOrUpdate(movies);
-        mRealm.commitTransaction();*/
-
-        // Listeners will be notified when data changes
-        /*movies.addChangeListener(new OrderedRealmCollectionChangeListener<RealmList<MovieRealm>>() {
-            @Override
-            public void onChange(RealmResults<MovieRealm> movies, OrderedCollectionChangeSet changeSet) {
-                // Query results are updated in real time with fine grained notifications.
-                changeSet.getInsertions();
-            }
-        });*/
 
 
     public interface OnNowPlayingListener {

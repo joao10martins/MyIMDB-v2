@@ -9,6 +9,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.view.ViewCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -72,6 +73,7 @@ public class SearchFragment extends Fragment implements SearchRecyclerAdapter.On
     private int mListCount;
     private String mSearch_query;
     private int mTotalPages;
+    RealmResults<SearchMovieRealm> mResults;
 
     private CheckKeyboardState mListener;
 
@@ -123,19 +125,19 @@ public class SearchFragment extends Fragment implements SearchRecyclerAdapter.On
 
         mContext = getActivity();
         mRecyclerView = mView.findViewById(R.id.rvSearch);
-        mRealm.executeTransaction(new Realm.Transaction() {
+
+        /*mRealm.executeTransaction(new Realm.Transaction() {
             @Override
             public void execute(Realm realm) {
                 RealmResults<SearchMovieRealm> rows = realm.where(SearchMovieRealm.class).findAll();
                 rows.deleteAllFromRealm();
             }
-        });
+        });*/
 
         registerKeyboardListener();
 
         // Initialize the list of Genres.
         getGenreList();
-
     }
 
     @Override
@@ -214,37 +216,77 @@ public class SearchFragment extends Fragment implements SearchRecyclerAdapter.On
         btnSearch.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mSearch_query = query_text.getText().toString();
+                mSearch_query = query_text.getText().toString().trim();
 
-                if (mSearch_query.isEmpty() || mSearch_query.trim().isEmpty())
-                    Toast.makeText(getActivity(), "Please enter a valid input", Toast.LENGTH_SHORT).show();
-                if (mAdapter == null && mButtonClickCount == 1 && !mSearch_query.isEmpty() && !mSearch_query.trim().isEmpty()) {
-                    // neste ponto, verificar conexão de internet e dependendo disso, fazer o request à API ou ao Realm.
 
-                    mUrl = "https://api.themoviedb.org/3/search/movie?api_key=07d93ad59393a99fe6bc8c1b8f0de23b&language=en-US&query=" + mSearch_query + "&page=1&include_adult=false";
+                try {
+                    if (mSearch_query.isEmpty() || mSearch_query.trim().isEmpty())
+                        Toast.makeText(getActivity(), "Please enter a valid input", Toast.LENGTH_SHORT).show();
+                    if ((mMovieList.size() == 0 || mRealm.where(SearchMovieRealm.class).findAllAsync() == null)  && mButtonClickCount == 1 && !mSearch_query.isEmpty() && !mSearch_query.trim().isEmpty()) {
+                        // neste ponto, verificar conexão de internet e dependendo disso, fazer o request à API ou ao Realm.
 
-                    GsonRequest<SearchMovieResults> request = new GsonRequest<>(mUrl,
-                            SearchMovieResults.class,
-                            getMovieSuccessListener(),
-                            getErrorListener());
+                        mUrl = "https://api.themoviedb.org/3/search/movie?api_key=07d93ad59393a99fe6bc8c1b8f0de23b&language=en-US&query=" + mSearch_query + "&page=1&include_adult=false";
 
-                    mRequestQueue.add(request);
-                    ++mListCount;
-                    ++mButtonClickCount;
-                }
-                if(mAdapter != null && mButtonClickCount > 1){
-                    mMovieList.clear();
-                    //mSearch_query = query_text.getText().toString();
+                        GsonRequest<SearchMovieResults> request = new GsonRequest<>(mUrl,
+                                SearchMovieResults.class,
+                                getMovieSuccessListener(),
+                                getErrorListener());
 
-                    mUrl = "https://api.themoviedb.org/3/search/movie?api_key=07d93ad59393a99fe6bc8c1b8f0de23b&language=en-US&query=" + mSearch_query + "&page=1&include_adult=false";
+                        mRequestQueue.add(request);
+                        ++mListCount;
+                        ++mButtonClickCount;
+                    }
+                    if(mAdapter != null && mButtonClickCount > 1){
+                        //mMovieList.clear();
+                        //mSearch_query = query_text.getText().toString();
 
-                    GsonRequest<SearchMovieResults> request = new GsonRequest<>(mUrl,
-                            SearchMovieResults.class,
-                            getMovieSuccessListener(),
-                            getErrorListener());
+                        mUrl = "https://api.themoviedb.org/3/search/movie?api_key=07d93ad59393a99fe6bc8c1b8f0de23b&language=en-US&query=" + mSearch_query + "&page=1&include_adult=false";
 
-                    mRequestQueue.add(request);
-                    ++mListCount;
+                        GsonRequest<SearchMovieResults> request = new GsonRequest<>(mUrl,
+                                SearchMovieResults.class,
+                                getMovieSuccessListener(),
+                                getErrorListener());
+
+                        mRequestQueue.add(request);
+                        ++mListCount;
+                    }
+                    mResults = mRealm.where(SearchMovieRealm.class)
+                            .like("title", "*"+mSearch_query.trim()+"*", Case.INSENSITIVE) // Finds any value that have 'mSearchQuery' in any position.
+                            .findAllAsync();
+                    if (mResults != null && mRecyclerView != null){
+                        mAdapter = new SearchRecyclerAdapter(getContext(), mResults, SearchFragment.this);
+                        mRecyclerView.setAdapter(mAdapter);
+                        mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+                    } else {
+                        mAdapter.notifyDataSetChanged();
+                    }
+
+                    mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+                        @Override
+                        public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                            super.onScrollStateChanged(recyclerView, newState);
+
+
+                            if (!recyclerView.canScrollVertically(1)) {
+                                //do something
+                                if (mListCount > mTotalPages) {
+                                    return;
+                                } else {
+                                    mUrl = "https://api.themoviedb.org/3/search/movie?api_key=07d93ad59393a99fe6bc8c1b8f0de23b&language=en-US&query=" + mSearch_query + "&page=" + mListCount + "&include_adult=false";
+
+                                    GsonRequest<SearchMovieResults> request = new GsonRequest<>(mUrl,
+                                            SearchMovieResults.class,
+                                            getMovieSuccessListener(),
+                                            getErrorListener());
+
+                                    mRequestQueue.add(request);
+                                    ++mListCount;
+                                }
+                            }
+                        }
+                    });
+                } catch (Exception e){
+                    e.printStackTrace();
                 }
             }
         });
@@ -259,7 +301,6 @@ public class SearchFragment extends Fragment implements SearchRecyclerAdapter.On
             public void onResponse(SearchMovieResults response) {
                 try {
                     if(response.searchMovieList.size() != 0) {
-                        //mMovieList.clear();
                         mTotalPages = response.totalPages;
                         mMovieList.addAll(response.searchMovieList);
 
@@ -281,28 +322,20 @@ public class SearchFragment extends Fragment implements SearchRecyclerAdapter.On
                         }
                         if (!mRealm.where(SearchMovieRealm.class).findAllAsync().containsAll(mMovieList)) {
                             saveSearchMovieListToDb(mMovieList);
-                           /* RealmResults<SearchMovieRealm> searchList = mRealm.where(SearchMovieRealm.class).findAllAsync();
-                            mAdapter = new SearchRecyclerAdapter(getContext(), searchList.sort(mSearch_query), SearchFragment.this);
-                            mRecyclerView.setAdapter(mAdapter);
-                            mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));*/
                         }
 
 
 
 
                         if (mAdapter == null) {
-                            mAdapter = new SearchRecyclerAdapter(getContext(), mRealm.where(SearchMovieRealm.class).findAllAsync(), SearchFragment.this);
-                            mRecyclerView.setAdapter(mAdapter);
-                            mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-                        } else if (mAdapter != null && mButtonClickCount > 1){
-                            RealmResults<SearchMovieRealm> results = mRealm.where(SearchMovieRealm.class)
-                                                                           .like("title", "*"+mSearch_query.trim()+"*", Case.INSENSITIVE) // Finds any value that have 'mSearchQuery' in any position.
-                                                                           .findAllAsync();
+                            mResults = mRealm.where(SearchMovieRealm.class)
+                                    .like("title", "*"+mSearch_query.trim()+"*", Case.INSENSITIVE) // Finds any value that have 'mSearchQuery' in any position.
+                                    .findAllAsync();
 
-                            mAdapter = new SearchRecyclerAdapter(getContext(), results, SearchFragment.this);
+                            mAdapter = new SearchRecyclerAdapter(getContext(), mResults, SearchFragment.this);
                             mRecyclerView.setAdapter(mAdapter);
+                            mAdapter.notifyDataSetChanged();
                             mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-
                         } else {
                             mAdapter.notifyDataSetChanged();
                         }
@@ -378,17 +411,19 @@ public class SearchFragment extends Fragment implements SearchRecyclerAdapter.On
                 detailsFragment.setArguments(bundle);
 
 
+
                 // Replace fragment after work is done.
                 // Get the FragmentManager and start a transaction.
                 FragmentManager fragmentManager = getFragmentManager();
                 FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
 
 
+
                 // Replace the fragment
                 fragmentTransaction.setCustomAnimations(R.anim.fade_in, R.anim.fade_out);
-                fragmentTransaction.replace(R.id.fragment_container,
-                        detailsFragment);
                 fragmentTransaction.addToBackStack(null);
+                fragmentTransaction.add(R.id.fragment_container,
+                        detailsFragment);
                 fragmentTransaction.commit();
             }
         };
