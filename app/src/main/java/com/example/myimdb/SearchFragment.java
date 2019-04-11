@@ -15,11 +15,15 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.RequestQueue;
@@ -64,11 +68,13 @@ public class SearchFragment extends Fragment implements SearchRecyclerAdapter.On
     private View mView;
     private Context mContext;
     private Unregistrar mUnregistrar;
+    private InputMethodManager mInputManager;
 
 
     private RequestQueue mRequestQueue;
     private String mUrl;
     private RecyclerView mRecyclerView;
+    private EditText query_text;
 
     //private List<MovieGenre> mGenreList = new ArrayList<>();
     private HashMap<Integer , MovieGenreRealm> mGenreMap = new HashMap<>();
@@ -129,6 +135,8 @@ public class SearchFragment extends Fragment implements SearchRecyclerAdapter.On
 
         mContext = getActivity();
         mRecyclerView = mView.findViewById(R.id.rvSearch);
+        query_text = mView.findViewById(R.id.search_movie);
+        mInputManager = (InputMethodManager) mContext.getSystemService(Context.INPUT_METHOD_SERVICE);
 
 
         mRealm.executeTransaction(new Realm.Transaction() {
@@ -181,8 +189,6 @@ public class SearchFragment extends Fragment implements SearchRecyclerAdapter.On
         } catch (Exception e) {
             e.printStackTrace();
         }
-
-
     }
 
 
@@ -223,109 +229,25 @@ public class SearchFragment extends Fragment implements SearchRecyclerAdapter.On
         mListCount = 1;
         mButtonClickCount = 1;
         mRequestQueue = Volley.newRequestQueue(getActivity().getApplicationContext());
-        final EditText query_text = mView.findViewById(R.id.search_movie);
+        query_text.setImeOptions(EditorInfo.IME_ACTION_SEARCH);
+        query_text.setOnEditorActionListener(new EditText.OnEditorActionListener(){
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                // If triggered by an enter key, this is the event; otherwise, this is null.
+                if (actionId == EditorInfo.IME_ACTION_SEARCH) {
+                    search();
+                    return true;
+                }
+                return false;
+            }
+        });
 
 
         ImageButton btnSearch = mView.findViewById(R.id.btnSearch);
         btnSearch.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mSearch_query = query_text.getText().toString().trim();
-
-
-                try {
-                    if (mSearch_query.isEmpty() || mSearch_query.trim().isEmpty())
-                        Toast.makeText(getActivity(), "Please enter a valid input", Toast.LENGTH_SHORT).show();
-                    if ((mMovieList.size() == 0 || mRealm.where(SearchMovieRealm.class).findAllAsync() == null)  && mButtonClickCount == 1 && !mSearch_query.isEmpty() && !mSearch_query.trim().isEmpty()) {
-                        // neste ponto, verificar conexão de internet e dependendo disso, fazer o request à API ou ao Realm.
-
-                        if (isConnectedToNetwork()){
-                            mUrl = "https://api.themoviedb.org/3/search/movie?api_key=07d93ad59393a99fe6bc8c1b8f0de23b&language=en-US&query=" + mSearch_query + "&page=1&include_adult=false";
-
-                            GsonRequest<SearchMovieResults> request = new GsonRequest<>(mUrl,
-                                    SearchMovieResults.class,
-                                    getMovieSuccessListener(),
-                                    getErrorListener());
-
-                            mRequestQueue.add(request);
-                            ++mListCount;
-                            ++mButtonClickCount;
-                        } else {
-                            //Show disconnected message
-                            Toast.makeText(getContext(), "Network connection unavailable", Toast.LENGTH_SHORT).show();
-                        }
-
-                    }
-
-                    if(mAdapter != null && mButtonClickCount > 1){
-
-                        if (isConnectedToNetwork()){
-                            mUrl = "https://api.themoviedb.org/3/search/movie?api_key=07d93ad59393a99fe6bc8c1b8f0de23b&language=en-US&query=" + mSearch_query + "&page=1&include_adult=false";
-
-                            GsonRequest<SearchMovieResults> request = new GsonRequest<>(mUrl,
-                                    SearchMovieResults.class,
-                                    getMovieSuccessListener(),
-                                    getErrorListener());
-
-                            mRequestQueue.add(request);
-                            ++mListCount;
-                        } else {
-                            if (mResults != null){
-                                mAdapter = new SearchRecyclerAdapter(getContext(), mResults, SearchFragment.this);
-                                mRecyclerView.setAdapter(mAdapter);
-                                mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-                            } else {
-                                //Show disconnected message
-                                Toast.makeText(getContext(), "Network connection unavailable", Toast.LENGTH_SHORT).show();
-                            }
-
-                        }
-                    }
-
-
-                    mResults = mRealm.where(SearchMovieRealm.class)
-                            .like("title", "*"+mSearch_query.trim()+"*", Case.INSENSITIVE) // Finds any value that have 'mSearchQuery' in any position.
-                            .findAllAsync();
-                    if (mResults != null && mRecyclerView != null){
-                        mAdapter = new SearchRecyclerAdapter(getContext(), mResults, SearchFragment.this);
-                        mRecyclerView.setAdapter(mAdapter);
-                        mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-                    } else {
-                        mAdapter.notifyDataSetChanged();
-                    }
-
-                    mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
-                        @Override
-                        public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
-                            super.onScrollStateChanged(recyclerView, newState);
-
-
-                            if (!recyclerView.canScrollVertically(1)) {
-                                //do something
-                                if (mListCount > mTotalPages) {
-                                    return;
-                                } else {
-                                    if (isConnectedToNetwork()) {
-                                        mUrl = "https://api.themoviedb.org/3/search/movie?api_key=07d93ad59393a99fe6bc8c1b8f0de23b&language=en-US&query=" + mSearch_query + "&page=" + mListCount + "&include_adult=false";
-
-                                        GsonRequest<SearchMovieResults> request = new GsonRequest<>(mUrl,
-                                                SearchMovieResults.class,
-                                                getMovieSuccessListener(),
-                                                getErrorListener());
-
-                                        mRequestQueue.add(request);
-                                        ++mListCount;
-                                    } else {
-                                        //Show disconnected message
-                                        Toast.makeText(getContext(), "Network connection unavailable", Toast.LENGTH_SHORT).show();
-                                    }
-                                }
-                            }
-                        }
-                    });
-                } catch (Exception e){
-                    e.printStackTrace();
-                }
+                search();
             }
         });
 
@@ -441,8 +363,6 @@ public class SearchFragment extends Fragment implements SearchRecyclerAdapter.On
         return new Response.Listener<MovieDetails>() {
             @Override
             public void onResponse(MovieDetails response) {
-                // TODO: send response data to Details fragment
-                // and replace fragment with details fragment
 
                 // Pack the response data in a Bundle.
                 Bundle bundle = new Bundle();
@@ -571,6 +491,106 @@ public class SearchFragment extends Fragment implements SearchRecyclerAdapter.On
             return true;
         } else {
             return false;
+        }
+    }
+
+
+    public void search(){
+        mSearch_query = query_text.getText().toString().trim();
+        mInputManager.hideSoftInputFromWindow((null == mView) ? null : mView.getWindowToken(),InputMethodManager.HIDE_NOT_ALWAYS);
+
+        try {
+            if (mSearch_query.isEmpty() || mSearch_query.trim().isEmpty())
+                Toast.makeText(getActivity(), "Please enter a valid input", Toast.LENGTH_SHORT).show();
+            if ((mMovieList.size() == 0 || mRealm.where(SearchMovieRealm.class).findAllAsync() == null)  && mButtonClickCount == 1 && !mSearch_query.isEmpty() && !mSearch_query.trim().isEmpty()) {
+                // neste ponto, verificar conexão de internet e dependendo disso, fazer o request à API ou ao Realm.
+
+                if (isConnectedToNetwork()){
+                    mUrl = "https://api.themoviedb.org/3/search/movie?api_key=07d93ad59393a99fe6bc8c1b8f0de23b&language=en-US&query=" + mSearch_query + "&page=1&include_adult=false";
+
+                    GsonRequest<SearchMovieResults> request = new GsonRequest<>(mUrl,
+                            SearchMovieResults.class,
+                            getMovieSuccessListener(),
+                            getErrorListener());
+
+                    mRequestQueue.add(request);
+                    ++mListCount;
+                    ++mButtonClickCount;
+                } else {
+                    //Show disconnected message
+                    Toast.makeText(getContext(), "Network connection unavailable", Toast.LENGTH_SHORT).show();
+                }
+
+            }
+
+            if(mAdapter != null && mButtonClickCount > 1){
+
+                if (isConnectedToNetwork()){
+                    mUrl = "https://api.themoviedb.org/3/search/movie?api_key=07d93ad59393a99fe6bc8c1b8f0de23b&language=en-US&query=" + mSearch_query + "&page=1&include_adult=false";
+
+                    GsonRequest<SearchMovieResults> request = new GsonRequest<>(mUrl,
+                            SearchMovieResults.class,
+                            getMovieSuccessListener(),
+                            getErrorListener());
+
+                    mRequestQueue.add(request);
+                    ++mListCount;
+                } else {
+                    if (mResults != null){
+                        mAdapter = new SearchRecyclerAdapter(getContext(), mResults, SearchFragment.this);
+                        mRecyclerView.setAdapter(mAdapter);
+                        mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+                    } else {
+                        //Show disconnected message
+                        Toast.makeText(getContext(), "Network connection unavailable", Toast.LENGTH_SHORT).show();
+                    }
+
+                }
+            }
+
+
+            mResults = mRealm.where(SearchMovieRealm.class)
+                    .like("title", "*"+mSearch_query.trim()+"*", Case.INSENSITIVE) // Finds any value that have 'mSearchQuery' in any position.
+                    .findAllAsync();
+            if (mResults != null && mRecyclerView != null){
+                mAdapter = new SearchRecyclerAdapter(getContext(), mResults, SearchFragment.this);
+                mRecyclerView.setAdapter(mAdapter);
+                mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+            } else {
+                mAdapter.notifyDataSetChanged();
+            }
+
+            mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+                @Override
+                public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                    super.onScrollStateChanged(recyclerView, newState);
+
+
+                    if (!recyclerView.canScrollVertically(1)) {
+                        //do something
+                        if (mListCount > mTotalPages) {
+                            return;
+                        } else {
+                            if (isConnectedToNetwork()) {
+                                mUrl = "https://api.themoviedb.org/3/search/movie?api_key=07d93ad59393a99fe6bc8c1b8f0de23b&language=en-US&query=" + mSearch_query + "&page=" + mListCount + "&include_adult=false";
+
+                                GsonRequest<SearchMovieResults> request = new GsonRequest<>(mUrl,
+                                        SearchMovieResults.class,
+                                        getMovieSuccessListener(),
+                                        getErrorListener());
+
+                                mRequestQueue.add(request);
+                                ++mListCount;
+                            } else {
+                                //Show disconnected message
+                                Toast.makeText(getContext(), "Network connection unavailable", Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    }
+                }
+            });
+        } catch (Exception e){
+            e.printStackTrace();
         }
     }
 

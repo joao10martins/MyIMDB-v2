@@ -193,7 +193,6 @@ public class MainActivity extends AppCompatActivity implements SearchFragment.Ch
     }
 
 
-    // TODO
     private void displaySearch() {
 
 
@@ -201,9 +200,6 @@ public class MainActivity extends AppCompatActivity implements SearchFragment.Ch
         final SearchFragment searchFragment = SearchFragment.newInstance();
 
         switchFragment(searchFragment, true, false);
-
-
-
 
 
 
@@ -221,9 +217,9 @@ public class MainActivity extends AppCompatActivity implements SearchFragment.Ch
 
     @Override
     public void onKeyboardStateChanged(boolean isOpen) {
-
         mBottomNavigationView.setVisibility(isOpen ? View.GONE : View.VISIBLE);
     }
+
 
     @Override
     public void onSwitchFragment(Fragment fragment) {
