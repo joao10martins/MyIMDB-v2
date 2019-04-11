@@ -3,6 +3,9 @@ package com.example.myimdb;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.IntentFilter;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -35,6 +38,8 @@ import com.example.myimdb.model.MovieResults;
 import com.example.myimdb.model.SearchMovie;
 import com.example.myimdb.model.SearchMovieRealm;
 import com.example.myimdb.model.SearchMovieResults;
+import com.example.myimdb.network.ConnectivityHelper;
+import com.example.myimdb.network.NetworkChangeReceiver;
 
 import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEvent;
 import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEventListener;
@@ -126,6 +131,7 @@ public class SearchFragment extends Fragment implements SearchRecyclerAdapter.On
         mContext = getActivity();
         mRecyclerView = mView.findViewById(R.id.rvSearch);
 
+
         /*mRealm.executeTransaction(new Realm.Transaction() {
             @Override
             public void execute(Realm realm) {
@@ -151,18 +157,26 @@ public class SearchFragment extends Fragment implements SearchRecyclerAdapter.On
     private void getGenreList() {
         mRequestQueue = Volley.newRequestQueue(getActivity().getApplicationContext());
         try {
+            // If there is no Genres data on Realm, try to fetch it from the API, if internet connection is available.
             if (mGenreMap.isEmpty() || mRealm.where(MovieGenreRealm.class).findAllAsync() == null) {
-                mUrl = "https://api.themoviedb.org/3/genre/movie/list?api_key=07d93ad59393a99fe6bc8c1b8f0de23b&language=en-US";
+                if (ConnectivityHelper.isConnectedToNetwork(getContext())) {
+                    mUrl = "https://api.themoviedb.org/3/genre/movie/list?api_key=07d93ad59393a99fe6bc8c1b8f0de23b&language=en-US";
 
-                GsonRequest<MovieGenreResults> request = new GsonRequest<>(mUrl,
-                        MovieGenreResults.class,
-                        getGenreSuccessListener(),
-                        getErrorListener());
+                    GsonRequest<MovieGenreResults> request = new GsonRequest<>(mUrl,
+                            MovieGenreResults.class,
+                            getGenreSuccessListener(),
+                            getErrorListener());
 
-                mRequestQueue.add(request);
+                    mRequestQueue.add(request);
+                } else {
+                    //Show disconnected message
+                    Toast.makeText(getContext(), "Network connection unavailable", Toast.LENGTH_SHORT).show();
+                }
+            } else {
+                for (MovieGenreRealm movieGenre : mRealm.where(MovieGenreRealm.class).findAllAsync()) {
+                    mGenreMap.put(movieGenre.getId(), movieGenre);
+                }
             }
-
-
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -511,6 +525,21 @@ public class SearchFragment extends Fragment implements SearchRecyclerAdapter.On
                     }
                 });
     }
+
+
+    protected boolean isConnectedToNetwork() {
+
+        ConnectivityManager connectivityManager = (ConnectivityManager) mContext.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo netInfo = connectivityManager.getActiveNetworkInfo();
+
+        if (netInfo != null && netInfo.isConnectedOrConnecting()) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+   
 
     public interface CheckKeyboardState {
         void onKeyboardStateChanged(boolean isOpen);
