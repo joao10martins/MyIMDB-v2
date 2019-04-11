@@ -38,8 +38,7 @@ import com.example.myimdb.model.MovieResults;
 import com.example.myimdb.model.SearchMovie;
 import com.example.myimdb.model.SearchMovieRealm;
 import com.example.myimdb.model.SearchMovieResults;
-import com.example.myimdb.network.ConnectivityHelper;
-import com.example.myimdb.network.NetworkChangeReceiver;
+
 
 import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEvent;
 import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEventListener;
@@ -132,13 +131,13 @@ public class SearchFragment extends Fragment implements SearchRecyclerAdapter.On
         mRecyclerView = mView.findViewById(R.id.rvSearch);
 
 
-        /*mRealm.executeTransaction(new Realm.Transaction() {
+        mRealm.executeTransaction(new Realm.Transaction() {
             @Override
             public void execute(Realm realm) {
                 RealmResults<SearchMovieRealm> rows = realm.where(SearchMovieRealm.class).findAll();
                 rows.deleteAllFromRealm();
             }
-        });*/
+        });
 
         registerKeyboardListener();
 
@@ -158,8 +157,8 @@ public class SearchFragment extends Fragment implements SearchRecyclerAdapter.On
         mRequestQueue = Volley.newRequestQueue(getActivity().getApplicationContext());
         try {
             // If there is no Genres data on Realm, try to fetch it from the API, if internet connection is available.
-            if (mGenreMap.isEmpty() || mRealm.where(MovieGenreRealm.class).findAllAsync() == null) {
-                if (ConnectivityHelper.isConnectedToNetwork(getContext())) {
+            if (mGenreMap.isEmpty() && mRealm.where(MovieGenreRealm.class).findAllAsync() == null) {
+                if (isConnectedToNetwork()) {
                     mUrl = "https://api.themoviedb.org/3/genre/movie/list?api_key=07d93ad59393a99fe6bc8c1b8f0de23b&language=en-US";
 
                     GsonRequest<MovieGenreResults> request = new GsonRequest<>(mUrl,
@@ -172,10 +171,12 @@ public class SearchFragment extends Fragment implements SearchRecyclerAdapter.On
                     //Show disconnected message
                     Toast.makeText(getContext(), "Network connection unavailable", Toast.LENGTH_SHORT).show();
                 }
+            // There is Genres data on Realm, so we will query Realm instead.
             } else {
                 for (MovieGenreRealm movieGenre : mRealm.where(MovieGenreRealm.class).findAllAsync()) {
                     mGenreMap.put(movieGenre.getId(), movieGenre);
                 }
+                searchQuery();
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -225,7 +226,6 @@ public class SearchFragment extends Fragment implements SearchRecyclerAdapter.On
         final EditText query_text = mView.findViewById(R.id.search_movie);
 
 
-
         ImageButton btnSearch = mView.findViewById(R.id.btnSearch);
         btnSearch.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -239,31 +239,50 @@ public class SearchFragment extends Fragment implements SearchRecyclerAdapter.On
                     if ((mMovieList.size() == 0 || mRealm.where(SearchMovieRealm.class).findAllAsync() == null)  && mButtonClickCount == 1 && !mSearch_query.isEmpty() && !mSearch_query.trim().isEmpty()) {
                         // neste ponto, verificar conexão de internet e dependendo disso, fazer o request à API ou ao Realm.
 
-                        mUrl = "https://api.themoviedb.org/3/search/movie?api_key=07d93ad59393a99fe6bc8c1b8f0de23b&language=en-US&query=" + mSearch_query + "&page=1&include_adult=false";
+                        if (isConnectedToNetwork()){
+                            mUrl = "https://api.themoviedb.org/3/search/movie?api_key=07d93ad59393a99fe6bc8c1b8f0de23b&language=en-US&query=" + mSearch_query + "&page=1&include_adult=false";
 
-                        GsonRequest<SearchMovieResults> request = new GsonRequest<>(mUrl,
-                                SearchMovieResults.class,
-                                getMovieSuccessListener(),
-                                getErrorListener());
+                            GsonRequest<SearchMovieResults> request = new GsonRequest<>(mUrl,
+                                    SearchMovieResults.class,
+                                    getMovieSuccessListener(),
+                                    getErrorListener());
 
-                        mRequestQueue.add(request);
-                        ++mListCount;
-                        ++mButtonClickCount;
+                            mRequestQueue.add(request);
+                            ++mListCount;
+                            ++mButtonClickCount;
+                        } else {
+                            //Show disconnected message
+                            Toast.makeText(getContext(), "Network connection unavailable", Toast.LENGTH_SHORT).show();
+                        }
+
                     }
+
                     if(mAdapter != null && mButtonClickCount > 1){
-                        //mMovieList.clear();
-                        //mSearch_query = query_text.getText().toString();
 
-                        mUrl = "https://api.themoviedb.org/3/search/movie?api_key=07d93ad59393a99fe6bc8c1b8f0de23b&language=en-US&query=" + mSearch_query + "&page=1&include_adult=false";
+                        if (isConnectedToNetwork()){
+                            mUrl = "https://api.themoviedb.org/3/search/movie?api_key=07d93ad59393a99fe6bc8c1b8f0de23b&language=en-US&query=" + mSearch_query + "&page=1&include_adult=false";
 
-                        GsonRequest<SearchMovieResults> request = new GsonRequest<>(mUrl,
-                                SearchMovieResults.class,
-                                getMovieSuccessListener(),
-                                getErrorListener());
+                            GsonRequest<SearchMovieResults> request = new GsonRequest<>(mUrl,
+                                    SearchMovieResults.class,
+                                    getMovieSuccessListener(),
+                                    getErrorListener());
 
-                        mRequestQueue.add(request);
-                        ++mListCount;
+                            mRequestQueue.add(request);
+                            ++mListCount;
+                        } else {
+                            if (mResults != null){
+                                mAdapter = new SearchRecyclerAdapter(getContext(), mResults, SearchFragment.this);
+                                mRecyclerView.setAdapter(mAdapter);
+                                mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+                            } else {
+                                //Show disconnected message
+                                Toast.makeText(getContext(), "Network connection unavailable", Toast.LENGTH_SHORT).show();
+                            }
+
+                        }
                     }
+
+
                     mResults = mRealm.where(SearchMovieRealm.class)
                             .like("title", "*"+mSearch_query.trim()+"*", Case.INSENSITIVE) // Finds any value that have 'mSearchQuery' in any position.
                             .findAllAsync();
@@ -286,15 +305,20 @@ public class SearchFragment extends Fragment implements SearchRecyclerAdapter.On
                                 if (mListCount > mTotalPages) {
                                     return;
                                 } else {
-                                    mUrl = "https://api.themoviedb.org/3/search/movie?api_key=07d93ad59393a99fe6bc8c1b8f0de23b&language=en-US&query=" + mSearch_query + "&page=" + mListCount + "&include_adult=false";
+                                    if (isConnectedToNetwork()) {
+                                        mUrl = "https://api.themoviedb.org/3/search/movie?api_key=07d93ad59393a99fe6bc8c1b8f0de23b&language=en-US&query=" + mSearch_query + "&page=" + mListCount + "&include_adult=false";
 
-                                    GsonRequest<SearchMovieResults> request = new GsonRequest<>(mUrl,
-                                            SearchMovieResults.class,
-                                            getMovieSuccessListener(),
-                                            getErrorListener());
+                                        GsonRequest<SearchMovieResults> request = new GsonRequest<>(mUrl,
+                                                SearchMovieResults.class,
+                                                getMovieSuccessListener(),
+                                                getErrorListener());
 
-                                    mRequestQueue.add(request);
-                                    ++mListCount;
+                                        mRequestQueue.add(request);
+                                        ++mListCount;
+                                    } else {
+                                        //Show disconnected message
+                                        Toast.makeText(getContext(), "Network connection unavailable", Toast.LENGTH_SHORT).show();
+                                    }
                                 }
                             }
                         }
@@ -308,7 +332,7 @@ public class SearchFragment extends Fragment implements SearchRecyclerAdapter.On
 
     }
 
-    // TODO: mudar adapters para depois implementar as checkagens de conectividade à internet.
+
     private Response.Listener<SearchMovieResults> getMovieSuccessListener() {
         return new Response.Listener<SearchMovieResults>() {
             @Override
@@ -365,15 +389,20 @@ public class SearchFragment extends Fragment implements SearchRecyclerAdapter.On
                                     if (mListCount > mTotalPages) {
                                         return;
                                     } else {
-                                        mUrl = "https://api.themoviedb.org/3/search/movie?api_key=07d93ad59393a99fe6bc8c1b8f0de23b&language=en-US&query=" + mSearch_query + "&page=" + mListCount + "&include_adult=false";
+                                        if (isConnectedToNetwork()) {
+                                            mUrl = "https://api.themoviedb.org/3/search/movie?api_key=07d93ad59393a99fe6bc8c1b8f0de23b&language=en-US&query=" + mSearch_query + "&page=" + mListCount + "&include_adult=false";
 
-                                        GsonRequest<SearchMovieResults> request = new GsonRequest<>(mUrl,
-                                                SearchMovieResults.class,
-                                                getMovieSuccessListener(),
-                                                getErrorListener());
+                                            GsonRequest<SearchMovieResults> request = new GsonRequest<>(mUrl,
+                                                    SearchMovieResults.class,
+                                                    getMovieSuccessListener(),
+                                                    getErrorListener());
 
-                                        mRequestQueue.add(request);
-                                        ++mListCount;
+                                            mRequestQueue.add(request);
+                                            ++mListCount;
+                                        } else {
+                                            //Show disconnected message
+                                            Toast.makeText(getContext(), "Network connection unavailable", Toast.LENGTH_SHORT).show();
+                                        }
                                     }
                                 }
                             }
@@ -391,14 +420,20 @@ public class SearchFragment extends Fragment implements SearchRecyclerAdapter.On
 
     @Override
     public void onItemClick(int movieId) {
-        mUrl = "https://api.themoviedb.org/3/movie/" + movieId + "?api_key=07d93ad59393a99fe6bc8c1b8f0de23b&language=en-US";
+        if (isConnectedToNetwork()) {
+            mUrl = "https://api.themoviedb.org/3/movie/" + movieId + "?api_key=07d93ad59393a99fe6bc8c1b8f0de23b&language=en-US";
 
-        GsonRequest<MovieDetails> request = new GsonRequest<>(mUrl,
-                MovieDetails.class,
-                getDetailsSuccessListener(),
-                getErrorListener());
+            GsonRequest<MovieDetails> request = new GsonRequest<>(mUrl,
+                    MovieDetails.class,
+                    getDetailsSuccessListener(),
+                    getErrorListener());
 
-        mRequestQueue.add(request);
+            mRequestQueue.add(request);
+        } else {
+            //Show disconnected message
+            Toast.makeText(getContext(), "Network connection unavailable", Toast.LENGTH_SHORT).show();
+        }
+
     }
 
 
@@ -539,7 +574,7 @@ public class SearchFragment extends Fragment implements SearchRecyclerAdapter.On
         }
     }
 
-   
+
 
     public interface CheckKeyboardState {
         void onKeyboardStateChanged(boolean isOpen);
