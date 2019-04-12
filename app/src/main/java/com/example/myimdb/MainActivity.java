@@ -92,7 +92,7 @@ public class MainActivity extends AppCompatActivity implements SearchFragment.Ch
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        getSupportActionBar().hide();
+        //getSupportActionBar().hide();
 
         //mRealm = Realm.getDefaultInstance();
         /*new OkHttpClient.Builder()
