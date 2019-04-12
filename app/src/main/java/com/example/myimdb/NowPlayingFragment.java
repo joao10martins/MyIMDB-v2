@@ -2,6 +2,7 @@ package com.example.myimdb;
 
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -10,6 +11,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -66,6 +68,7 @@ public class NowPlayingFragment extends Fragment implements NowPlayingRecyclerAd
 
         // Inflate the layout for this fragment
         mView = inflater.inflate(R.layout.fragment_now_playing, container, false);
+
 
 
         mRealm = Realm.getDefaultInstance();
@@ -235,7 +238,8 @@ public class NowPlayingFragment extends Fragment implements NowPlayingRecyclerAd
 
 
     @Override
-    public void onItemClick(int movieId) {
+    public void onItemClick(int movieId, String title) {
+        // TODO: send title by interface listener to MainActivity.
         mUrl = "https://api.themoviedb.org/3/movie/" + movieId + "?api_key=07d93ad59393a99fe6bc8c1b8f0de23b&language=en-US";
 
         GsonRequest<MovieDetails> request = new GsonRequest<>(mUrl,
@@ -250,8 +254,8 @@ public class NowPlayingFragment extends Fragment implements NowPlayingRecyclerAd
         return new Response.Listener<MovieDetails>() {
             @Override
             public void onResponse(MovieDetails response) {
-                // TODO: send response data to Details fragment
-                // and replace fragment with details fragment
+
+
 
                 // Pack the response data in a Bundle.
                 Bundle bundle = new Bundle();
@@ -269,6 +273,7 @@ public class NowPlayingFragment extends Fragment implements NowPlayingRecyclerAd
                 detailsFragment.setArguments(bundle);
 
 
+
                 // Send detailsFragment to Main
                 //mListener.onSwitchFragment(detailsFragment);
 
@@ -278,12 +283,15 @@ public class NowPlayingFragment extends Fragment implements NowPlayingRecyclerAd
                 FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
 
 
+
+
                 // Replace the fragment
                 fragmentTransaction.setCustomAnimations(R.anim.fade_in, R.anim.fade_out);
                 fragmentTransaction.replace(R.id.fragment_container,
                         detailsFragment);
                 fragmentTransaction.addToBackStack(null);
                 fragmentTransaction.commit();
+
             }
         };
     }

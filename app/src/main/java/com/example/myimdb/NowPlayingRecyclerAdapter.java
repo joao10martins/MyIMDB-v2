@@ -109,7 +109,7 @@ public class NowPlayingRecyclerAdapter extends RealmRecyclerViewAdapter<MovieRea
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-               mListener.onItemClick(currentItem.getId());
+               mListener.onItemClick(currentItem.getId(), currentItem.getTitle());
             }
         });
 
@@ -123,7 +123,7 @@ public class NowPlayingRecyclerAdapter extends RealmRecyclerViewAdapter<MovieRea
 
 
     public interface OnMovieClick {
-        void onItemClick(int movieId);
+        void onItemClick(int movieId, String title);
     }
 
 

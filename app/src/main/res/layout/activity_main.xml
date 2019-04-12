@@ -14,7 +14,9 @@
         android:layout_height="wrap_content"
         android:background="?attr/colorPrimary"
         android:minHeight="?attr/actionBarSize"
-        android:theme="?attr/actionBarTheme"
+        app:titleTextColor="@color/colorAccent"
+        android:elevation="4dp"
+        android:theme="@style/Theme.AppCompat.Light.DarkActionBar"
         app:layout_constraintTop_toTopOf="parent" />
 
     <FrameLayout

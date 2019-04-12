@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toolbar;
 
 import com.bumptech.glide.Glide;
 
@@ -29,6 +30,7 @@ public class DetailsFragment extends Fragment {
     private TextView mReleaseDate;
     private TextView mDuration;
     private TextView mOverview;
+    private Toolbar mToolbar;
 
     public DetailsFragment() {
         // Required empty public constructor
@@ -83,6 +85,7 @@ public class DetailsFragment extends Fragment {
 
         // Set the View's info.
         mOriginalTitle.setText(bundle.getString("original_title"));
+        //mToolbar.setTitle(bundle.getString("original_title"));
         // String formatters can be an alternative to the '/10' label
         // and to the usages of 'String.valueOf()'
         if (bundle.getDouble("vote_average") == 0) {

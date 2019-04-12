@@ -121,6 +121,7 @@ public class SearchFragment extends Fragment implements SearchRecyclerAdapter.On
         // Inflate the layout for this fragment
         mView = inflater.inflate(R.layout.fragment_search, container, false);
 
+
         // get db
         mRealm = Realm.getDefaultInstance();
 
