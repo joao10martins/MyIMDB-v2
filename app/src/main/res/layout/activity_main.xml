@@ -16,6 +16,7 @@
         android:minHeight="?attr/actionBarSize"
         app:titleTextColor="@color/colorAccent"
         android:elevation="4dp"
+        app:titleTextAppearance="@style/Base.TextAppearance.AppCompat.Large"
         android:theme="@style/Theme.AppCompat.Light.DarkActionBar"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -36,8 +37,7 @@
         android:id="@+id/navigation"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="?android:attr/windowBackground"
-        android:backgroundTint="@color/colorPrimaryDark"
+        android:background="?attr/colorPrimaryDark"
         android:elevation="4dp"
         android:fitsSystemWindows="true"
         android:splitMotionEvents="true"

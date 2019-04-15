@@ -13,13 +13,15 @@
         android:id="@+id/navigation_search"
         android:icon="@drawable/ic_search_black_24dp"
         android:title="@string/nav_search" />
+    <!--
     <item
         android:id="@+id/navigation_favorites"
-        android:icon="@drawable/ic_favorite_border_black_24dp"
+        android:icon="@drawable/ic_favorite_border_24dp"
         android:title="@string/nav_favorites" />
     <item
         android:id="@+id/navigation_visualization"
-        android:icon="@drawable/ic_change_visualization_eye_black_24dp"
+        android:icon="@drawable/ic_change_visualization_eye_24dp"
         android:title="@string/nav_visualization" />
+    -->
 
 </menu>

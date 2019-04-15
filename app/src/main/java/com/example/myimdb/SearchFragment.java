@@ -14,10 +14,12 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewCompat;
 import android.support.v7.app.ActionBar;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
@@ -85,6 +87,7 @@ public class SearchFragment extends Fragment implements SearchRecyclerAdapter.On
     private String mSearch_query;
     private int mTotalPages;
     RealmResults<SearchMovieRealm> mResults;
+    private boolean isMovieViewAsList = false;
 
     private CheckKeyboardState mListener;
 
@@ -154,6 +157,29 @@ public class SearchFragment extends Fragment implements SearchRecyclerAdapter.On
         // Initialize the list of Genres.
         getGenreList();
     }
+
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+
+        // TODO: switch case
+        switch (id){
+            case R.id.toolbar_favorites:
+                //switchFragment();
+                return true;
+            case R.id.toolbar_visualization:
+                // change between List and Grid layout(default: Grid)
+                mRecyclerView.setLayoutManager(isMovieViewAsList ? new GridLayoutManager(getContext(), 2) : new LinearLayoutManager(getContext()));
+                //might need mAdapter.notifyDataSetChanged();
+                return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+
+
 
     @Override
     public void onDestroy() {

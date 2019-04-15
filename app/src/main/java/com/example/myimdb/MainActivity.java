@@ -12,6 +12,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -130,6 +131,29 @@ public class MainActivity extends AppCompatActivity implements SearchFragment.Ch
         isHomeFragmentDisplayed = true;
     }
 
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.toolbar_menu, menu);
+
+        return true;
+    }
+
+    // Toolbar
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        int id = item.getItemId();
+
+        // TODO: switch case
+        switch (id){
+            case R.id.toolbar_favorites:
+                //switchFragment();
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
     // Display Now Playing Movies
     public void displayNowPlaying() {
         // Instantiate the fragment.
@@ -226,6 +250,14 @@ public class MainActivity extends AppCompatActivity implements SearchFragment.Ch
     }
 
 
+
+    // TODO: implement favorite feature.
+    public void displayFavorites(MenuItem item) {
+    }
+
+
+
+
     /* Interface listener implementation */
 
     @Override
@@ -258,4 +290,7 @@ public class MainActivity extends AppCompatActivity implements SearchFragment.Ch
             myToolbar.setTitle("Search");
         }
     }
+
+
+
 }

@@ -12,9 +12,11 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -52,6 +54,7 @@ public class NowPlayingFragment extends Fragment implements NowPlayingRecyclerAd
     private RequestQueue mRequestQueue;
     private String mUrl;
     private int mTotalPages;
+    private boolean isMovieViewAsList = false;
 
     private View mView;
 
@@ -98,6 +101,28 @@ public class NowPlayingFragment extends Fragment implements NowPlayingRecyclerAd
         getNowPlaying();
     }
 
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+
+        // TODO: switch case
+        switch (id){
+            case R.id.toolbar_favorites:
+                //switchFragment();
+                return true;
+            case R.id.toolbar_visualization:
+                // change between List and Grid layout(default: Grid)
+                mRecyclerView.setLayoutManager(isMovieViewAsList ? new GridLayoutManager(getContext(), 2) : new LinearLayoutManager(getContext()));
+                //might need
+                mAdapter.notifyDataSetChanged();
+                return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
@@ -136,7 +161,7 @@ public class NowPlayingFragment extends Fragment implements NowPlayingRecyclerAd
             }
 
             if (mRecyclerView != null && mRealm.where(MovieRealm.class).findAllAsync() != null) { // Executes in case data already exists, to avoid making unnecessary requests to the API
-                mAdapter = new NowPlayingRecyclerAdapter(mRealm.where(MovieRealm.class).findAllAsync(), getContext(), NowPlayingFragment.this);
+                mAdapter = new NowPlayingRecyclerAdapter(mRealm.where(MovieRealm.class).findAllAsync(), getContext(), NowPlayingFragment.this, isMovieViewAsList);
                 //mAdapter = new NowPlayingRecyclerAdapter(getContext(), nowPlayingList, NowPlayingFragment.this);
                 mRecyclerView.setAdapter(mAdapter);
 
@@ -176,6 +201,7 @@ public class NowPlayingFragment extends Fragment implements NowPlayingRecyclerAd
     }
 
 
+
     private Response.Listener<MovieResults> createMyReqSuccessListener() {
         return new Response.Listener<MovieResults>() {
             @Override
@@ -185,7 +211,7 @@ public class NowPlayingFragment extends Fragment implements NowPlayingRecyclerAd
                     nowPlayingList.addAll(response.movieList);
                     saveMovieListToDb(nowPlayingList); // PLEASE WORK ༼ つ ◕_◕ ༽つ
                     if (mAdapter == null) {
-                        mAdapter = new NowPlayingRecyclerAdapter(mRealm.where(MovieRealm.class).findAllAsync(), getContext(), NowPlayingFragment.this);
+                        mAdapter = new NowPlayingRecyclerAdapter(mRealm.where(MovieRealm.class).findAllAsync(), getContext(), NowPlayingFragment.this, isMovieViewAsList);
                         //mAdapter = new NowPlayingRecyclerAdapter(getContext(), nowPlayingList, NowPlayingFragment.this);
                         mRecyclerView.setAdapter(mAdapter);
                         mRecyclerView.setLayoutManager(new GridLayoutManager(getContext(), 3));
