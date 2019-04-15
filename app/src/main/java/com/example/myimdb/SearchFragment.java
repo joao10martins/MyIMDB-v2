@@ -13,6 +13,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewCompat;
+import android.support.v7.app.ActionBar;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.KeyEvent;
@@ -342,7 +343,7 @@ public class SearchFragment extends Fragment implements SearchRecyclerAdapter.On
     }
 
     @Override
-    public void onItemClick(int movieId) {
+    public void onItemClick(int movieId, String title) {
         if (isConnectedToNetwork()) {
             mUrl = "https://api.themoviedb.org/3/movie/" + movieId + "?api_key=07d93ad59393a99fe6bc8c1b8f0de23b&language=en-US";
 
@@ -356,6 +357,9 @@ public class SearchFragment extends Fragment implements SearchRecyclerAdapter.On
             //Show disconnected message
             Toast.makeText(getContext(), "Network connection unavailable", Toast.LENGTH_SHORT).show();
         }
+
+        mListener.onDetailClick(title);
+        mListener.isFromSearch(true);
 
     }
 
@@ -596,9 +600,21 @@ public class SearchFragment extends Fragment implements SearchRecyclerAdapter.On
     }
 
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        ActionBar actionBar = ((MainActivity)getActivity()).getSupportActionBar();
+        if (actionBar != null){
+            actionBar.setTitle("Search");
+        }
+    }
 
     public interface CheckKeyboardState {
         void onKeyboardStateChanged(boolean isOpen);
+        void onDetailClick(String title);
+        void isFromSearch(boolean isFromSearch);
     }
+
+
 
 }

@@ -100,7 +100,7 @@ public class SearchRecyclerAdapter extends RealmRecyclerViewAdapter<SearchMovieR
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mListener.onItemClick(currentItem.getId());
+                mListener.onItemClick(currentItem.getId(), currentItem.getTitle());
             }
         });
 
@@ -109,7 +109,7 @@ public class SearchRecyclerAdapter extends RealmRecyclerViewAdapter<SearchMovieR
 
 
     public interface OnMovieClick {
-        void onItemClick(int movieId);
+        void onItemClick(int movieId, String title);
     }
 
 }

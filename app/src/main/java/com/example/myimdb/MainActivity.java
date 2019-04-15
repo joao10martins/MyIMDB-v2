@@ -33,7 +33,7 @@ import io.realm.RealmList;
 import io.realm.RealmResults;
 import okhttp3.OkHttpClient;
 
-public class MainActivity extends AppCompatActivity implements SearchFragment.CheckKeyboardState, NowPlayingFragment.OnNowPlayingListener, NowPlayingRecyclerAdapter.OnMovieClick {
+public class MainActivity extends AppCompatActivity implements SearchFragment.CheckKeyboardState, NowPlayingFragment.OnNowPlayingListener {
 
     /* Constants */
     private static final String TAG = MainActivity.class.getCanonicalName();
@@ -48,6 +48,7 @@ public class MainActivity extends AppCompatActivity implements SearchFragment.Ch
     private boolean isHomeFragmentDisplayed = false;
     private boolean isSearchFragmentDisplayed = false;
     private boolean isDetailsFragmentDisplayed = false;
+    private boolean isFromSearch = false;
 
     /* Realm */
     Realm mRealm;
@@ -202,6 +203,8 @@ public class MainActivity extends AppCompatActivity implements SearchFragment.Ch
         } else {
             fragmentTransaction.commit();
         }
+
+
     }
 
 
@@ -235,20 +238,25 @@ public class MainActivity extends AppCompatActivity implements SearchFragment.Ch
     public void onSwitchFragment(Fragment fragment) {
         switchFragment(fragment, true, false);
     }
+    
 
-    /*@Override
-    public void onMovieClick(boolean wasClicked) {
-        if (wasClicked)
-            for (MovieRealm movie : mRealm.where(MovieRealm.class).findAllAsync()) {
-                if (mRealm.where(MovieRealm.class).findAllAsync().contains(movie)){
-                    myToolbar.setTitle(movie.getTitle());
-            }
-        }
 
-    }*/
 
     @Override
-    public void onItemClick(int movieId, String title) {
+    public void onDetailClick(String title) {
         myToolbar.setTitle(title);
+    }
+
+    @Override
+    public void isFromSearch(boolean detailsFromSearch) {
+        isFromSearch = detailsFromSearch;
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        if (isFromSearch){
+            myToolbar.setTitle("Search");
+        }
     }
 }

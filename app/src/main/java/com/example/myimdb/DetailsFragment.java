@@ -133,4 +133,7 @@ public class DetailsFragment extends Fragment {
         return mView;
     }
 
+
+
+
 }
