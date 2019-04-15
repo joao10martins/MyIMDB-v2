@@ -4,7 +4,7 @@
     <item
         android:id="@+id/navigation_nowplaying"
         android:icon="@drawable/ic_play_arrow_black_24dp"
-        android:title="@string/title_nowplaying" />
+        android:title="@string/nav_nowplaying" />
     <item
         android:id="@+id/navigation_home"
         android:icon="@drawable/ic_home_black_24dp"
@@ -12,6 +12,14 @@
     <item
         android:id="@+id/navigation_search"
         android:icon="@drawable/ic_search_black_24dp"
-        android:title="@string/title_search" />
+        android:title="@string/nav_search" />
+    <item
+        android:id="@+id/navigation_favorites"
+        android:icon="@drawable/ic_favorite_border_black_24dp"
+        android:title="@string/nav_favorites" />
+    <item
+        android:id="@+id/navigation_visualization"
+        android:icon="@drawable/ic_change_visualization_eye_black_24dp"
+        android:title="@string/nav_visualization" />
 
 </menu>

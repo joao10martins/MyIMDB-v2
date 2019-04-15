@@ -34,10 +34,14 @@
 
     <android.support.design.widget.BottomNavigationView
         android:id="@+id/navigation"
-        android:layout_width="0dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="?android:attr/windowBackground"
         android:backgroundTint="@color/colorPrimaryDark"
+        android:elevation="4dp"
+        android:fitsSystemWindows="true"
+        android:splitMotionEvents="true"
+        app:elevation="4dp"
         app:itemBackground="@drawable/bottom_navigation_item_checked_background_colors"
         app:itemIconTint="@drawable/bottom_navigation_colors"
         app:itemTextColor="@drawable/bottom_navigation_colors"

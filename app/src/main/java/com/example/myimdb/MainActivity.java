@@ -238,7 +238,6 @@ public class MainActivity extends AppCompatActivity implements SearchFragment.Ch
     public void onSwitchFragment(Fragment fragment) {
         switchFragment(fragment, true, false);
     }
-    
 
 
 
