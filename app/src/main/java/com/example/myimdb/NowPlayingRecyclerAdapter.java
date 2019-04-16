@@ -63,6 +63,7 @@ public class NowPlayingRecyclerAdapter extends RealmRecyclerViewAdapter<MovieRea
     class NowPlayingViewHolder extends RecyclerView.ViewHolder {
         public final TextView title;
         public final ImageView movieImage;
+        public TextView movieYear;
         public MovieRealm data;
 
         final NowPlayingRecyclerAdapter mAdapter;
@@ -73,8 +74,9 @@ public class NowPlayingRecyclerAdapter extends RealmRecyclerViewAdapter<MovieRea
                 title = movieView.findViewById(R.id.search_movie_title);
                 movieImage = movieView.findViewById(R.id.movie_thumbnail);
             } else {
-                title = movieView.findViewById(R.id.movie_title_id);
-                movieImage = movieView.findViewById(R.id.movie_img_id);
+                title = movieView.findViewById(R.id.np_movie_title);
+                movieImage = movieView.findViewById(R.id.np_movie_img);
+                movieYear = movieView.findViewById(R.id.np_movie_year);
             }
 
 
@@ -113,6 +115,9 @@ public class NowPlayingRecyclerAdapter extends RealmRecyclerViewAdapter<MovieRea
                     .load(R.drawable.ic_no_image_available)
                     .into(holder.movieImage);
         }
+
+        String year = currentItem.getRelease_date().substring(0, Math.min(currentItem.getRelease_date().length(), 4));
+        holder.movieYear.setText(year);
 
 
         //holder.movieImage.setTag(currentItem.getId());

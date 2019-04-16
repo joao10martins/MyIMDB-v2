@@ -114,25 +114,21 @@ public class NowPlayingFragment extends Fragment implements NowPlayingRecyclerAd
                 return true;
             case R.id.toolbar_visualization:
                 isMovieViewAsList = !isMovieViewAsList;
-                //getActivity().invalidateOptionsMenu();
-                int i = ((LinearLayoutManager) mRecyclerView.getLayoutManager()).findFirstCompletelyVisibleItemPosition();
+
+                int scrollPosition = ((LinearLayoutManager) mRecyclerView.getLayoutManager()).findFirstCompletelyVisibleItemPosition();
 
                 // change between List and Grid layout(default: Grid)
                 mAdapter = new NowPlayingRecyclerAdapter(mRealm.where(MovieRealm.class).findAllAsync(), getContext(), NowPlayingFragment.this, isMovieViewAsList);
-
-
-
                 mRecyclerView.setAdapter(mAdapter);
-                mRecyclerView.setLayoutManager(isMovieViewAsList ? new LinearLayoutManager(getContext()) : new GridLayoutManager(getContext(), 3));
                 mAdapter.notifyDataSetChanged();
+
                 if(mRecyclerView.getLayoutManager() instanceof GridLayoutManager) {
                     mRecyclerView.setLayoutManager(isMovieViewAsList ? new LinearLayoutManager(getContext()) : new GridLayoutManager(getContext(), 3));
                 } else {
                     mRecyclerView.setLayoutManager(isMovieViewAsList ? new LinearLayoutManager(getContext()) : new GridLayoutManager(getContext(), 3));
                 }
-                mRecyclerView.scrollToPosition(i);
+                mRecyclerView.scrollToPosition(scrollPosition);
 
-                //might need
 
                 return true;
         }

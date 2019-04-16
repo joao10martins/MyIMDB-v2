@@ -3,15 +3,16 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="130dp"
-    android:layout_height="190dp">
+    android:layout_height="230dp">
 
     <android.support.v7.widget.CardView
+        android:id="@+id/fav_grid_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:cardBackgroundColor="@color/colorPrimaryDark"
+        app:cardCornerRadius="4dp"
         app:cardElevation="4dp"
         app:cardUseCompatPadding="true"
-        app:cardCornerRadius="4dp"
         app:contentPadding="4dp">
 
         <android.support.constraint.ConstraintLayout
@@ -19,37 +20,46 @@
             android:layout_height="match_parent">
 
             <ImageView
-                android:id="@+id/movie_img_id"
-                android:layout_width="130dp"
+                android:id="@+id/np_movie_img"
+                android:layout_width="match_parent"
                 android:layout_height="170dp"
-                android:contentDescription="@string/item_now_playing"
-                android:scaleType="fitCenter"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintRight_toRightOf="parent"/>
+                android:background="@color/colorPrimaryDark"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
-                android:id="@+id/movie_title_id"
-                android:layout_width="match_parent"
-                android:layout_height="25dp"
-                android:layout_marginBottom="16dp"
-                android:background="@color/colorPrimaryDark"
-                android:text="@string/cardview_item_movie_title"
-                android:textAlignment="center"
-                android:textColor="@color/colorAccent"
-                android:singleLine="true"
+                android:id="@+id/np_movie_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
+                android:layout_marginTop="4dp"
+                android:layout_marginEnd="8dp"
                 android:ellipsize="end"
+                android:singleLine="true"
+                android:text="Movie Title"
+                android:textColor="@color/colorAccent"
+                android:textSize="12sp"
+                android:textStyle="bold"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/np_movie_img" />
+
+            <TextView
+                android:id="@+id/np_movie_year"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:layout_marginBottom="8dp"
+                android:text="Year"
+                android:textColor="@color/colorLightGrey"
+                android:textSize="10sp"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintLeft_toLeftOf="@id/movie_img_id"
-                app:layout_constraintRight_toRightOf="@id/movie_img_id"
-                app:layout_constraintTop_toBottomOf="@+id/movie_img_id" />
+                app:layout_constraintStart_toStartOf="@+id/np_movie_title"
+                app:layout_constraintTop_toBottomOf="@+id/np_movie_title" />
 
 
         </android.support.constraint.ConstraintLayout>
-
-
     </android.support.v7.widget.CardView>
-
 
 
 </FrameLayout>

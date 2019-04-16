@@ -7,6 +7,10 @@ import android.text.method.ScrollingMovementMethod;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationSet;
+import android.view.animation.LinearInterpolator;
+import android.view.animation.RotateAnimation;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toolbar;
@@ -24,6 +28,7 @@ public class DetailsFragment extends Fragment {
     // Declaring views
     private ImageView mBackpathImage;
     private ImageView mPosterpathImage;
+    private ImageView mLike;
     private TextView mOriginalTitle;
     private TextView mRating;
     private TextView mVoteCount;
@@ -49,6 +54,7 @@ public class DetailsFragment extends Fragment {
         // Views
         mBackpathImage = mView.findViewById(R.id.details_movie_background_img);
         mPosterpathImage = mView.findViewById(R.id.details_movie_thumbnail);
+        mLike = mView.findViewById(R.id.details_like);
         mOriginalTitle = mView.findViewById(R.id.details_title);
         mRating = mView.findViewById(R.id.txt_vote_average);
         mVoteCount = mView.findViewById(R.id.txt_number_of_votes);
@@ -127,6 +133,41 @@ public class DetailsFragment extends Fragment {
             mOverview.setText(bundle.getString("overview"));
             mOverview.setMovementMethod(new ScrollingMovementMethod());
         }
+
+
+        //RotateAnimation shake = new RotateAnimation(-10f, 10f, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
+        RotateAnimation centerToLeft = new RotateAnimation(0f, -10f, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
+        RotateAnimation shake = new RotateAnimation(-10f, 10f, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
+        RotateAnimation centerToRight = new RotateAnimation(0f, 10f, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
+        RotateAnimation backToMiddle = new RotateAnimation(-10f, 0f, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
+
+
+        centerToLeft.setInterpolator(new LinearInterpolator());
+        centerToLeft.setDuration(100);
+        //mLike.setAnimation(centerToLeft);
+        shake.setInterpolator(new LinearInterpolator());
+        shake.setRepeatCount(7);
+        shake.setRepeatMode(Animation.REVERSE);
+        shake.setDuration(300);
+        // Animate like button/image
+        //mLike.setAnimation(shake);
+        centerToRight.setInterpolator(new LinearInterpolator());
+        centerToRight.setDuration(100);
+
+
+        backToMiddle.setInterpolator(new LinearInterpolator());
+        //backToMiddle.setRepeatMode(Animation.REVERSE);
+        backToMiddle.setDuration(100);
+        //mLike.setAnimation(backToMiddle);
+
+
+        AnimationSet anim = new AnimationSet(false);
+        //anim.addAnimation(centerToLeft);
+        anim.addAnimation(shake);
+        //anim.addAnimation(centerToRight);
+        anim.addAnimation(backToMiddle);
+
+        mLike.setAnimation(anim);
 
 
 
