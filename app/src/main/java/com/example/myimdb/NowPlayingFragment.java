@@ -93,6 +93,7 @@ public class NowPlayingFragment extends Fragment implements NowPlayingRecyclerAd
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        setHasOptionsMenu(true);
 
         mContext = getActivity();
 
@@ -112,10 +113,27 @@ public class NowPlayingFragment extends Fragment implements NowPlayingRecyclerAd
                 //switchFragment();
                 return true;
             case R.id.toolbar_visualization:
+                isMovieViewAsList = !isMovieViewAsList;
+                //getActivity().invalidateOptionsMenu();
+                int i = ((LinearLayoutManager) mRecyclerView.getLayoutManager()).findFirstCompletelyVisibleItemPosition();
+
                 // change between List and Grid layout(default: Grid)
-                mRecyclerView.setLayoutManager(isMovieViewAsList ? new GridLayoutManager(getContext(), 2) : new LinearLayoutManager(getContext()));
-                //might need
+                mAdapter = new NowPlayingRecyclerAdapter(mRealm.where(MovieRealm.class).findAllAsync(), getContext(), NowPlayingFragment.this, isMovieViewAsList);
+
+
+
+                mRecyclerView.setAdapter(mAdapter);
+                mRecyclerView.setLayoutManager(isMovieViewAsList ? new LinearLayoutManager(getContext()) : new GridLayoutManager(getContext(), 3));
                 mAdapter.notifyDataSetChanged();
+                if(mRecyclerView.getLayoutManager() instanceof GridLayoutManager) {
+                    mRecyclerView.setLayoutManager(isMovieViewAsList ? new LinearLayoutManager(getContext()) : new GridLayoutManager(getContext(), 3));
+                } else {
+                    mRecyclerView.setLayoutManager(isMovieViewAsList ? new LinearLayoutManager(getContext()) : new GridLayoutManager(getContext(), 3));
+                }
+                mRecyclerView.scrollToPosition(i);
+
+                //might need
+
                 return true;
         }
 
@@ -165,7 +183,7 @@ public class NowPlayingFragment extends Fragment implements NowPlayingRecyclerAd
                 //mAdapter = new NowPlayingRecyclerAdapter(getContext(), nowPlayingList, NowPlayingFragment.this);
                 mRecyclerView.setAdapter(mAdapter);
 
-                mRecyclerView.setLayoutManager(new GridLayoutManager(getContext(), 3));
+                mRecyclerView.setLayoutManager(isMovieViewAsList ? new LinearLayoutManager(getContext()) : new GridLayoutManager(getContext(), 3));
             } else {
                 mAdapter.notifyDataSetChanged();
             }
@@ -214,7 +232,7 @@ public class NowPlayingFragment extends Fragment implements NowPlayingRecyclerAd
                         mAdapter = new NowPlayingRecyclerAdapter(mRealm.where(MovieRealm.class).findAllAsync(), getContext(), NowPlayingFragment.this, isMovieViewAsList);
                         //mAdapter = new NowPlayingRecyclerAdapter(getContext(), nowPlayingList, NowPlayingFragment.this);
                         mRecyclerView.setAdapter(mAdapter);
-                        mRecyclerView.setLayoutManager(new GridLayoutManager(getContext(), 3));
+                        mRecyclerView.setLayoutManager(isMovieViewAsList ? new LinearLayoutManager(getContext()) : new GridLayoutManager(getContext(), 3));
                     } else {
                         mAdapter.notifyDataSetChanged();
                     }

@@ -70,11 +70,11 @@ public class NowPlayingRecyclerAdapter extends RealmRecyclerViewAdapter<MovieRea
         public NowPlayingViewHolder(View movieView, NowPlayingRecyclerAdapter adapter) {
             super(movieView);
             if (isMovieViewAsList){
-                title = movieView.findViewById(R.id.movie_title_id);
-                movieImage = movieView.findViewById(R.id.movie_img_id);
-            } else {
                 title = movieView.findViewById(R.id.search_movie_title);
                 movieImage = movieView.findViewById(R.id.movie_thumbnail);
+            } else {
+                title = movieView.findViewById(R.id.movie_title_id);
+                movieImage = movieView.findViewById(R.id.movie_img_id);
             }
 
 
@@ -87,8 +87,7 @@ public class NowPlayingRecyclerAdapter extends RealmRecyclerViewAdapter<MovieRea
     @Override
     public NowPlayingViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         //test
-        View mMovieView = LayoutInflater.from(parent.getContext()).inflate(isMovieViewAsList ? R.layout.cardview_item_movie : R.layout.cardview_search_item_result, parent, false);
-
+        View mMovieView = LayoutInflater.from(parent.getContext()).inflate(isMovieViewAsList ? R.layout.cardview_search_item_result : R.layout.cardview_item_movie, parent, false);
         //View mMovieView = mInflater.inflate(R.layout.cardview_item_movie, parent, false);
         return new NowPlayingViewHolder(mMovieView, this);
     }
@@ -127,6 +126,8 @@ public class NowPlayingRecyclerAdapter extends RealmRecyclerViewAdapter<MovieRea
 
     }
 
+
+
     /*@Override
     public int getItemCount() {
         return getData().size();
@@ -136,6 +137,8 @@ public class NowPlayingRecyclerAdapter extends RealmRecyclerViewAdapter<MovieRea
     public interface OnMovieClick {
         void onItemClick(int movieId, String title);
     }
+
+
 
 
 }
