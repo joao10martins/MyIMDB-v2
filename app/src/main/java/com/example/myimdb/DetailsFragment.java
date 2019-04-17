@@ -1,7 +1,10 @@
 package com.example.myimdb;
 
 
+import android.animation.AnimatorSet;
+import android.animation.ObjectAnimator;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.text.method.ScrollingMovementMethod;
 import android.view.LayoutInflater;
@@ -11,6 +14,7 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationSet;
 import android.view.animation.LinearInterpolator;
 import android.view.animation.RotateAnimation;
+import android.view.animation.ScaleAnimation;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toolbar;
@@ -135,39 +139,61 @@ public class DetailsFragment extends Fragment {
         }
 
 
-        //RotateAnimation shake = new RotateAnimation(-10f, 10f, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
-        RotateAnimation centerToLeft = new RotateAnimation(0f, -10f, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
-        RotateAnimation shake = new RotateAnimation(-10f, 10f, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
-        RotateAnimation centerToRight = new RotateAnimation(0f, 10f, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
-        RotateAnimation backToMiddle = new RotateAnimation(-10f, 0f, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
 
 
-        centerToLeft.setInterpolator(new LinearInterpolator());
-        centerToLeft.setDuration(100);
-        //mLike.setAnimation(centerToLeft);
-        shake.setInterpolator(new LinearInterpolator());
-        shake.setRepeatCount(7);
-        shake.setRepeatMode(Animation.REVERSE);
-        shake.setDuration(300);
-        // Animate like button/image
-        //mLike.setAnimation(shake);
-        centerToRight.setInterpolator(new LinearInterpolator());
-        centerToRight.setDuration(100);
+        ScaleAnimation scaleUp = new ScaleAnimation(0.5f, 1.5f, 0.5f, 1.5f, ScaleAnimation.RELATIVE_TO_SELF, 0.5f, ScaleAnimation.RELATIVE_TO_SELF, 0.5f);
+        ScaleAnimation scaleDown = new ScaleAnimation(1.5f, 0.5f, 1.5f, 0.5f, ScaleAnimation.RELATIVE_TO_SELF, 0.5f, ScaleAnimation.RELATIVE_TO_SELF, 0.5f);
+        final ScaleAnimation scaleUpToNormal = new ScaleAnimation(0.7f, 1f, 0.7f, 1f, ScaleAnimation.RELATIVE_TO_SELF, 0.5f, ScaleAnimation.RELATIVE_TO_SELF, 0.5f);
+        scaleUp.setDuration(1000);
+        scaleDown.setDuration(1000);
+        scaleUp.setRepeatCount(3);
+        //scaleUp.setRepeatMode(ScaleAnimation.REVERSE);
+        scaleDown.setRepeatCount(3);
+        scaleUpToNormal.setDuration(1000);
+        scaleUpToNormal.setFillAfter(true);
 
 
-        backToMiddle.setInterpolator(new LinearInterpolator());
-        //backToMiddle.setRepeatMode(Animation.REVERSE);
-        backToMiddle.setDuration(100);
-        //mLike.setAnimation(backToMiddle);
+        //mLike.setAnimation(scaleUp);
+        //mLike.setAnimation(scaleDown);
+        //mLike.startAnimation();
 
 
-        AnimationSet anim = new AnimationSet(false);
-        //anim.addAnimation(centerToLeft);
-        anim.addAnimation(shake);
-        //anim.addAnimation(centerToRight);
-        anim.addAnimation(backToMiddle);
+        final AnimationSet anim = new AnimationSet(true);
 
-        mLike.setAnimation(anim);
+        anim.addAnimation(scaleUp);
+        anim.addAnimation(scaleDown);
+        anim.setFillAfter(true);
+        //animation delay
+
+        anim.setAnimationListener(new Animation.AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {
+
+            }
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                mLike.setAnimation(scaleUpToNormal);
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+
+            }
+        });
+
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                mLike.startAnimation(anim);
+            }
+        }, 2000);
+
+        //mLike.postDelayed(anim.start(), 2000);
+        //mLike.setAnimation(anim);
+
+
+
 
 
 
