@@ -8,6 +8,7 @@ import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.text.method.ScrollingMovementMethod;
 import android.view.LayoutInflater;
+import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
@@ -25,7 +26,7 @@ import com.bumptech.glide.Glide;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class DetailsFragment extends Fragment {
+public class DetailsFragment extends Fragment implements MainActivity.OnToolbarChanges {
 
     private View mView;
 
@@ -201,6 +202,10 @@ public class DetailsFragment extends Fragment {
     }
 
 
-
-
+    @Override
+    public void onShareToolbar(android.support.v7.widget.Toolbar toolbar) {
+        Menu menu = toolbar.getMenu();
+        menu.findItem(R.id.toolbar_favorites).setVisible(false);
+        menu.findItem(R.id.toolbar_visualization).setVisible(false);
+    }
 }

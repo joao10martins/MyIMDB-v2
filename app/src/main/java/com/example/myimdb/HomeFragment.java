@@ -1,7 +1,9 @@
 package com.example.myimdb;
 
 
+import android.graphics.drawable.AnimationDrawable;
 import android.os.Bundle;
+import android.support.constraint.ConstraintLayout;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
@@ -15,6 +17,8 @@ import android.view.ViewGroup;
 public class HomeFragment extends Fragment {
 
     private View mView;
+    ConstraintLayout constraintLayout;
+    AnimationDrawable animDrawable;
 
 
     public HomeFragment() {
@@ -31,6 +35,7 @@ public class HomeFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         mView = inflater.inflate(R.layout.fragment_home, container, false);
+
 
         return mView;
     }

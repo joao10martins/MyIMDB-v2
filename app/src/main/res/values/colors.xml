@@ -6,4 +6,9 @@
     <color name="colorAccentOpaque">#99FFC107</color>
     <color name="onItemChecked">#0E0E0E</color>
     <color name="colorLightGrey">#8D8D8D</color>
+
+    <color name="colorGradient1">#141414</color>
+    <color name="colorGradient2">#3B3B3B</color>
+    <color name="colorGradient3">#676767</color>
+
 </resources>

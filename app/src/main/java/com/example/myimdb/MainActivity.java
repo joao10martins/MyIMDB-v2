@@ -2,8 +2,11 @@ package com.example.myimdb;
 
 import android.content.Context;
 import android.graphics.Rect;
+import android.graphics.drawable.AnimatedImageDrawable;
+import android.graphics.drawable.AnimationDrawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -34,7 +37,7 @@ import io.realm.RealmList;
 import io.realm.RealmResults;
 import okhttp3.OkHttpClient;
 
-public class MainActivity extends AppCompatActivity implements SearchFragment.CheckKeyboardState, NowPlayingFragment.OnNowPlayingListener {
+public class MainActivity extends AppCompatActivity implements SearchFragment.CheckKeyboardState, NowPlayingFragment.OnNowPlayingListener, FavoritesFragment.OnFavoritesListener {
 
     /* Constants */
     private static final String TAG = MainActivity.class.getCanonicalName();
@@ -43,6 +46,8 @@ public class MainActivity extends AppCompatActivity implements SearchFragment.Ch
     private View mView;
     private Toolbar myToolbar;
     private NowPlayingRecyclerAdapter.OnMovieClick mListener;
+    AnimationDrawable animDrawable;
+    ConstraintLayout constraintLayout;
 
     /* Variables */
     private boolean isNowPlayingFragmentDisplayed = false;
@@ -101,6 +106,10 @@ public class MainActivity extends AppCompatActivity implements SearchFragment.Ch
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+
+
+
         myToolbar = findViewById(R.id.toolbar);
         myToolbar.setTitle("Home");
         setSupportActionBar(myToolbar);
@@ -135,6 +144,7 @@ public class MainActivity extends AppCompatActivity implements SearchFragment.Ch
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.toolbar_menu, menu);
+        menu.findItem(R.id.toolbar_visualization).setVisible(false);
 
         return true;
     }
@@ -161,6 +171,8 @@ public class MainActivity extends AppCompatActivity implements SearchFragment.Ch
 
         switchFragment(nowPlayingFragment, true, true);
 
+
+        //myToolbar.getMenu().findItem(R.id.toolbar_visualization).setVisible(true);
         // Set boolean flag to indicate fragment is open.
         isNowPlayingFragmentDisplayed = true;
         isHomeFragmentDisplayed = false;
@@ -253,6 +265,11 @@ public class MainActivity extends AppCompatActivity implements SearchFragment.Ch
 
     // TODO: implement favorite feature.
     public void displayFavorites(MenuItem item) {
+    }
+
+
+    public interface OnToolbarChanges {
+        void onShareToolbar(Toolbar toolbar);
     }
 
 
