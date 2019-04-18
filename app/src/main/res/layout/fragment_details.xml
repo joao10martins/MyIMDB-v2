@@ -182,7 +182,7 @@
         android:clickable="true"
         android:elevation="8dp"
         android:src="@drawable/ic_favorite_border_24dp"
-        android:tint="@android:color/background_light"
+        android:tint="@color/liked"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 

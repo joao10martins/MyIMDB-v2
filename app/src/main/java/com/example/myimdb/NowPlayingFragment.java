@@ -311,6 +311,7 @@ public class NowPlayingFragment extends Fragment implements NowPlayingRecyclerAd
 
                 // Pack the response data in a Bundle.
                 Bundle bundle = new Bundle();
+                bundle.putInt("id", response.getId());
                 bundle.putString("original_title", response.getOriginal_title());
                 bundle.putString("backdrop_path", response.getBackdrop_path());
                 bundle.putString("overview", response.getOverview());

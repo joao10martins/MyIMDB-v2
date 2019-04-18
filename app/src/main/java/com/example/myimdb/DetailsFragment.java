@@ -3,9 +3,12 @@ package com.example.myimdb;
 
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
+import android.content.res.ColorStateList;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
+import android.support.v4.widget.ImageViewCompat;
 import android.text.method.ScrollingMovementMethod;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -21,6 +24,18 @@ import android.widget.TextView;
 import android.widget.Toolbar;
 
 import com.bumptech.glide.Glide;
+import com.example.myimdb.map.MovieMapper;
+import com.example.myimdb.model.FavoritesRealm;
+import com.example.myimdb.model.Movie;
+import com.example.myimdb.model.MovieDetails;
+import com.example.myimdb.model.MovieRealm;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import io.realm.Realm;
+import io.realm.RealmList;
+import io.realm.RealmResults;
 
 
 /**
@@ -41,6 +56,14 @@ public class DetailsFragment extends Fragment implements MainActivity.OnToolbarC
     private TextView mDuration;
     private TextView mOverview;
     private Toolbar mToolbar;
+    private boolean isLiked = false;
+
+    /* Realm */
+    Realm mRealm;
+
+
+    List<FavoritesRealm> favorites = new ArrayList<>();
+    RealmList<FavoritesRealm> _favorites = new RealmList<>();
 
     public DetailsFragment() {
         // Required empty public constructor
@@ -56,6 +79,7 @@ public class DetailsFragment extends Fragment implements MainActivity.OnToolbarC
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         mView = inflater.inflate(R.layout.fragment_details, container, false);
+        mRealm = Realm.getDefaultInstance();
         // Views
         mBackpathImage = mView.findViewById(R.id.details_movie_background_img);
         mPosterpathImage = mView.findViewById(R.id.details_movie_thumbnail);
@@ -69,7 +93,7 @@ public class DetailsFragment extends Fragment implements MainActivity.OnToolbarC
 
 
         // Get bundle which contains the response data
-        Bundle bundle = getArguments();
+        final Bundle bundle = getArguments();
         // Set the View's images.
         String imageBackpath = "https://image.tmdb.org/t/p/original/" + bundle.getString("backdrop_path"); // Background Image.
         if (bundle.getString("backdrop_path") != null){
@@ -141,64 +165,134 @@ public class DetailsFragment extends Fragment implements MainActivity.OnToolbarC
 
 
 
-
-        ScaleAnimation scaleUp = new ScaleAnimation(0.5f, 1.5f, 0.5f, 1.5f, ScaleAnimation.RELATIVE_TO_SELF, 0.5f, ScaleAnimation.RELATIVE_TO_SELF, 0.5f);
-        ScaleAnimation scaleDown = new ScaleAnimation(1.5f, 0.5f, 1.5f, 0.5f, ScaleAnimation.RELATIVE_TO_SELF, 0.5f, ScaleAnimation.RELATIVE_TO_SELF, 0.5f);
-        final ScaleAnimation scaleUpToNormal = new ScaleAnimation(0.7f, 1f, 0.7f, 1f, ScaleAnimation.RELATIVE_TO_SELF, 0.5f, ScaleAnimation.RELATIVE_TO_SELF, 0.5f);
-        scaleUp.setDuration(1000);
-        scaleDown.setDuration(1000);
-        scaleUp.setRepeatCount(3);
-        //scaleUp.setRepeatMode(ScaleAnimation.REVERSE);
-        scaleDown.setRepeatCount(3);
-        scaleUpToNormal.setDuration(1000);
-        scaleUpToNormal.setFillAfter(true);
-
-
-        //mLike.setAnimation(scaleUp);
-        //mLike.setAnimation(scaleDown);
-        //mLike.startAnimation();
-
-
-        final AnimationSet anim = new AnimationSet(true);
-
-        anim.addAnimation(scaleUp);
-        anim.addAnimation(scaleDown);
-        anim.setFillAfter(true);
-        //animation delay
-
-        anim.setAnimationListener(new Animation.AnimationListener() {
+        mLike.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onAnimationStart(Animation animation) {
+            public void onClick(View v) {
+                // if true -> set false | if false -> set true.
+                isLiked = !isLiked;
+                if (isLiked) {
+                    saveMovieToFavoritesDb(bundle, isLiked);
+                    mLike.setImageResource(R.drawable.ic_favorite_24dp);
+                    /*ScaleAnimation scaleUp = new ScaleAnimation(0.7f, 1f, 0.7f, 1f, ScaleAnimation.RELATIVE_TO_SELF, 0.5f, ScaleAnimation.RELATIVE_TO_SELF, 0.5f);
+                    ScaleAnimation scaleDown = new ScaleAnimation(1.3f, 0.7f, 1.3f, 0.7f, ScaleAnimation.RELATIVE_TO_SELF, 0.5f, ScaleAnimation.RELATIVE_TO_SELF, 0.5f);
+                    scaleUp.setDuration(500);
+                    scaleUp.setRepeatMode(ScaleAnimation.REVERSE);
+                    scaleUp.setFillAfter(true);
+                    scaleDown.setDuration(500);
 
-            }
-
-            @Override
-            public void onAnimationEnd(Animation animation) {
-                mLike.setAnimation(scaleUpToNormal);
-            }
-
-            @Override
-            public void onAnimationRepeat(Animation animation) {
-
+                    AnimationSet anim = new AnimationSet(true);
+                    anim.addAnimation(scaleUp);
+                    anim.addAnimation(scaleDown);
+                    anim.setFillAfter(false);
+                    mLike.startAnimation(scaleUp);*/
+                } else {
+                    //remove from db.
+                    mLike.setImageResource(R.drawable.ic_favorite_border_24dp);
+                    mRealm.executeTransactionAsync(new Realm.Transaction() { // Delete selected movie from the Favorites.
+                        @Override
+                        public void execute(Realm realm) {
+                            RealmResults<FavoritesRealm> results = realm.where(FavoritesRealm.class).equalTo("id", bundle.getInt("id")).findAll();
+                            results.deleteAllFromRealm();
+                        }
+                    });
+                    //ImageViewCompat.setImageTintList(mLike, ColorStateList.valueOf(ContextCompat.getColor(getContext(), R.color.liked)));
+                }
             }
         });
 
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                mLike.startAnimation(anim);
-            }
-        }, 2000);
 
-        //mLike.postDelayed(anim.start(), 2000);
-        //mLike.setAnimation(anim);
+        if (isLiked){
+            //do nothing
+        } else {
+            ScaleAnimation scaleUp = new ScaleAnimation(0.5f, 1.5f, 0.5f, 1.5f, ScaleAnimation.RELATIVE_TO_SELF, 0.5f, ScaleAnimation.RELATIVE_TO_SELF, 0.5f);
+            ScaleAnimation scaleDown = new ScaleAnimation(1.5f, 0.5f, 1.5f, 0.5f, ScaleAnimation.RELATIVE_TO_SELF, 0.5f, ScaleAnimation.RELATIVE_TO_SELF, 0.5f);
+            final ScaleAnimation scaleUpToNormal = new ScaleAnimation(0.7f, 1f, 0.7f, 1f, ScaleAnimation.RELATIVE_TO_SELF, 0.5f, ScaleAnimation.RELATIVE_TO_SELF, 0.5f);
+            scaleUp.setDuration(1000);
+            scaleDown.setDuration(1000);
+            scaleUp.setRepeatCount(3);
+            //scaleUp.setRepeatMode(ScaleAnimation.REVERSE);
+            scaleDown.setRepeatCount(3);
+            scaleUpToNormal.setDuration(1000);
+            scaleUpToNormal.setFillAfter(true);
 
+
+            final AnimationSet anim = new AnimationSet(true);
+
+            anim.addAnimation(scaleUp);
+            anim.addAnimation(scaleDown);
+            anim.setFillAfter(true);
+            //animation delay
+
+            anim.setAnimationListener(new Animation.AnimationListener() {
+                @Override
+                public void onAnimationStart(Animation animation) {
+
+                }
+
+                @Override
+                public void onAnimationEnd(Animation animation) {
+                    mLike.setAnimation(scaleUpToNormal);
+                }
+
+                @Override
+                public void onAnimationRepeat(Animation animation) {
+
+                }
+            });
+
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    mLike.startAnimation(anim);
+                }
+            }, 2000);
+
+        }
 
 
 
 
 
         return mView;
+    }
+
+
+    private void saveMovieToFavoritesDb(final Bundle movie, final boolean isLiked){
+        // TEST
+        final MovieMapper movieMapper = new MovieMapper();
+
+        try (Realm realm = Realm.getDefaultInstance()) {
+            realm.executeTransactionAsync(new Realm.Transaction() {
+                @Override
+                public void execute(Realm realm) {
+                    /*FavoritesRealm favorite = movieMapper.toFavoritesRealmList(movie, isLiked);
+                    favorites.add(favorite);
+                    _favorites.add(favorites);*/
+                    FavoritesRealm myFavoritesRealm = new FavoritesRealm(
+                            movie.getInt("id"),
+                            movie.getDouble("vote_average"),
+                            movie.getString("original_title"),
+                            movie.getString("poster_path"),
+                            isLiked);
+                    realm.insertOrUpdate(_favorites);
+                }
+            }, new Realm.Transaction.OnSuccess() {
+                @Override
+                public void onSuccess() {
+                    // GREAT SUCCESS (•̀ᴗ•́)و ̑̑
+                }
+            }, new Realm.Transaction.OnError() {
+                @Override
+                public void onError(Throwable error) {
+                    // sad reactions only
+                }
+            });
+        } catch (Exception e) {
+            // Wow such exception
+            e.printStackTrace();
+        } finally {
+            // Wow such finally
+        }
     }
 
 

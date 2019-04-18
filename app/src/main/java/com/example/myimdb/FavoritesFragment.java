@@ -11,6 +11,8 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -26,6 +28,10 @@ public class FavoritesFragment extends Fragment {
     private RecyclerView mRecyclerView;
     private RequestQueue mRequestQueue;
     private String mUrl;
+    private ImageView mPosterpathImage;
+    private ImageView mLike;
+    private TextView mOriginalTitle;
+    private TextView mRating;
 
 
     /* Realm */
@@ -41,7 +47,7 @@ public class FavoritesFragment extends Fragment {
                              Bundle savedInstanceState) {
 
         // Inflate the layout for this fragment
-        mView = inflater.inflate(R.layout.fragment_now_playing, container, false);
+        mView = inflater.inflate(R.layout.fragment_favorites, container, false);
 
 
         mRealm = Realm.getDefaultInstance();
@@ -56,7 +62,12 @@ public class FavoritesFragment extends Fragment {
         setHasOptionsMenu(true);
 
         mContext = getActivity();
-        mRecyclerView = mView.findViewById(R.id.rv_NowPlaying);
+        mRecyclerView = mView.findViewById(R.id.rv_Favorites);
+
+        mPosterpathImage = mView.findViewById(R.id.fav_grid_layout_img);
+        mLike = mView.findViewById(R.id.favorites_like);
+        mOriginalTitle = mView.findViewById(R.id.fav_grid_layout_title);
+        mRating = mView.findViewById(R.id.fav_grid_layout_rating);
 
 
     }
@@ -68,7 +79,7 @@ public class FavoritesFragment extends Fragment {
 
 
 
-    @Override
+    /*@Override
     public void onItemClick(int movieId, String title) {
         // TODO: send title by interface listener to MainActivity.
         mUrl = "https://api.themoviedb.org/3/movie/" + movieId + "?api_key=07d93ad59393a99fe6bc8c1b8f0de23b&language=en-US";
@@ -80,7 +91,7 @@ public class FavoritesFragment extends Fragment {
 
         mRequestQueue.add(request);
         mListener.onDetailClick(title); // TODO: adapter interface listener
-    }
+    }*/
 
 
 

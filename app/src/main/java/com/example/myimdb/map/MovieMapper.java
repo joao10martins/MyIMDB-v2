@@ -1,7 +1,9 @@
 
 package com.example.myimdb.map;
 
+import com.example.myimdb.model.FavoritesRealm;
 import com.example.myimdb.model.Movie;
+import com.example.myimdb.model.MovieDetails;
 import com.example.myimdb.model.MovieGenreRealm;
 import com.example.myimdb.model.MovieRealm;
 import com.example.myimdb.model.SearchMovie;
@@ -16,6 +18,7 @@ import io.realm.RealmList;
 public class MovieMapper {
     List<MovieRealm> myMovieRealmList = new ArrayList<>();
     List<SearchMovieRealm> mySearchRealmList = new ArrayList<>();
+
     //RealmList<Integer> movieGenres = new RealmList<>();
     Realm mRealm = Realm.getDefaultInstance();
 
@@ -67,6 +70,18 @@ public class MovieMapper {
         RealmList<Integer> movieGenres = new RealmList<>();
         movieGenres.addAll(list);
         return movieGenres;
+    }
+
+    public FavoritesRealm toFavoritesRealmList(MovieDetails movie, boolean like) {
+
+
+        FavoritesRealm myFavoritesRealm = new FavoritesRealm(
+                movie.getId(),
+                movie.getVote_average(),
+                movie.getOriginal_title(),
+                movie.getPoster_path(),
+                like);
+        return myFavoritesRealm;
     }
 }
 
