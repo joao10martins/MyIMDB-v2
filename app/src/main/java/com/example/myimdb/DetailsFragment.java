@@ -165,6 +165,14 @@ public class DetailsFragment extends Fragment implements MainActivity.OnToolbarC
 
 
 
+        // If the movie exists in the Favorites database, set the Like image to "LIKED".
+        RealmResults<FavoritesRealm> results = mRealm.where(FavoritesRealm.class)
+                .equalTo("id", bundle.getInt("id")).findAll();
+        if (results.size() != 0){
+            mLike.setImageResource(R.drawable.ic_favorite_24dp);
+            isLiked = true;
+        }
+
         mLike.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -246,7 +254,6 @@ public class DetailsFragment extends Fragment implements MainActivity.OnToolbarC
                     mLike.startAnimation(anim);
                 }
             }, 2000);
-
         }
 
 
@@ -268,12 +275,13 @@ public class DetailsFragment extends Fragment implements MainActivity.OnToolbarC
                     /*FavoritesRealm favorite = movieMapper.toFavoritesRealmList(movie, isLiked);
                     favorites.add(favorite);
                     _favorites.add(favorites);*/
-                    FavoritesRealm myFavoritesRealm = new FavoritesRealm(
+                    FavoritesRealm favorite = new FavoritesRealm(
                             movie.getInt("id"),
                             movie.getDouble("vote_average"),
                             movie.getString("original_title"),
                             movie.getString("poster_path"),
                             isLiked);
+                    _favorites.add(favorite);
                     realm.insertOrUpdate(_favorites);
                 }
             }, new Realm.Transaction.OnSuccess() {
