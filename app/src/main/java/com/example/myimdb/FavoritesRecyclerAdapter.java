@@ -2,6 +2,7 @@ package com.example.myimdb;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -111,6 +112,17 @@ public class FavoritesRecyclerAdapter extends RealmRecyclerViewAdapter<Favorites
 
         }*/
         holder.like.setImageResource(R.drawable.ic_favorite_24dp);
+        holder.like.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                View dialogView = LayoutInflater.from(context).inflate(R.layout.custom_favorites_alert_dialog, (ViewGroup) v.getRootView(), false);
+                AlertDialog.Builder builder = new AlertDialog.Builder(context);
+                builder.setView(dialogView);
+                AlertDialog alertDialog = builder.create();
+                alertDialog.show();
+            }
+        });
 
 
         //holder.movieImage.setTag(currentItem.getId());
