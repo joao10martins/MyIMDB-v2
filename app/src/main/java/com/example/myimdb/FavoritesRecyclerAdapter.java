@@ -7,6 +7,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -20,8 +21,10 @@ import java.util.List;
 import java.util.Set;
 
 import io.realm.OrderedRealmCollection;
+import io.realm.Realm;
 import io.realm.RealmList;
 import io.realm.RealmRecyclerViewAdapter;
+import io.realm.RealmResults;
 
 public class FavoritesRecyclerAdapter extends RealmRecyclerViewAdapter<FavoritesRealm, FavoritesRecyclerAdapter.FavoritesViewHolder>  {
 
@@ -30,6 +33,7 @@ public class FavoritesRecyclerAdapter extends RealmRecyclerViewAdapter<Favorites
     private Context context;
     private boolean isMovieViewAsList;
     private OnMovieClick mListener;
+    private Realm mRealm;
 
 
     FavoritesRecyclerAdapter(OrderedRealmCollection<FavoritesRealm> data,
@@ -87,7 +91,7 @@ public class FavoritesRecyclerAdapter extends RealmRecyclerViewAdapter<Favorites
 
 
     @Override
-    public void onBindViewHolder(@NonNull FavoritesViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull final FavoritesViewHolder holder, int position) {
 
         final FavoritesRealm currentItem = getItem(position);
         holder.data = currentItem;
@@ -117,10 +121,37 @@ public class FavoritesRecyclerAdapter extends RealmRecyclerViewAdapter<Favorites
             public void onClick(View v) {
 
                 View dialogView = LayoutInflater.from(context).inflate(R.layout.custom_favorites_alert_dialog, (ViewGroup) v.getRootView(), false);
-                AlertDialog.Builder builder = new AlertDialog.Builder(context);
+                AlertDialog.Builder builder = new AlertDialog.Builder(context)
+                        .setCancelable(true);
                 builder.setView(dialogView);
-                AlertDialog alertDialog = builder.create();
+                final AlertDialog alertDialog = builder.create();
                 alertDialog.show();
+
+                // dismiss
+                Button cancel = dialogView.findViewById(R.id.buttonCancel);
+                cancel.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        alertDialog.dismiss();
+                    }
+                });
+
+
+                // remove
+                // TODO: update recyclerview after delete(preferably with animation)
+                Button remove = dialogView.findViewById(R.id.buttonRemove);
+                remove.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        mRealm.executeTransactionAsync(new Realm.Transaction() { // Delete selected movie from the Favorites.
+                            @Override
+                            public void execute(Realm realm) {
+                                currentItem.deleteFromRealm();
+                            }
+                        });
+                    }
+                });
+
             }
         });
 
