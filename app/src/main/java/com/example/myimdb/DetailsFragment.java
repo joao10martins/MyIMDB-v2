@@ -209,17 +209,18 @@ public class DetailsFragment extends Fragment implements MainActivity.OnToolbarC
         });
 
 
+
         if (isLiked){
             //do nothing
         } else {
             ScaleAnimation scaleUp = new ScaleAnimation(0.5f, 1.5f, 0.5f, 1.5f, ScaleAnimation.RELATIVE_TO_SELF, 0.5f, ScaleAnimation.RELATIVE_TO_SELF, 0.5f);
             ScaleAnimation scaleDown = new ScaleAnimation(1.5f, 0.5f, 1.5f, 0.5f, ScaleAnimation.RELATIVE_TO_SELF, 0.5f, ScaleAnimation.RELATIVE_TO_SELF, 0.5f);
             final ScaleAnimation scaleUpToNormal = new ScaleAnimation(0.7f, 1f, 0.7f, 1f, ScaleAnimation.RELATIVE_TO_SELF, 0.5f, ScaleAnimation.RELATIVE_TO_SELF, 0.5f);
-            scaleUp.setDuration(1000);
-            scaleDown.setDuration(1000);
-            scaleUp.setRepeatCount(3);
+            scaleUp.setDuration(900);
+            scaleDown.setDuration(900);
+            scaleUp.setRepeatCount(2);
             //scaleUp.setRepeatMode(ScaleAnimation.REVERSE);
-            scaleDown.setRepeatCount(3);
+            scaleDown.setRepeatCount(2);
             scaleUpToNormal.setDuration(1000);
             scaleUpToNormal.setFillAfter(true);
 

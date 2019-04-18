@@ -109,6 +109,7 @@ public class NowPlayingFragment extends Fragment implements NowPlayingRecyclerAd
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
         menu.findItem(R.id.toolbar_visualization).setVisible(true);
+        menu.findItem(R.id.toolbar_favorites).setVisible(true);
 
     }
 
@@ -120,7 +121,21 @@ public class NowPlayingFragment extends Fragment implements NowPlayingRecyclerAd
         switch (id){
             case R.id.toolbar_favorites:
                 //switchFragment();
-                return true;
+                // Get the FragmentManager and start a transaction.
+                FavoritesFragment favoritesFragment = FavoritesFragment.newInstance();
+                FragmentManager fragmentManager = getFragmentManager();
+                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+
+
+                // Replace the fragment
+                fragmentTransaction.setCustomAnimations(R.anim.fade_in, R.anim.fade_out);
+                fragmentTransaction.replace(R.id.fragment_container,
+                        favoritesFragment);
+                fragmentTransaction.addToBackStack(null);
+                ActionBar toolbar = ((MainActivity)getActivity()).getSupportActionBar();
+                toolbar.setTitle("Favorites");
+                fragmentTransaction.commit();
+                //return true;
             case R.id.toolbar_visualization:
                 isMovieViewAsList = !isMovieViewAsList;
 

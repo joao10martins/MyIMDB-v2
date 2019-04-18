@@ -246,7 +246,6 @@ public class MainActivity extends AppCompatActivity implements SearchFragment.Ch
 
     private void displaySearch() {
 
-
         // Instantiate the fragment.
         final SearchFragment searchFragment = SearchFragment.newInstance();
 
@@ -263,9 +262,7 @@ public class MainActivity extends AppCompatActivity implements SearchFragment.Ch
 
 
 
-    // TODO: implement favorite feature.
-    public void displayFavorites(MenuItem item) {
-    }
+
 
 
     public interface OnToolbarChanges {

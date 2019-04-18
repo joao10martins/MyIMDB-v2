@@ -106,6 +106,12 @@ public class FavoritesRecyclerAdapter extends RealmRecyclerViewAdapter<Favorites
                     .into(holder.movieImage);
         }
 
+        holder.rating.setText(String.valueOf(currentItem.getVote_average()));
+        /*if (currentItem.isLike()) { //
+
+        }*/
+        holder.like.setImageResource(R.drawable.ic_favorite_24dp);
+
 
         //holder.movieImage.setTag(currentItem.getId());
         holder.itemView.setOnClickListener(new View.OnClickListener() {

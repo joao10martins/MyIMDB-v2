@@ -6,8 +6,7 @@
         android:id="@+id/toolbar_favorites"
         android:icon="@drawable/ic_favorite_border_24dp"
         android:title="@string/nav_favorites"
-        app:showAsAction="always"
-        android:onClick="displayFavorites"/>
+        app:showAsAction="always" />
 
     <item
         android:id="@+id/toolbar_visualization"
