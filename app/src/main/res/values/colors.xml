@@ -13,6 +13,8 @@
 
 
     <color name="liked">#FF2A2A</color>
+    <color name="checked">#009688</color>
+    <color name="unchecked">#FFFFFF</color>
 
 
 

@@ -1,10 +1,12 @@
 package com.example.myimdb;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -48,6 +50,7 @@ public class FavoritesRecyclerAdapter extends RealmRecyclerViewAdapter<Favorites
         this.context = context;
         this.isMovieViewAsList = isMovieViewAsList;
         this.mListener = listener;
+        this.mRealm = Realm.getDefaultInstance();
         setHasStableIds(false);
     }
 
@@ -128,7 +131,7 @@ public class FavoritesRecyclerAdapter extends RealmRecyclerViewAdapter<Favorites
                 alertDialog.show();
 
                 // dismiss
-                Button cancel = dialogView.findViewById(R.id.buttonCancel);
+                final Button cancel = dialogView.findViewById(R.id.buttonCancel);
                 cancel.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -143,10 +146,13 @@ public class FavoritesRecyclerAdapter extends RealmRecyclerViewAdapter<Favorites
                 remove.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        mRealm.executeTransactionAsync(new Realm.Transaction() { // Delete selected movie from the Favorites.
+                        mRealm.executeTransaction(new Realm.Transaction() { // Delete selected movie from the Favorites.
                             @Override
                             public void execute(Realm realm) {
+                                // adapter.remove() -> not supported by RealmResults or OrderedRealmCollection
                                 currentItem.deleteFromRealm();
+                                notifyDataSetChanged();
+                                alertDialog.dismiss();
                             }
                         });
                     }
@@ -156,7 +162,6 @@ public class FavoritesRecyclerAdapter extends RealmRecyclerViewAdapter<Favorites
         });
 
 
-        //holder.movieImage.setTag(currentItem.getId());
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -172,6 +177,9 @@ public class FavoritesRecyclerAdapter extends RealmRecyclerViewAdapter<Favorites
     public interface OnMovieClick {
         void onItemClick(int movieId, String title);
     }
+
+
+
 
 
 }

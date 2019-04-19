@@ -73,6 +73,29 @@
 
         </LinearLayout>
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <CheckBox
+                android:id="@+id/alertDialog_checkbox"
+                android:layout_width="35dp"
+                android:layout_height="35dp"
+                android:textAlignment="center" />
+
+            <TextView
+                android:id="@+id/alertDialog_confirmText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Do not show me this message again."
+                android:textAlignment="center"
+                android:textColor="@color/colorPrimary" />
+
+
+        </LinearLayout>
+
 
     </LinearLayout>
 
