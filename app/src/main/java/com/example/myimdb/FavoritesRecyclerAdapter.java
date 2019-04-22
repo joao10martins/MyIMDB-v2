@@ -10,6 +10,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -36,6 +37,9 @@ public class FavoritesRecyclerAdapter extends RealmRecyclerViewAdapter<Favorites
     private boolean isMovieViewAsList;
     private OnMovieClick mListener;
     private Realm mRealm;
+    private boolean isChecked = false;
+    private boolean isCancel = false;
+    private boolean isRemove = false;
 
 
     FavoritesRecyclerAdapter(OrderedRealmCollection<FavoritesRealm> data,
@@ -123,40 +127,72 @@ public class FavoritesRecyclerAdapter extends RealmRecyclerViewAdapter<Favorites
             @Override
             public void onClick(View v) {
 
-                View dialogView = LayoutInflater.from(context).inflate(R.layout.custom_favorites_alert_dialog, (ViewGroup) v.getRootView(), false);
-                AlertDialog.Builder builder = new AlertDialog.Builder(context)
-                        .setCancelable(true);
-                builder.setView(dialogView);
-                final AlertDialog alertDialog = builder.create();
-                alertDialog.show();
+                if (isChecked && isRemove){
+                    mRealm.executeTransaction(new Realm.Transaction() { // Delete selected movie from the Favorites.
+                        @Override
+                        public void execute(Realm realm) {
+                            // adapter.remove() -> not supported by RealmResults or OrderedRealmCollection
+                            currentItem.deleteFromRealm();
+                            notifyDataSetChanged();
+                        }
+                    });
+                }
 
-                // dismiss
-                final Button cancel = dialogView.findViewById(R.id.buttonCancel);
-                cancel.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        alertDialog.dismiss();
-                    }
-                });
+                if (!isChecked || (isRemove && !isChecked) || (isChecked && isCancel)){
+                    isCancel = false;
+                    isChecked = false;
+                    isRemove = false;
+                    View dialogView = LayoutInflater.from(context).inflate(R.layout.custom_favorites_alert_dialog, (ViewGroup) v.getRootView(), false);
+                    AlertDialog.Builder builder = new AlertDialog.Builder(context)
+                            .setCancelable(true);
+                    builder.setView(dialogView);
+                    final AlertDialog alertDialog = builder.create();
+                    alertDialog.show();
+
+                    // dismiss
+                    final Button cancel = dialogView.findViewById(R.id.buttonCancel);
+                    cancel.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            isCancel = !isCancel;
+                            alertDialog.dismiss();
+                        }
+                    });
 
 
-                // remove
-                // TODO: update recyclerview after delete(preferably with animation)
-                Button remove = dialogView.findViewById(R.id.buttonRemove);
-                remove.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        mRealm.executeTransaction(new Realm.Transaction() { // Delete selected movie from the Favorites.
-                            @Override
-                            public void execute(Realm realm) {
-                                // adapter.remove() -> not supported by RealmResults or OrderedRealmCollection
-                                currentItem.deleteFromRealm();
-                                notifyDataSetChanged();
-                                alertDialog.dismiss();
-                            }
-                        });
-                    }
-                });
+                    // remove
+                    // TODO: update recyclerview after delete(preferably with animation)
+                    Button remove = dialogView.findViewById(R.id.buttonRemove);
+                    remove.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            isRemove = !isRemove;
+                            mRealm.executeTransaction(new Realm.Transaction() { // Delete selected movie from the Favorites.
+                                @Override
+                                public void execute(Realm realm) {
+                                    // adapter.remove() -> not supported by RealmResults or OrderedRealmCollection
+                                    currentItem.deleteFromRealm();
+                                    notifyDataSetChanged();
+                                    alertDialog.dismiss();
+                                }
+                            });
+                        }
+                    });
+
+
+                    CheckBox checkBox = dialogView.findViewById(R.id.alertDialog_checkbox);
+                    checkBox.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            isChecked = !isChecked;
+                        }
+                    });
+                }
+
+
+
+
+
 
             }
         });

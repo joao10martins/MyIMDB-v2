@@ -27,7 +27,7 @@ import android.widget.TextView;
 import com.example.myimdb.model.Movie;
 import com.example.myimdb.model.MovieDetails;
 import com.example.myimdb.model.MovieRealm;
-import com.facebook.stetho.okhttp3.StethoInterceptor;
+
 
 import io.realm.OrderedCollectionChangeSet;
 import io.realm.OrderedRealmCollectionChangeListener;
