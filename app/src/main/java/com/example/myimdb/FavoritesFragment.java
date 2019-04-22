@@ -7,6 +7,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v7.app.ActionBar;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -22,6 +23,7 @@ import android.widget.TextView;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.android.volley.toolbox.Volley;
 import com.example.myimdb.model.FavoritesRealm;
 import com.example.myimdb.model.MovieDetails;
 import com.example.myimdb.model.MovieRealm;
@@ -63,6 +65,7 @@ public class FavoritesFragment extends Fragment implements FavoritesRecyclerAdap
 
 
         mRealm = Realm.getDefaultInstance();
+        mRequestQueue = Volley.newRequestQueue(getActivity().getApplicationContext());
 
 
         return mView;
@@ -83,6 +86,19 @@ public class FavoritesFragment extends Fragment implements FavoritesRecyclerAdap
 
         getFavorites();
 
+    }
+
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        if (context instanceof FavoritesFragment.OnFavoritesListener) {
+            //init the listener
+            mListener = (FavoritesFragment.OnFavoritesListener) context;
+        } else {
+            throw new RuntimeException(context.toString()
+                    + " must implement InteractionListener");
+        }
     }
 
 
@@ -150,7 +166,7 @@ public class FavoritesFragment extends Fragment implements FavoritesRecyclerAdap
 
     @Override
     public void onItemClick(int movieId, String title) {
-        // TODO: send title by interface listener to MainActivity.
+
         mUrl = "https://api.themoviedb.org/3/movie/" + movieId + "?api_key=07d93ad59393a99fe6bc8c1b8f0de23b&language=en-US";
 
         GsonRequest<MovieDetails> request = new GsonRequest<>(mUrl,
@@ -159,7 +175,7 @@ public class FavoritesFragment extends Fragment implements FavoritesRecyclerAdap
                 getErrorListener());
 
         mRequestQueue.add(request);
-        mListener.onDetailClick(title); // TODO: adapter interface listener
+        mListener.onDetailClick(title); 
     }
 
 
@@ -200,7 +216,6 @@ public class FavoritesFragment extends Fragment implements FavoritesRecyclerAdap
 
 
 
-
                 // Replace the fragment
                 fragmentTransaction.setCustomAnimations(R.anim.fade_in, R.anim.fade_out);
                 fragmentTransaction.replace(R.id.fragment_container,
@@ -222,6 +237,15 @@ public class FavoritesFragment extends Fragment implements FavoritesRecyclerAdap
         };
     }
 
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        ActionBar actionBar = ((MainActivity)getActivity()).getSupportActionBar();
+        if (actionBar != null){
+            actionBar.setTitle("Favorites");
+        }
+    }
 
 
     public interface OnFavoritesListener {

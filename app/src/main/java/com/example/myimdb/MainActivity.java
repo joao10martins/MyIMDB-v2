@@ -11,6 +11,7 @@ import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -159,6 +160,20 @@ public class MainActivity extends AppCompatActivity implements SearchFragment.Ch
         switch (id){
             case R.id.toolbar_favorites:
                 //switchFragment();
+                // Get the FragmentManager and start a transaction.
+                FavoritesFragment favoritesFragment = FavoritesFragment.newInstance();
+                FragmentManager fragmentManager = getSupportFragmentManager();
+                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+
+
+                // Replace the fragment
+                fragmentTransaction.setCustomAnimations(R.anim.fade_in, R.anim.fade_out);
+                fragmentTransaction.replace(R.id.fragment_container,
+                        favoritesFragment);
+                fragmentTransaction.addToBackStack(null);
+                myToolbar.setTitle("Favorites");
+                fragmentTransaction.commit();
+                //return true;
         }
 
         return super.onOptionsItemSelected(item);

@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="220dp">
+
+    <android.support.v7.widget.CardView
+        android:id="@+id/fav_list_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:cardBackgroundColor="@color/colorPrimaryDark"
+        app:cardCornerRadius="2dp"
+        app:cardElevation="4dp"
+        app:cardUseCompatPadding="true"
+        app:contentPadding="2dp">
+
+        <android.support.constraint.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <ImageView
+                android:id="@+id/fav_list_layout_img"
+                android:layout_width="140dp"
+                android:layout_height="match_parent"
+                android:background="@color/colorPrimary"
+                android:scaleType="fitXY"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/fav_list_layout_title"
+                android:layout_width="190dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:ellipsize="end"
+                android:singleLine="true"
+                android:text="Movie Title"
+                android:textColor="@color/colorAccent"
+                android:textSize="24sp"
+                android:textStyle="bold"
+                app:layout_constraintStart_toEndOf="@+id/fav_list_layout_img"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/fav_list_layout_views"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:text="Views"
+                android:textColor="@color/colorLightGrey"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="@+id/rating_img"
+                app:layout_constraintStart_toStartOf="@+id/rating_img" />
+
+            <ImageView
+                android:id="@+id/rating_img"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_marginStart="16dp"
+                android:tint="@color/colorAccent"
+                app:layout_constraintBottom_toTopOf="@id/fav_list_layout_views"
+                app:layout_constraintStart_toStartOf="@+id/fav_list_layout_title"
+                app:srcCompat="@drawable/ic_change_visualization_eye_24dp" />
+
+            <ImageView
+                android:id="@+id/favorites_list_like"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="8dp"
+                android:clickable="true"
+                android:elevation="4dp"
+                android:tint="@color/liked"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/ic_favorite_24dp" />
+
+            <TextView
+                android:id="@+id/releaseDate_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="24dp"
+                android:text="Released"
+                android:textColor="@color/colorAccent"
+                app:layout_constraintBottom_toTopOf="@+id/fav_list_layout_releaseDate"
+                app:layout_constraintStart_toEndOf="@+id/rating_img" />
+
+            <TextView
+                android:id="@+id/fav_list_layout_releaseDate"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:text="Release Date"
+                android:textColor="@color/colorLightGrey"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="@+id/releaseDate_label"
+                app:layout_constraintStart_toStartOf="@+id/releaseDate_label" />
+
+        </android.support.constraint.ConstraintLayout>
+    </android.support.v7.widget.CardView>
+
+
+</FrameLayout>

@@ -5,10 +5,20 @@ import android.graphics.drawable.AnimationDrawable;
 import android.os.Bundle;
 import android.support.constraint.ConstraintLayout;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
+import android.support.v7.app.ActionBar;
+import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+
+import com.example.myimdb.model.MovieRealm;
 
 
 /**
@@ -40,4 +50,49 @@ public class HomeFragment extends Fragment {
         return mView;
     }
 
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        menu.findItem(R.id.toolbar_visualization).setVisible(false);
+        menu.findItem(R.id.toolbar_favorites).setVisible(true);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+
+        // TODO: switch case
+        switch (id){
+            case R.id.toolbar_favorites:
+                //switchFragment();
+                // Get the FragmentManager and start a transaction.
+                FavoritesFragment favoritesFragment = FavoritesFragment.newInstance();
+                FragmentManager fragmentManager = getFragmentManager();
+                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+
+
+                // Replace the fragment
+                fragmentTransaction.setCustomAnimations(R.anim.fade_in, R.anim.fade_out);
+                fragmentTransaction.replace(R.id.fragment_container,
+                        favoritesFragment);
+                fragmentTransaction.addToBackStack(null);
+                ActionBar toolbar = ((MainActivity)getActivity()).getSupportActionBar();
+                toolbar.setTitle("Favorites");
+                fragmentTransaction.commit();
+                //return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        ActionBar actionBar = ((MainActivity)getActivity()).getSupportActionBar();
+        if (actionBar != null){
+            actionBar.setTitle("Home");
+        }
+    }
 }

@@ -36,15 +36,13 @@
 
     <TextView
         android:id="@+id/details_title"
-        android:layout_width="0dp"
+        android:layout_width="175dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginTop="8dp"
-        android:layout_marginEnd="16dp"
         android:fontFamily="@font/archivo_black"
         android:textColor="@color/colorAccent"
         android:textSize="18sp"
-        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/details_movie_thumbnail"
         app:layout_constraintTop_toBottomOf="@+id/details_movie_background_img"
         tools:text="Details Title" />

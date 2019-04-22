@@ -189,11 +189,6 @@ public class FavoritesRecyclerAdapter extends RealmRecyclerViewAdapter<Favorites
                     });
                 }
 
-
-
-
-
-
             }
         });
 
