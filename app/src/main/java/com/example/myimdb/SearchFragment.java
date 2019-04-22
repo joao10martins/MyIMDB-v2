@@ -19,6 +19,8 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -137,6 +139,7 @@ public class SearchFragment extends Fragment implements SearchRecyclerAdapter.On
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        setHasOptionsMenu(true);
 
         mContext = getActivity();
         mRecyclerView = mView.findViewById(R.id.rvSearch);
@@ -158,6 +161,14 @@ public class SearchFragment extends Fragment implements SearchRecyclerAdapter.On
         getGenreList();
     }
 
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        menu.findItem(R.id.toolbar_visualization).setVisible(true);
+        menu.findItem(R.id.toolbar_favorites).setVisible(true);
+
+    }
+
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -167,6 +178,20 @@ public class SearchFragment extends Fragment implements SearchRecyclerAdapter.On
         switch (id){
             case R.id.toolbar_favorites:
                 //switchFragment();
+                // Get the FragmentManager and start a transaction.
+                FavoritesFragment favoritesFragment = FavoritesFragment.newInstance();
+                FragmentManager fragmentManager = getFragmentManager();
+                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+
+
+                // Replace the fragment
+                fragmentTransaction.setCustomAnimations(R.anim.fade_in, R.anim.fade_out);
+                fragmentTransaction.replace(R.id.fragment_container,
+                        favoritesFragment);
+                fragmentTransaction.addToBackStack(null);
+                ActionBar toolbar = ((MainActivity)getActivity()).getSupportActionBar();
+                toolbar.setTitle("Favorites");
+                fragmentTransaction.commit();
                 return true;
             case R.id.toolbar_visualization:
                 // change between List and Grid layout(default: Grid)
