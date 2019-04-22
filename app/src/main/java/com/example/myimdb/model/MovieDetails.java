@@ -11,11 +11,12 @@ public class MovieDetails {
     private int runtime;
     private double vote_average;
     private int vote_count;
+    private double popularity;
 
     private boolean like; // variable for like/favorites.
 
 
-    public MovieDetails (int id, String backdrop_path, String original_title, String overview, String poster_path, String release_date, int runtime, double vote_average, int vote_count) {
+    public MovieDetails (int id, String backdrop_path, String original_title, String overview, String poster_path, String release_date, int runtime, double vote_average, int vote_count, double popularity) {
         this.id = id;
         this.backdrop_path = backdrop_path;
         this.original_title = original_title;
@@ -25,6 +26,7 @@ public class MovieDetails {
         this.runtime = runtime;
         this.vote_average = vote_average;
         this.vote_count = vote_count;
+        this.popularity = popularity;
     }
 
     public int getId() {
@@ -105,5 +107,13 @@ public class MovieDetails {
 
     public void setVote_count(int vote_count) {
         this.vote_count = vote_count;
+    }
+
+    public double getPopularity() {
+        return popularity;
+    }
+
+    public void setPopularity(double popularity) {
+        this.popularity = popularity;
     }
 }

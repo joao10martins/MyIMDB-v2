@@ -335,6 +335,7 @@ public class NowPlayingFragment extends Fragment implements NowPlayingRecyclerAd
                 bundle.putInt("runtime", response.getRuntime());
                 bundle.putDouble("vote_average", response.getVote_average());
                 bundle.putInt("vote_count", response.getVote_count());
+                bundle.putDouble("popularity", response.getPopularity());
 
                 // Send the response data stored within the Bundle to the Fragment.
                 DetailsFragment detailsFragment = DetailsFragment.newInstance();

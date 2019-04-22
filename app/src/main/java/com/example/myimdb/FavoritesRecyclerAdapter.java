@@ -64,6 +64,8 @@ public class FavoritesRecyclerAdapter extends RealmRecyclerViewAdapter<Favorites
         public final ImageView movieImage;
         public ImageView like;
         public TextView rating;
+        public TextView views;
+        public TextView movieDate;
         public FavoritesRealm data;
 
         final FavoritesRecyclerAdapter mAdapter;
@@ -71,9 +73,11 @@ public class FavoritesRecyclerAdapter extends RealmRecyclerViewAdapter<Favorites
         public FavoritesViewHolder(View movieView, FavoritesRecyclerAdapter adapter) {
             super(movieView);
             if (isMovieViewAsList){
-                title = movieView.findViewById(R.id.search_movie_title);
-                movieImage = movieView.findViewById(R.id.movie_thumbnail);
-                rating = movieView.findViewById(R.id.search_movie_genre);
+                title = movieView.findViewById(R.id.fav_list_layout_title);
+                movieImage = movieView.findViewById(R.id.fav_list_layout_img);
+                views = movieView.findViewById(R.id.fav_list_layout_views);
+                movieDate = movieView.findViewById(R.id.fav_list_layout_releaseDate);
+                like = movieView.findViewById(R.id.favorites_list_like);
                 //TODO: list layout for favorites
             } else {
                 title = movieView.findViewById(R.id.fav_grid_layout_title);
@@ -92,7 +96,7 @@ public class FavoritesRecyclerAdapter extends RealmRecyclerViewAdapter<Favorites
     @Override
     public FavoritesViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         //test
-        View mMovieView = LayoutInflater.from(parent.getContext()).inflate(isMovieViewAsList ? R.layout.cardview_search_item_result : R.layout.favorites_grid_layout, parent, false);
+        View mMovieView = LayoutInflater.from(parent.getContext()).inflate(isMovieViewAsList ? R.layout.favorites_list_layout : R.layout.favorites_grid_layout, parent, false);
         return new FavoritesViewHolder(mMovieView, this);
     }
 
@@ -118,11 +122,21 @@ public class FavoritesRecyclerAdapter extends RealmRecyclerViewAdapter<Favorites
                     .into(holder.movieImage);
         }
 
-        holder.rating.setText(String.valueOf(currentItem.getVote_average()));
+
         /*if (currentItem.isLike()) { //
 
         }*/
         holder.like.setImageResource(R.drawable.ic_favorite_24dp);
+
+
+        if (isMovieViewAsList){
+            holder.views.setText(String.valueOf(currentItem.getPopularity()));
+            holder.movieDate.setText(currentItem.getRelease_date());
+        } else {
+            holder.rating.setText(String.valueOf(currentItem.getVote_average()));
+        }
+
+
         holder.like.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

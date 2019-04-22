@@ -80,6 +80,8 @@ public class MovieMapper {
                 movie.getVote_average(),
                 movie.getOriginal_title(),
                 movie.getPoster_path(),
+                movie.getPopularity(),
+                movie.getRelease_date(),
                 like);
         return myFavoritesRealm;
     }

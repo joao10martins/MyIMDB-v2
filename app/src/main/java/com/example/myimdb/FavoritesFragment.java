@@ -29,6 +29,7 @@ import com.example.myimdb.model.MovieDetails;
 import com.example.myimdb.model.MovieRealm;
 
 import io.realm.Realm;
+import io.realm.RealmResults;
 
 public class FavoritesFragment extends Fragment implements FavoritesRecyclerAdapter.OnMovieClick {
 
@@ -65,6 +66,13 @@ public class FavoritesFragment extends Fragment implements FavoritesRecyclerAdap
 
 
         mRealm = Realm.getDefaultInstance();
+        /*mRealm.executeTransaction(new Realm.Transaction() {
+            @Override
+            public void execute(Realm realm) {
+                RealmResults<FavoritesRealm> rows = realm.where(FavoritesRealm.class).findAll();
+                rows.deleteAllFromRealm();
+            }
+        });*/
         mRequestQueue = Volley.newRequestQueue(getActivity().getApplicationContext());
 
 
@@ -120,21 +128,21 @@ public class FavoritesFragment extends Fragment implements FavoritesRecyclerAdap
                 //switchFragment();
                 return true;
             case R.id.toolbar_visualization:
-                /*isMovieViewAsList = !isMovieViewAsList;
+                isMovieViewAsList = !isMovieViewAsList;
 
                 int scrollPosition = ((LinearLayoutManager) mRecyclerView.getLayoutManager()).findFirstCompletelyVisibleItemPosition();
 
                 // change between List and Grid layout(default: Grid)
-                mAdapter = new NowPlayingRecyclerAdapter(mRealm.where(FavoritesRealm.class).findAllAsync(), getContext(), FavoritesFragment.this, isMovieViewAsList);
+                mAdapter = new FavoritesRecyclerAdapter(mRealm.where(FavoritesRealm.class).findAllAsync(), getContext(), FavoritesFragment.this, isMovieViewAsList);
                 mRecyclerView.setAdapter(mAdapter);
                 mAdapter.notifyDataSetChanged();
 
                 if(mRecyclerView.getLayoutManager() instanceof GridLayoutManager) {
-                    mRecyclerView.setLayoutManager(isMovieViewAsList ? new LinearLayoutManager(getContext()) : new GridLayoutManager(getContext(), 3));
+                    mRecyclerView.setLayoutManager(isMovieViewAsList ? new LinearLayoutManager(getContext()) : new GridLayoutManager(getContext(), 2));
                 } else {
-                    mRecyclerView.setLayoutManager(isMovieViewAsList ? new LinearLayoutManager(getContext()) : new GridLayoutManager(getContext(), 3));
+                    mRecyclerView.setLayoutManager(isMovieViewAsList ? new LinearLayoutManager(getContext()) : new GridLayoutManager(getContext(), 2));
                 }
-                mRecyclerView.scrollToPosition(scrollPosition);*/
+                mRecyclerView.scrollToPosition(scrollPosition);
 
 
                 return true;
@@ -175,7 +183,7 @@ public class FavoritesFragment extends Fragment implements FavoritesRecyclerAdap
                 getErrorListener());
 
         mRequestQueue.add(request);
-        mListener.onDetailClick(title); 
+        mListener.onDetailClick(title);
     }
 
 
@@ -199,6 +207,9 @@ public class FavoritesFragment extends Fragment implements FavoritesRecyclerAdap
                 bundle.putInt("runtime", response.getRuntime());
                 bundle.putDouble("vote_average", response.getVote_average());
                 bundle.putInt("vote_count", response.getVote_count());
+                bundle.putDouble("popularity", response.getPopularity());
+
+
 
                 // Send the response data stored within the Bundle to the Fragment.
                 DetailsFragment detailsFragment = DetailsFragment.newInstance();

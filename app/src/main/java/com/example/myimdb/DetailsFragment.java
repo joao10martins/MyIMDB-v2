@@ -92,6 +92,7 @@ public class DetailsFragment extends Fragment implements MainActivity.OnToolbarC
         mOverview = mView.findViewById(R.id.txt_overview);
 
 
+
         // Get bundle which contains the response data
         final Bundle bundle = getArguments();
         // Set the View's images.
@@ -281,6 +282,8 @@ public class DetailsFragment extends Fragment implements MainActivity.OnToolbarC
                             movie.getDouble("vote_average"),
                             movie.getString("original_title"),
                             movie.getString("poster_path"),
+                            movie.getDouble("popularity"),
+                            movie.getString("release_date"),
                             isLiked);
                     _favorites.add(favorite);
                     realm.insertOrUpdate(_favorites);

@@ -10,22 +10,31 @@ public class FavoritesRealm extends RealmObject {
     private double vote_average;
     private String title;
     private String poster_path;
+    private double popularity;
+    private String release_date;
     private boolean like;
 
 
+
     public FavoritesRealm(){}
+
+
 
     public FavoritesRealm(
             int id,
             double vote_average,
             String title,
             String poster_path,
+            double popularity,
+            String release_date,
             boolean like
     ) {
         this.id = id;
         this.vote_average = vote_average;
         this.title = title;
         this.poster_path = poster_path;
+        this.popularity = popularity;
+        this.release_date = release_date;
         this.like = like;
     }
 
@@ -68,5 +77,21 @@ public class FavoritesRealm extends RealmObject {
 
     public void setLike(boolean like) {
         this.like = like;
+    }
+
+    public double getPopularity() {
+        return popularity;
+    }
+
+    public void setPopularity(double popularity) {
+        this.popularity = popularity;
+    }
+
+    public String getRelease_date() {
+        return release_date;
+    }
+
+    public void setRelease_date(String release_date) {
+        this.release_date = release_date;
     }
 }
