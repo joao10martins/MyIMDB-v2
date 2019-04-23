@@ -17,6 +17,7 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -93,6 +94,7 @@ public class SearchFragment extends Fragment implements SearchRecyclerAdapter.On
 
     private CheckKeyboardState mListener;
 
+
     /* Realm */
     Realm mRealm;
 
@@ -119,6 +121,10 @@ public class SearchFragment extends Fragment implements SearchRecyclerAdapter.On
             throw new RuntimeException(context.toString()
                     + " must implement InteractionListener");
         }
+
+        //mToolbarOptions = (ToolbarOptions) context;
+
+
     }
 
     @Override
@@ -222,12 +228,12 @@ public class SearchFragment extends Fragment implements SearchRecyclerAdapter.On
                         mRecyclerView.setLayoutManager(isMovieViewAsList ? new GridLayoutManager(getContext(), 2) : new LinearLayoutManager(getContext()));
                     }
                     mRecyclerView.scrollToPosition(scrollPosition);
-                    return true;
                 }
 
         }
 
         return super.onOptionsItemSelected(item);
+        //return false;
     }
 
 
@@ -439,8 +445,10 @@ public class SearchFragment extends Fragment implements SearchRecyclerAdapter.On
             Toast.makeText(getContext(), "Network connection unavailable", Toast.LENGTH_SHORT).show();
         }
 
+
         mListener.onDetailClick(title);
         mListener.isFromSearch(true);
+
 
     }
 
@@ -694,7 +702,10 @@ public class SearchFragment extends Fragment implements SearchRecyclerAdapter.On
         void onKeyboardStateChanged(boolean isOpen);
         void onDetailClick(String title);
         void isFromSearch(boolean isFromSearch);
+        void isDetailsFromSearch(boolean detailsFromSearch);
     }
+
+
 
 
 

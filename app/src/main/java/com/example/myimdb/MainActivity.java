@@ -314,6 +314,11 @@ public class MainActivity extends AppCompatActivity implements SearchFragment.Ch
     }
 
     @Override
+    public void isDetailsFromSearch(boolean detailsFromSearch) {
+
+    }
+
+    @Override
     public void onBackPressed() {
         super.onBackPressed();
         if (isFromSearch){

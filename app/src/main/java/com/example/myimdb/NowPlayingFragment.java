@@ -305,7 +305,7 @@ public class NowPlayingFragment extends Fragment implements NowPlayingRecyclerAd
 
     @Override
     public void onItemClick(int movieId, String title) {
-        // TODO: send title by interface listener to MainActivity.
+
         mUrl = "https://api.themoviedb.org/3/movie/" + movieId + "?api_key=07d93ad59393a99fe6bc8c1b8f0de23b&language=en-US";
 
         GsonRequest<MovieDetails> request = new GsonRequest<>(mUrl,

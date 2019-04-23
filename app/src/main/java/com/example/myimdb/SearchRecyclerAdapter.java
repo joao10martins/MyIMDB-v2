@@ -69,7 +69,7 @@ public class SearchRecyclerAdapter extends RealmRecyclerViewAdapter<SearchMovieR
                 movieYear = movieView.findViewById(R.id.search_grid_layout_year);
             } else {
                 title = movieView.findViewById(R.id.search_movie_title);
-                genre = movieView.findViewById(R.id.search_movie_genre); //TODO: NPE? Mudei de final para public(wtf)
+                genre = movieView.findViewById(R.id.search_movie_genre);
                 movieImage = movieView.findViewById(R.id.movie_thumbnail);
             }
             this.mAdapter = adapter;

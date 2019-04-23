@@ -17,5 +17,8 @@
     <color name="unchecked">#FFFFFF</color>
 
 
+    <color name="launcherGradient1">#232526</color>
+    <color name="launcherGradient2">#414345</color>
+
 
 </resources>

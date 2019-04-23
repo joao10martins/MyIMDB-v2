@@ -12,6 +12,7 @@ import android.support.v4.widget.ImageViewCompat;
 import android.text.method.ScrollingMovementMethod;
 import android.view.LayoutInflater;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
@@ -64,6 +65,7 @@ public class DetailsFragment extends Fragment implements MainActivity.OnToolbarC
 
     List<FavoritesRealm> favorites = new ArrayList<>();
     RealmList<FavoritesRealm> _favorites = new RealmList<>();
+    boolean isDetailsFromSearch = false;
 
     public DetailsFragment() {
         // Required empty public constructor
@@ -266,6 +268,12 @@ public class DetailsFragment extends Fragment implements MainActivity.OnToolbarC
     }
 
 
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        menu.findItem(R.id.toolbar_visualization).setVisible(false);
+    }
+
     private void saveMovieToFavoritesDb(final Bundle movie, final boolean isLiked){
         // TEST
         final MovieMapper movieMapper = new MovieMapper();
@@ -310,8 +318,16 @@ public class DetailsFragment extends Fragment implements MainActivity.OnToolbarC
 
     @Override
     public void onShareToolbar(android.support.v7.widget.Toolbar toolbar) {
-        Menu menu = toolbar.getMenu();
-        menu.findItem(R.id.toolbar_favorites).setVisible(false);
-        menu.findItem(R.id.toolbar_visualization).setVisible(false);
+        if (isDetailsFromSearch){
+            Menu menu = toolbar.getMenu();
+            menu.findItem(R.id.toolbar_favorites).setVisible(true);
+            menu.findItem(R.id.toolbar_visualization).setVisible(false);
+        } else {
+            Menu menu = toolbar.getMenu();
+            menu.findItem(R.id.toolbar_favorites).setVisible(true);
+            menu.findItem(R.id.toolbar_visualization).setVisible(true);
+        }
+
     }
+    
 }
