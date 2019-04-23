@@ -156,13 +156,13 @@ public class SearchFragment extends Fragment implements SearchRecyclerAdapter.On
             }
         });*/
 
-        mRealm.executeTransaction(new Realm.Transaction() {
+        /*mRealm.executeTransaction(new Realm.Transaction() {
             @Override
             public void execute(Realm realm) {
                 RealmResults<SearchMovieRealm> rows = realm.where(SearchMovieRealm.class).findAll();
                 rows.deleteAllFromRealm();
             }
-        });
+        });*/
 
         registerKeyboardListener();
 
@@ -203,10 +203,29 @@ public class SearchFragment extends Fragment implements SearchRecyclerAdapter.On
                 fragmentTransaction.commit();
                 return true;
             case R.id.toolbar_visualization:
-                // change between List and Grid layout(default: Grid)
-                mRecyclerView.setLayoutManager(isMovieViewAsList ? new GridLayoutManager(getContext(), 2) : new LinearLayoutManager(getContext()));
-                //might need mAdapter.notifyDataSetChanged();
-                return true;
+
+                // change between List and Grid layout(default: Linear)
+                if (mSearch_query != null){
+                    isMovieViewAsList = !isMovieViewAsList;
+                    int scrollPosition = ((LinearLayoutManager) mRecyclerView.getLayoutManager()).findFirstCompletelyVisibleItemPosition();
+
+
+                    RealmResults<SearchMovieRealm> results = mRealm.where(SearchMovieRealm.class)
+                            .like("title", "*"+mSearch_query.trim()+"*", Case.INSENSITIVE) // Finds any value that have 'mSearchQuery' in any position.
+                            .findAllAsync();
+                    mAdapter = new SearchRecyclerAdapter(getContext(), results,SearchFragment.this, isMovieViewAsList);
+                    mRecyclerView.setAdapter(mAdapter);
+                    mAdapter.notifyDataSetChanged();
+
+                    if(mRecyclerView.getLayoutManager() instanceof LinearLayoutManager) {
+                        mRecyclerView.setLayoutManager(isMovieViewAsList ? new GridLayoutManager(getContext(), 2) : new LinearLayoutManager(getContext()));
+                    } else {
+                        mRecyclerView.setLayoutManager(isMovieViewAsList ? new GridLayoutManager(getContext(), 2) : new LinearLayoutManager(getContext()));
+                    }
+                    mRecyclerView.scrollToPosition(scrollPosition);
+                    return true;
+                }
+
         }
 
         return super.onOptionsItemSelected(item);
@@ -357,7 +376,7 @@ public class SearchFragment extends Fragment implements SearchRecyclerAdapter.On
                                     .like("title", "*"+mSearch_query.trim()+"*", Case.INSENSITIVE) // Finds any value that have 'mSearchQuery' in any position.
                                     .findAllAsync();
 
-                            mAdapter = new SearchRecyclerAdapter(getContext(), mResults, SearchFragment.this);
+                            mAdapter = new SearchRecyclerAdapter(getContext(), mResults, SearchFragment.this, isMovieViewAsList);
                             mRecyclerView.setAdapter(mAdapter);
                             mAdapter.notifyDataSetChanged();
                             mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
@@ -605,7 +624,7 @@ public class SearchFragment extends Fragment implements SearchRecyclerAdapter.On
                     ++mListCount;
                 } else {
                     if (mResults != null){
-                        mAdapter = new SearchRecyclerAdapter(getContext(), mResults, SearchFragment.this);
+                        mAdapter = new SearchRecyclerAdapter(getContext(), mResults, SearchFragment.this, isMovieViewAsList);
                         mRecyclerView.setAdapter(mAdapter);
                         mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
                     } else {
@@ -621,7 +640,7 @@ public class SearchFragment extends Fragment implements SearchRecyclerAdapter.On
                     .like("title", "*"+mSearch_query.trim()+"*", Case.INSENSITIVE) // Finds any value that have 'mSearchQuery' in any position.
                     .findAllAsync();
             if (mResults != null && mRecyclerView != null){
-                mAdapter = new SearchRecyclerAdapter(getContext(), mResults, SearchFragment.this);
+                mAdapter = new SearchRecyclerAdapter(getContext(), mResults, SearchFragment.this, isMovieViewAsList);
                 mRecyclerView.setAdapter(mAdapter);
                 mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
             } else {

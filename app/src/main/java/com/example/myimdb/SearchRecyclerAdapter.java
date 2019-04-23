@@ -33,6 +33,7 @@ public class SearchRecyclerAdapter extends RealmRecyclerViewAdapter<SearchMovieR
     Realm mRealm;
 
     private OnMovieClick mListener;
+    private boolean isMovieViewAsList;
 
     private List<MovieGenre> mGenreList;
     @SuppressLint("UseSparseArrays")
@@ -41,27 +42,36 @@ public class SearchRecyclerAdapter extends RealmRecyclerViewAdapter<SearchMovieR
     //private NowPlayingListener nowPlayingListener;
 
     SearchRecyclerAdapter(Context context,
-                                 OrderedRealmCollection<SearchMovieRealm> data,
-                                 OnMovieClick listener) {
+                          OrderedRealmCollection<SearchMovieRealm> data,
+                          OnMovieClick listener,
+                          boolean isMovieViewAsList) {
         super(data, true);
         this.context = context;
         this.mListener = listener;
+        this.isMovieViewAsList = isMovieViewAsList;
         setHasStableIds(false);
     }
 
     class SearchViewHolder extends RecyclerView.ViewHolder {
-        final TextView title;
-        final TextView genre;
-        final ImageView movieImage;
+        public TextView title;
+        TextView genre;
+        public TextView movieYear;
+        public ImageView movieImage;
         public SearchMovieRealm data;
 
         final SearchRecyclerAdapter mAdapter;
 
         public SearchViewHolder(View movieView, SearchRecyclerAdapter adapter) {
             super(movieView);
-            title = movieView.findViewById(R.id.search_movie_title);
-            genre = movieView.findViewById(R.id.search_movie_genre);
-            movieImage = movieView.findViewById(R.id.movie_thumbnail);
+            if (isMovieViewAsList){
+                title = movieView.findViewById(R.id.search_grid_layout_title);
+                movieImage = movieView.findViewById(R.id.search_grid_layout_img);
+                movieYear = movieView.findViewById(R.id.search_grid_layout_year);
+            } else {
+                title = movieView.findViewById(R.id.search_movie_title);
+                genre = movieView.findViewById(R.id.search_movie_genre); //TODO: NPE? Mudei de final para public(wtf)
+                movieImage = movieView.findViewById(R.id.movie_thumbnail);
+            }
             this.mAdapter = adapter;
         }
     }
@@ -70,7 +80,7 @@ public class SearchRecyclerAdapter extends RealmRecyclerViewAdapter<SearchMovieR
     @NonNull
     @Override
     public SearchViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View mMovieView = LayoutInflater.from(parent.getContext()).inflate(R.layout.cardview_search_item_result, parent, false);
+        View mMovieView = LayoutInflater.from(parent.getContext()).inflate(isMovieViewAsList ? R.layout.search_grid_layout : R.layout.cardview_search_item_result, parent, false);
         return new SearchViewHolder(mMovieView, this);
     }
 
@@ -84,7 +94,18 @@ public class SearchRecyclerAdapter extends RealmRecyclerViewAdapter<SearchMovieR
 
 
         holder.title.setText(currentItem.getTitle());
-        holder.genre.setText(currentItem.getGenresDescription());
+        if (isMovieViewAsList){
+            String year = currentItem.getRelease_date().substring(0, Math.min(currentItem.getRelease_date().length(), 4));
+            if (year.equals("")){
+                holder.movieYear.setText("N/A");
+            } else {
+                holder.movieYear.setText(year);
+            }
+
+        } else {
+            holder.genre.setText(currentItem.getGenresDescription());
+        }
+
 
         if (currentItem.getPoster_path() != null){
             Glide.with(context)
@@ -95,6 +116,8 @@ public class SearchRecyclerAdapter extends RealmRecyclerViewAdapter<SearchMovieR
                     .load(R.drawable.ic_no_image_available)
                     .into(holder.movieImage);
         }
+
+
 
 
         holder.itemView.setOnClickListener(new View.OnClickListener() {
