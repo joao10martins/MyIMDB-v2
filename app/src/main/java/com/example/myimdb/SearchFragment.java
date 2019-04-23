@@ -147,6 +147,15 @@ public class SearchFragment extends Fragment implements SearchRecyclerAdapter.On
         mInputManager = (InputMethodManager) mContext.getSystemService(Context.INPUT_METHOD_SERVICE);
 
 
+
+        /*mRealm.executeTransaction(new Realm.Transaction() {
+            @Override
+            public void execute(Realm realm) {
+                RealmResults<MovieGenreRealm> rows = realm.where(MovieGenreRealm.class).findAll();
+                rows.deleteAllFromRealm();
+            }
+        });*/
+
         mRealm.executeTransaction(new Realm.Transaction() {
             @Override
             public void execute(Realm realm) {
@@ -218,7 +227,7 @@ public class SearchFragment extends Fragment implements SearchRecyclerAdapter.On
         mRequestQueue = Volley.newRequestQueue(getActivity().getApplicationContext());
         try {
             // If there is no Genres data on Realm, try to fetch it from the API, if internet connection is available.
-            if (mGenreMap.isEmpty() && mRealm.where(MovieGenreRealm.class).findAllAsync() == null) {
+            if (mGenreMap.isEmpty() && mRealm.where(MovieGenreRealm.class).findAll().isEmpty()) {
                 if (isConnectedToNetwork()) {
                     mUrl = "https://api.themoviedb.org/3/genre/movie/list?api_key=07d93ad59393a99fe6bc8c1b8f0de23b&language=en-US";
 
@@ -249,12 +258,15 @@ public class SearchFragment extends Fragment implements SearchRecyclerAdapter.On
         return new Response.Listener<MovieGenreResults>() {
             @Override
             public void onResponse(MovieGenreResults response) {
-                genreList.addAll(response.genreList);
-                saveGenresToDb(genreList);
                 try {
-                    for (MovieGenreRealm movieGenre : mRealm.where(MovieGenreRealm.class).findAllAsync()) {
-                        mGenreMap.put(movieGenre.getId(), movieGenre);
+                    genreList.addAll(response.genreList);
+                    saveGenresToDb(genreList);
+                    if (!mRealm.where(MovieGenreRealm.class).findAll().containsAll(genreList)){
+                        for (MovieGenreRealm movieGenre : mRealm.where(MovieGenreRealm.class).findAllAsync()) {
+                            mGenreMap.put(movieGenre.getId(), movieGenre);
+                        }
                     }
+
                     //mGenreList.addAll(response.genreList);
                 } catch (Exception e) {
                     e.printStackTrace();
