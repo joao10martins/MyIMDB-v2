@@ -105,6 +105,7 @@ public class MainActivity extends AppCompatActivity implements SearchFragment.Ch
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        setTheme(R.style.AppTheme);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
@@ -151,7 +152,7 @@ public class MainActivity extends AppCompatActivity implements SearchFragment.Ch
     }
 
     // Toolbar
-    @Override
+    /*@Override
     public boolean onOptionsItemSelected(MenuItem item) {
 
         int id = item.getItemId();
@@ -177,7 +178,7 @@ public class MainActivity extends AppCompatActivity implements SearchFragment.Ch
         }
 
         return super.onOptionsItemSelected(item);
-    }
+    }*/
 
     // Display Now Playing Movies
     public void displayNowPlaying() {
@@ -264,7 +265,7 @@ public class MainActivity extends AppCompatActivity implements SearchFragment.Ch
         // Instantiate the fragment.
         final SearchFragment searchFragment = SearchFragment.newInstance();
 
-        switchFragment(searchFragment, true, false);
+        switchFragment(searchFragment, false, false);
 
 
 

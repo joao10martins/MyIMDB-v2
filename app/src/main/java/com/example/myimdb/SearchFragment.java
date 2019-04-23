@@ -183,7 +183,6 @@ public class SearchFragment extends Fragment implements SearchRecyclerAdapter.On
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
 
-        // TODO: switch case
         switch (id){
             case R.id.toolbar_favorites:
                 //switchFragment();
@@ -195,13 +194,13 @@ public class SearchFragment extends Fragment implements SearchRecyclerAdapter.On
 
                 // Replace the fragment
                 fragmentTransaction.setCustomAnimations(R.anim.fade_in, R.anim.fade_out);
-                fragmentTransaction.replace(R.id.fragment_container,
-                        favoritesFragment);
                 fragmentTransaction.addToBackStack(null);
+                fragmentTransaction.add(R.id.fragment_container,
+                        favoritesFragment);
                 ActionBar toolbar = ((MainActivity)getActivity()).getSupportActionBar();
                 toolbar.setTitle("Favorites");
                 fragmentTransaction.commit();
-                return true;
+                //return true;
             case R.id.toolbar_visualization:
 
                 // change between List and Grid layout(default: Linear)
