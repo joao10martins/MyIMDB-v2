@@ -224,7 +224,7 @@ public class SearchFragment extends Fragment implements SearchRecyclerAdapter.On
 
                 mListener.onFavoritesClick(isFavoritesFromSearch);
 
-                //return true;
+                return true;
             case R.id.toolbar_visualization:
 
                 // change between List and Grid layout(default: Linear)

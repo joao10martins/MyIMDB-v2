@@ -60,6 +60,7 @@ public class MainActivity extends AppCompatActivity implements SearchFragment.Ch
     private String testTitle;
     private int backCount;
     private int testCount;
+    private Fragment mContent;
 
     /* Realm */
     Realm mRealm;
@@ -113,7 +114,9 @@ public class MainActivity extends AppCompatActivity implements SearchFragment.Ch
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-
+        /*if (savedInstanceState != null) {
+            mContent = getSupportFragmentManager().getFragment(savedInstanceState, "NowPlayingFragment");
+        }*/
 
 
         myToolbar = findViewById(R.id.toolbar);
@@ -146,6 +149,12 @@ public class MainActivity extends AppCompatActivity implements SearchFragment.Ch
         isHomeFragmentDisplayed = true;
     }
 
+    /*@Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        getSupportFragmentManager().putFragment(outState, "NowPlaying", mContent);
+    }*/
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

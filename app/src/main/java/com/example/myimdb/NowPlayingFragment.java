@@ -137,7 +137,7 @@ public class NowPlayingFragment extends Fragment implements NowPlayingRecyclerAd
                 ActionBar toolbar = ((MainActivity)getActivity()).getSupportActionBar();
                 toolbar.setTitle("Favorites");
                 fragmentTransaction.commit();
-                //return true;
+                return true;
             case R.id.toolbar_visualization:
                 isMovieViewAsList = !isMovieViewAsList;
 
@@ -154,9 +154,6 @@ public class NowPlayingFragment extends Fragment implements NowPlayingRecyclerAd
                     mRecyclerView.setLayoutManager(isMovieViewAsList ? new LinearLayoutManager(getContext()) : new GridLayoutManager(getContext(), 3));
                 }
                 mRecyclerView.scrollToPosition(scrollPosition);
-
-
-                return true;
         }
 
         return super.onOptionsItemSelected(item);
@@ -416,6 +413,20 @@ public class NowPlayingFragment extends Fragment implements NowPlayingRecyclerAd
             actionBar.setTitle("Now Playing");
         }
     }
+
+    /*@Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putBoolean("np_viewMode", isMovieViewAsList);
+    }
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        if (savedInstanceState != null) {
+            savedInstanceState.getBoolean("np_viewMode");
+        }
+    }*/
 }
 
 
