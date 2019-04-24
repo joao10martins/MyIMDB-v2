@@ -91,6 +91,8 @@ public class SearchFragment extends Fragment implements SearchRecyclerAdapter.On
     private int mTotalPages;
     RealmResults<SearchMovieRealm> mResults;
     private boolean isMovieViewAsList = false;
+    private boolean isFavoritesFromSearch = false;
+    private int testCount;
 
     private CheckKeyboardState mListener;
 
@@ -179,8 +181,18 @@ public class SearchFragment extends Fragment implements SearchRecyclerAdapter.On
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
-        menu.findItem(R.id.toolbar_visualization).setVisible(true);
+        ActionBar toolbar = ((MainActivity)getActivity()).getSupportActionBar();
+        toolbar.setTitle("Search");
         menu.findItem(R.id.toolbar_favorites).setVisible(true);
+        menu.findItem(R.id.toolbar_visualization).setVisible(true);
+        /*if (isFavoritesFromSearch && testCount == 0 ){
+            menu.findItem(R.id.toolbar_visualization).setVisible(false);
+        } else {
+            menu.findItem(R.id.toolbar_visualization).setVisible(true);
+        }
+
+        menu.findItem(R.id.toolbar_visualization).setVisible(!(isFavoritesFromSearch && testCount == 0));
+*/
 
     }
 
@@ -206,6 +218,12 @@ public class SearchFragment extends Fragment implements SearchRecyclerAdapter.On
                 ActionBar toolbar = ((MainActivity)getActivity()).getSupportActionBar();
                 toolbar.setTitle("Favorites");
                 fragmentTransaction.commit();
+
+                isFavoritesFromSearch = true;
+                testCount = mListener.getBackCount();
+
+                mListener.onFavoritesClick(isFavoritesFromSearch);
+
                 //return true;
             case R.id.toolbar_visualization:
 
@@ -485,6 +503,8 @@ public class SearchFragment extends Fragment implements SearchRecyclerAdapter.On
                 // Replace the fragment
                 fragmentTransaction.setCustomAnimations(R.anim.fade_in, R.anim.fade_out);
                 fragmentTransaction.addToBackStack(null);
+                Toolbar toolbar = getActivity().findViewById(R.id.toolbar);
+                toolbar.getMenu().findItem(R.id.toolbar_visualization).setVisible(false);
                 fragmentTransaction.add(R.id.fragment_container,
                         detailsFragment);
                 fragmentTransaction.commit();
@@ -698,11 +718,14 @@ public class SearchFragment extends Fragment implements SearchRecyclerAdapter.On
         }
     }
 
+
+
     public interface CheckKeyboardState {
         void onKeyboardStateChanged(boolean isOpen);
         void onDetailClick(String title);
         void isFromSearch(boolean isFromSearch);
-        void isDetailsFromSearch(boolean detailsFromSearch);
+        void onFavoritesClick(boolean favoritesFromSearch);
+        int getBackCount();
     }
 
 

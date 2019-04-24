@@ -45,6 +45,7 @@ public class HomeFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         mView = inflater.inflate(R.layout.fragment_home, container, false);
+        setHasOptionsMenu(true);
 
 
         return mView;
@@ -53,6 +54,8 @@ public class HomeFragment extends Fragment {
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
+        ActionBar toolbar = ((MainActivity)getActivity()).getSupportActionBar();
+        toolbar.setTitle("Home");
         menu.findItem(R.id.toolbar_visualization).setVisible(false);
         menu.findItem(R.id.toolbar_favorites).setVisible(true);
     }

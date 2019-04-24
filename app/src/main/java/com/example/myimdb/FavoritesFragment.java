@@ -31,7 +31,7 @@ import com.example.myimdb.model.MovieRealm;
 import io.realm.Realm;
 import io.realm.RealmResults;
 
-public class FavoritesFragment extends Fragment implements FavoritesRecyclerAdapter.OnMovieClick {
+public class FavoritesFragment extends Fragment implements FavoritesRecyclerAdapter.OnMovieClick, SearchFragment.CheckKeyboardState {
 
     /* Views */
     private View mView;
@@ -48,6 +48,7 @@ public class FavoritesFragment extends Fragment implements FavoritesRecyclerAdap
     private RequestQueue mRequestQueue;
     private FavoritesRecyclerAdapter mAdapter;
     private OnFavoritesListener mListener;
+    private boolean isFavoritesFromSearch;
 
     /* Realm */
     Realm mRealm;
@@ -113,6 +114,8 @@ public class FavoritesFragment extends Fragment implements FavoritesRecyclerAdap
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
+        ActionBar toolbar = ((MainActivity)getActivity()).getSupportActionBar();
+        toolbar.setTitle("Favorites");
         menu.findItem(R.id.toolbar_visualization).setVisible(true);
         menu.findItem(R.id.toolbar_favorites).setVisible(false);
     }
@@ -126,7 +129,7 @@ public class FavoritesFragment extends Fragment implements FavoritesRecyclerAdap
         switch (id){
             case R.id.toolbar_favorites:
                 //switchFragment();
-                return true;
+                //return true;
             case R.id.toolbar_visualization:
                 isMovieViewAsList = !isMovieViewAsList;
 
@@ -145,7 +148,7 @@ public class FavoritesFragment extends Fragment implements FavoritesRecyclerAdap
                 mRecyclerView.scrollToPosition(scrollPosition);
 
 
-                return true;
+                //return true;
         }
 
         return super.onOptionsItemSelected(item);
@@ -258,8 +261,35 @@ public class FavoritesFragment extends Fragment implements FavoritesRecyclerAdap
         }
     }
 
+    @Override
+    public void onKeyboardStateChanged(boolean isOpen) {
+
+    }
+
+    @Override
+    public void onDetailClick(String title) {
+
+    }
+
+    @Override
+    public void isFromSearch(boolean isFromSearch) {
+        //isFavoritesFromSearch = isFromSearch;
+    }
+
+    @Override
+    public void onFavoritesClick(boolean favoritesFromSearch) {
+        //isFavoritesFromSearch = favoritesFromSearch;
+    }
+
+    @Override
+    public int getBackCount() {
+        return 0;
+    }
+
 
     public interface OnFavoritesListener {
         void onDetailClick(String title);
     }
+
+
 }

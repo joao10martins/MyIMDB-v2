@@ -56,6 +56,10 @@ public class MainActivity extends AppCompatActivity implements SearchFragment.Ch
     private boolean isSearchFragmentDisplayed = false;
     private boolean isDetailsFragmentDisplayed = false;
     private boolean isFromSearch = false;
+    private boolean isFavoritesFromSearch;
+    private String testTitle;
+    private int backCount;
+    private int testCount;
 
     /* Realm */
     Realm mRealm;
@@ -147,6 +151,7 @@ public class MainActivity extends AppCompatActivity implements SearchFragment.Ch
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.toolbar_menu, menu);
         menu.findItem(R.id.toolbar_visualization).setVisible(false);
+        menu.findItem(R.id.toolbar_favorites).setVisible(false);
 
         return true;
     }
@@ -160,21 +165,8 @@ public class MainActivity extends AppCompatActivity implements SearchFragment.Ch
         // TODO: switch case
         switch (id){
             case R.id.toolbar_favorites:
-                //switchFragment();
-                // Get the FragmentManager and start a transaction.
-                FavoritesFragment favoritesFragment = FavoritesFragment.newInstance();
-                FragmentManager fragmentManager = getSupportFragmentManager();
-                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                mListener.
 
-
-                // Replace the fragment
-                fragmentTransaction.setCustomAnimations(R.anim.fade_in, R.anim.fade_out);
-                fragmentTransaction.replace(R.id.fragment_container,
-                        favoritesFragment);
-                fragmentTransaction.addToBackStack(null);
-                myToolbar.setTitle("Favorites");
-                fragmentTransaction.commit();
-                //return true;
         }
 
         return super.onOptionsItemSelected(item);
@@ -262,6 +254,7 @@ public class MainActivity extends AppCompatActivity implements SearchFragment.Ch
 
     private void displaySearch() {
 
+        backCount = 0;
         // Instantiate the fragment.
         final SearchFragment searchFragment = SearchFragment.newInstance();
 
@@ -283,6 +276,7 @@ public class MainActivity extends AppCompatActivity implements SearchFragment.Ch
 
     public interface OnToolbarChanges {
         void onShareToolbar(Toolbar toolbar);
+        //void getCounter();
     }
 
 
@@ -306,6 +300,7 @@ public class MainActivity extends AppCompatActivity implements SearchFragment.Ch
     @Override
     public void onDetailClick(String title) {
         myToolbar.setTitle(title);
+        testTitle = title;
     }
 
     @Override
@@ -314,17 +309,15 @@ public class MainActivity extends AppCompatActivity implements SearchFragment.Ch
     }
 
     @Override
-    public void isDetailsFromSearch(boolean detailsFromSearch) {
-
+    public void onFavoritesClick(boolean favoritesFromSearch) {
+        isFavoritesFromSearch = favoritesFromSearch;
     }
 
     @Override
-    public void onBackPressed() {
-        super.onBackPressed();
-        if (isFromSearch){
-            myToolbar.setTitle("Search");
-        }
+    public int getBackCount() {
+        return backCount;
     }
+
 
 
 

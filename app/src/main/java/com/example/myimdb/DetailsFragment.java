@@ -7,12 +7,16 @@ import android.content.res.ColorStateList;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.ImageViewCompat;
+import android.support.v7.app.ActionBar;
 import android.text.method.ScrollingMovementMethod;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
@@ -81,6 +85,7 @@ public class DetailsFragment extends Fragment implements MainActivity.OnToolbarC
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         mView = inflater.inflate(R.layout.fragment_details, container, false);
+        setHasOptionsMenu(false);
         mRealm = Realm.getDefaultInstance();
         // Views
         mBackpathImage = mView.findViewById(R.id.details_movie_background_img);
@@ -268,11 +273,7 @@ public class DetailsFragment extends Fragment implements MainActivity.OnToolbarC
     }
 
 
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        super.onCreateOptionsMenu(menu, inflater);
-        menu.findItem(R.id.toolbar_visualization).setVisible(false);
-    }
+
 
     private void saveMovieToFavoritesDb(final Bundle movie, final boolean isLiked){
         // TEST
@@ -318,16 +319,7 @@ public class DetailsFragment extends Fragment implements MainActivity.OnToolbarC
 
     @Override
     public void onShareToolbar(android.support.v7.widget.Toolbar toolbar) {
-        if (isDetailsFromSearch){
-            Menu menu = toolbar.getMenu();
-            menu.findItem(R.id.toolbar_favorites).setVisible(true);
-            menu.findItem(R.id.toolbar_visualization).setVisible(false);
-        } else {
-            Menu menu = toolbar.getMenu();
-            menu.findItem(R.id.toolbar_favorites).setVisible(true);
-            menu.findItem(R.id.toolbar_visualization).setVisible(true);
-        }
 
     }
-    
+
 }
