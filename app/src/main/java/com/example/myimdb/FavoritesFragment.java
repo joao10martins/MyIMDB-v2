@@ -122,6 +122,7 @@ public class FavoritesFragment extends Fragment implements FavoritesRecyclerAdap
         toolbar.setTitle("Favorites");
         menu.findItem(R.id.toolbar_visualization).setVisible(true);
         menu.findItem(R.id.toolbar_favorites).setVisible(false);
+        menu.findItem(R.id.toolbar_sort).setVisible(true);
     }
 
 
@@ -153,6 +154,8 @@ public class FavoritesFragment extends Fragment implements FavoritesRecyclerAdap
 
 
                 //return true;
+            case R.id.toolbar_sort:
+                //custom popup
         }
 
         return super.onOptionsItemSelected(item);

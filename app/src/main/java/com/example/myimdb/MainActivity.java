@@ -162,6 +162,7 @@ public class MainActivity extends AppCompatActivity implements SearchFragment.Ch
         getMenuInflater().inflate(R.menu.toolbar_menu, menu);
         menu.findItem(R.id.toolbar_visualization).setVisible(false);
         menu.findItem(R.id.toolbar_favorites).setVisible(false);
+        menu.findItem(R.id.toolbar_sort).setVisible(false);
 
         return true;
     }

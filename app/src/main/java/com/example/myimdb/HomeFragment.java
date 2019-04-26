@@ -58,6 +58,7 @@ public class HomeFragment extends Fragment {
         toolbar.setTitle("Home");
         menu.findItem(R.id.toolbar_visualization).setVisible(false);
         menu.findItem(R.id.toolbar_favorites).setVisible(true);
+        menu.findItem(R.id.toolbar_sort).setVisible(false);
     }
 
     @Override

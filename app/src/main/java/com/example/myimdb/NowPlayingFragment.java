@@ -128,6 +128,7 @@ public class NowPlayingFragment extends Fragment implements NowPlayingRecyclerAd
         toolbar.setTitle("Now Playing");
         menu.findItem(R.id.toolbar_visualization).setVisible(true);
         menu.findItem(R.id.toolbar_favorites).setVisible(true);
+        menu.findItem(R.id.toolbar_sort).setVisible(false);
 
     }
 

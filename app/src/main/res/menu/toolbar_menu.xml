@@ -8,11 +8,19 @@
         android:title="@string/nav_favorites"
         app:showAsAction="always" />
 
+
     <item
         android:id="@+id/toolbar_visualization"
         android:icon="@drawable/ic_change_visualization_eye_24dp"
         android:title="@string/nav_visualization"
         app:showAsAction="always"
         android:iconTint="@color/colorAccent" />
+
+    <item
+        android:id="@+id/toolbar_sort"
+        android:icon="@drawable/ic_sort_by_black_24dp"
+        app:showAsAction="always"
+        android:iconTint="@color/colorAccent"
+        android:title="@string/nav_sort_by" />
 
 </menu>
