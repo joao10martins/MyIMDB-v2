@@ -280,12 +280,8 @@ public class MainActivity extends AppCompatActivity implements SearchFragment.Ch
     }
 
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        //SharedPreferencesHelper.getInstance().removePreferences("search_query");
-        //SharedPreferencesHelper.getInstance().removePreferences("search_viewMode");
-    }
+
+
 
     public interface OnToolbarChanges {
         void onShareToolbar(Toolbar toolbar);

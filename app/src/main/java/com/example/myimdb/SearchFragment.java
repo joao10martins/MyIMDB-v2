@@ -261,13 +261,13 @@ public class SearchFragment extends Fragment implements SearchRecyclerAdapter.On
 
 
 
-
     @Override
     public void onDestroy() {
-        super.onDestroy();
-
         mUnregistrar.unregister();
+        super.onDestroy();
     }
+
+
 
     // Get List of all the existing Genres in the API.
     private void getGenreList() {
@@ -344,6 +344,27 @@ public class SearchFragment extends Fragment implements SearchRecyclerAdapter.On
         if (mSearch_query != null){
             query_text.setText(mSearch_query.trim());
             search();
+            query_text.setImeOptions(EditorInfo.IME_ACTION_SEARCH);
+            query_text.setOnEditorActionListener(new EditText.OnEditorActionListener(){
+                @Override
+                public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                    // If triggered by an enter key, this is the event; otherwise, this is null.
+                    if (actionId == EditorInfo.IME_ACTION_SEARCH) {
+                        search();
+                        return true;
+                    }
+                    return false;
+                }
+            });
+
+
+            ImageButton btnSearch = mView.findViewById(R.id.btnSearch);
+            btnSearch.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    search();
+                }
+            });
         } else {
             query_text.setImeOptions(EditorInfo.IME_ACTION_SEARCH);
             query_text.setOnEditorActionListener(new EditText.OnEditorActionListener(){
@@ -737,12 +758,8 @@ public class SearchFragment extends Fragment implements SearchRecyclerAdapter.On
         SharedPreferencesHelper.getInstance().setPreferences("search_query", mSearch_query.trim());
     }
 
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        SharedPreferencesHelper.getInstance().removePreferences("search_query");
-        SharedPreferencesHelper.getInstance().removePreferences("search_viewMode");
-    }
+
+
 
     public interface CheckKeyboardState {
         void onKeyboardStateChanged(boolean isOpen);

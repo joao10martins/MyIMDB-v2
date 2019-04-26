@@ -18,6 +18,9 @@ public class MyApplication extends Application {
 
         // SharedPreferences Singleton instance init
         SharedPreferencesHelper.getInstance().initialize(this);
+
+        SharedPreferencesHelper.getInstance().removePreferences("search_query");
+        SharedPreferencesHelper.getInstance().removePreferences("search_viewMode");
         // Init Stetho
         /*Stetho.initialize(
                 Stetho.newInitializerBuilder(this)
@@ -39,4 +42,5 @@ public class MyApplication extends Application {
                 .addNetworkInterceptor(new StethoInterceptor())
                 .build();*/
     }
+
 }
