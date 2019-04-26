@@ -137,8 +137,8 @@ public class SearchFragment extends Fragment implements SearchRecyclerAdapter.On
         mView = inflater.inflate(R.layout.fragment_search, container, false);
 
         SharedPreferencesHelper prefs = SharedPreferencesHelper.getInstance();
-        //isMovieViewAsList = Boolean.valueOf(prefs.getPreferences("search_viewMode", "false"));
-        //mSearch_query = prefs.getPreferences("search_query", null);
+        isMovieViewAsList = Boolean.valueOf(prefs.getPreferences("search_viewMode", "false"));
+        mSearch_query = prefs.getPreferences("search_query", null);
 
 
         // get db
@@ -733,8 +733,8 @@ public class SearchFragment extends Fragment implements SearchRecyclerAdapter.On
     @Override
     public void onPause() {
         super.onPause();
-        //SharedPreferencesHelper.getInstance().setPreferences("search_viewMode", String.valueOf(isMovieViewAsList));
-        //SharedPreferencesHelper.getInstance().setPreferences("search_query", mSearch_query.trim());
+        SharedPreferencesHelper.getInstance().setPreferences("search_viewMode", String.valueOf(isMovieViewAsList));
+        SharedPreferencesHelper.getInstance().setPreferences("search_query", mSearch_query.trim());
     }
 
     @Override
