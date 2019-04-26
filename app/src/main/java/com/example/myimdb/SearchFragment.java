@@ -342,51 +342,13 @@ public class SearchFragment extends Fragment implements SearchRecyclerAdapter.On
         mButtonClickCount = 1;
         mRequestQueue = Volley.newRequestQueue(getActivity().getApplicationContext());
         if (mSearch_query != null){
+            // if there already was a search
             query_text.setText(mSearch_query.trim());
             search();
-            query_text.setImeOptions(EditorInfo.IME_ACTION_SEARCH);
-            query_text.setOnEditorActionListener(new EditText.OnEditorActionListener(){
-                @Override
-                public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                    // If triggered by an enter key, this is the event; otherwise, this is null.
-                    if (actionId == EditorInfo.IME_ACTION_SEARCH) {
-                        search();
-                        return true;
-                    }
-                    return false;
-                }
-            });
-
-
-            ImageButton btnSearch = mView.findViewById(R.id.btnSearch);
-            btnSearch.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    search();
-                }
-            });
+            // also enable next search
+            enableSearch();
         } else {
-            query_text.setImeOptions(EditorInfo.IME_ACTION_SEARCH);
-            query_text.setOnEditorActionListener(new EditText.OnEditorActionListener(){
-                @Override
-                public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                    // If triggered by an enter key, this is the event; otherwise, this is null.
-                    if (actionId == EditorInfo.IME_ACTION_SEARCH) {
-                        search();
-                        return true;
-                    }
-                    return false;
-                }
-            });
-
-
-            ImageButton btnSearch = mView.findViewById(R.id.btnSearch);
-            btnSearch.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    search();
-                }
-            });
+            enableSearch();
         }
 
 
@@ -738,6 +700,30 @@ public class SearchFragment extends Fragment implements SearchRecyclerAdapter.On
         } catch (Exception e){
             e.printStackTrace();
         }
+    }
+
+    private void enableSearch(){
+        query_text.setImeOptions(EditorInfo.IME_ACTION_SEARCH);
+        query_text.setOnEditorActionListener(new EditText.OnEditorActionListener(){
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                // If triggered by an enter key, this is the event; otherwise, this is null.
+                if (actionId == EditorInfo.IME_ACTION_SEARCH) {
+                    search();
+                    return true;
+                }
+                return false;
+            }
+        });
+
+
+        ImageButton btnSearch = mView.findViewById(R.id.btnSearch);
+        btnSearch.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                search();
+            }
+        });
     }
 
 
