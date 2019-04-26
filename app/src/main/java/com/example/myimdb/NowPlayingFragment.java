@@ -4,6 +4,7 @@ package com.example.myimdb;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -26,6 +27,7 @@ import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.Volley;
+import com.example.myimdb.helpers.SharedPreferencesHelper;
 import com.example.myimdb.map.MovieMapper;
 import com.example.myimdb.model.Movie;
 import com.example.myimdb.model.MovieDetails;
@@ -57,6 +59,7 @@ public class NowPlayingFragment extends Fragment implements NowPlayingRecyclerAd
     private String mUrl;
     private int mTotalPages;
     private boolean isMovieViewAsList = false;
+    private int mScrollPosition;
 
     private View mView;
 
@@ -77,6 +80,20 @@ public class NowPlayingFragment extends Fragment implements NowPlayingRecyclerAd
         mView = inflater.inflate(R.layout.fragment_now_playing, container, false);
 
 
+        SharedPreferencesHelper prefs = SharedPreferencesHelper.getInstance();
+        isMovieViewAsList = Boolean.valueOf(prefs.getPreferences("np_viewMode", "false"));
+        mScrollPosition = Integer.valueOf(prefs.getPreferences("np_scrollPos", "0"));
+
+        /*if (prefs.contains("my_state")) {
+            // modify your fragment's starting state with the saved info
+        }*/
+
+
+
+        
+
+
+
 
         mRealm = Realm.getDefaultInstance();
         /*mRealm.executeTransaction(new Realm.Transaction() {
@@ -87,8 +104,7 @@ public class NowPlayingFragment extends Fragment implements NowPlayingRecyclerAd
             }
         });*/
 
-        //final RealmResults<MovieRealm> movies = mRealm.where(MovieRealm.class).findAll();
-        //System.out.println("༼ つ ◕_◕ ༽つ THE MOVIES ARE HERE, COME GET'EM ༼ つ ◕_◕ ༽つ" + movies);
+
         return mView;
     }
 
@@ -141,7 +157,7 @@ public class NowPlayingFragment extends Fragment implements NowPlayingRecyclerAd
             case R.id.toolbar_visualization:
                 isMovieViewAsList = !isMovieViewAsList;
 
-                int scrollPosition = ((LinearLayoutManager) mRecyclerView.getLayoutManager()).findFirstCompletelyVisibleItemPosition();
+                mScrollPosition = ((LinearLayoutManager) mRecyclerView.getLayoutManager()).findFirstCompletelyVisibleItemPosition();
 
                 // change between List and Grid layout(default: Grid)
                 mAdapter = new NowPlayingRecyclerAdapter(mRealm.where(MovieRealm.class).findAllAsync(), getContext(), NowPlayingFragment.this, isMovieViewAsList);
@@ -153,7 +169,7 @@ public class NowPlayingFragment extends Fragment implements NowPlayingRecyclerAd
                 } else {
                     mRecyclerView.setLayoutManager(isMovieViewAsList ? new LinearLayoutManager(getContext()) : new GridLayoutManager(getContext(), 3));
                 }
-                mRecyclerView.scrollToPosition(scrollPosition);
+                mRecyclerView.scrollToPosition(mScrollPosition);
         }
 
         return super.onOptionsItemSelected(item);
@@ -398,7 +414,6 @@ public class NowPlayingFragment extends Fragment implements NowPlayingRecyclerAd
     }
 
 
-
     public interface OnNowPlayingListener {
         void onSwitchFragment(Fragment fragment);
         void onDetailClick(String title);
@@ -414,19 +429,12 @@ public class NowPlayingFragment extends Fragment implements NowPlayingRecyclerAd
         }
     }
 
-    /*@Override
-    public void onSaveInstanceState(@NonNull Bundle outState) {
-        super.onSaveInstanceState(outState);
-        outState.putBoolean("np_viewMode", isMovieViewAsList);
-    }
-
     @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-        if (savedInstanceState != null) {
-            savedInstanceState.getBoolean("np_viewMode");
-        }
-    }*/
+    public void onPause() {
+        super.onPause();
+        SharedPreferencesHelper.getInstance().setPreferences("np_viewMode", String.valueOf(isMovieViewAsList));
+        SharedPreferencesHelper.getInstance().setPreferences("np_scrollPos", String.valueOf(mScrollPosition));
+    }
 }
 
 

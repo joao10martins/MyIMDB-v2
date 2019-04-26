@@ -24,6 +24,7 @@ import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.Volley;
+import com.example.myimdb.helpers.SharedPreferencesHelper;
 import com.example.myimdb.model.FavoritesRealm;
 import com.example.myimdb.model.MovieDetails;
 import com.example.myimdb.model.MovieRealm;
@@ -64,6 +65,9 @@ public class FavoritesFragment extends Fragment implements FavoritesRecyclerAdap
 
         // Inflate the layout for this fragment
         mView = inflater.inflate(R.layout.fragment_favorites, container, false);
+
+        SharedPreferencesHelper prefs = SharedPreferencesHelper.getInstance();
+        isMovieViewAsList = Boolean.valueOf(prefs.getPreferences("fav_viewMode", "false"));
 
 
         mRealm = Realm.getDefaultInstance();
@@ -260,6 +264,13 @@ public class FavoritesFragment extends Fragment implements FavoritesRecyclerAdap
             actionBar.setTitle("Favorites");
         }
     }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        SharedPreferencesHelper.getInstance().setPreferences("fav_viewMode", String.valueOf(isMovieViewAsList));
+    }
+
 
     @Override
     public void onKeyboardStateChanged(boolean isOpen) {

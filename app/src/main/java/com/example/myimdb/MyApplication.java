@@ -3,6 +3,7 @@ package com.example.myimdb;
 import android.app.Application;
 
 
+import com.example.myimdb.helpers.SharedPreferencesHelper;
 
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
@@ -14,6 +15,9 @@ public class MyApplication extends Application {
     public void onCreate() {
         super.onCreate();
 
+
+        // SharedPreferences Singleton instance init
+        SharedPreferencesHelper.getInstance().initialize(this);
         // Init Stetho
         /*Stetho.initialize(
                 Stetho.newInitializerBuilder(this)

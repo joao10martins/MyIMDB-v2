@@ -36,6 +36,7 @@ import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.Volley;
+import com.example.myimdb.helpers.SharedPreferencesHelper;
 import com.example.myimdb.map.GenreMapper;
 import com.example.myimdb.map.MovieMapper;
 import com.example.myimdb.model.Movie;
@@ -134,6 +135,10 @@ public class SearchFragment extends Fragment implements SearchRecyclerAdapter.On
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         mView = inflater.inflate(R.layout.fragment_search, container, false);
+
+        SharedPreferencesHelper prefs = SharedPreferencesHelper.getInstance();
+        isMovieViewAsList = Boolean.valueOf(prefs.getPreferences("search_viewMode", "false"));
+        mSearch_query = prefs.getPreferences("search_query", null);
 
 
         // get db
@@ -716,6 +721,14 @@ public class SearchFragment extends Fragment implements SearchRecyclerAdapter.On
         if (actionBar != null){
             actionBar.setTitle("Search");
         }
+    }
+
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        SharedPreferencesHelper.getInstance().setPreferences("search_viewMode", String.valueOf(isMovieViewAsList));
+        SharedPreferencesHelper.getInstance().setPreferences("search_query", mSearch_query.trim());
     }
 
 
