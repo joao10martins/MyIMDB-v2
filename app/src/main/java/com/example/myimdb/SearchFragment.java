@@ -137,8 +137,8 @@ public class SearchFragment extends Fragment implements SearchRecyclerAdapter.On
         mView = inflater.inflate(R.layout.fragment_search, container, false);
 
         SharedPreferencesHelper prefs = SharedPreferencesHelper.getInstance();
-        isMovieViewAsList = Boolean.valueOf(prefs.getPreferences("search_viewMode", "false"));
-        mSearch_query = prefs.getPreferences("search_query", null);
+        //isMovieViewAsList = Boolean.valueOf(prefs.getPreferences("search_viewMode", "false"));
+        //mSearch_query = prefs.getPreferences("search_query", null);
 
 
         // get db
@@ -341,27 +341,33 @@ public class SearchFragment extends Fragment implements SearchRecyclerAdapter.On
         mListCount = 1;
         mButtonClickCount = 1;
         mRequestQueue = Volley.newRequestQueue(getActivity().getApplicationContext());
-        query_text.setImeOptions(EditorInfo.IME_ACTION_SEARCH);
-        query_text.setOnEditorActionListener(new EditText.OnEditorActionListener(){
-            @Override
-            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                // If triggered by an enter key, this is the event; otherwise, this is null.
-                if (actionId == EditorInfo.IME_ACTION_SEARCH) {
-                    search();
-                    return true;
+        if (mSearch_query != null){
+            query_text.setText(mSearch_query.trim());
+            search();
+        } else {
+            query_text.setImeOptions(EditorInfo.IME_ACTION_SEARCH);
+            query_text.setOnEditorActionListener(new EditText.OnEditorActionListener(){
+                @Override
+                public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                    // If triggered by an enter key, this is the event; otherwise, this is null.
+                    if (actionId == EditorInfo.IME_ACTION_SEARCH) {
+                        search();
+                        return true;
+                    }
+                    return false;
                 }
-                return false;
-            }
-        });
+            });
 
 
-        ImageButton btnSearch = mView.findViewById(R.id.btnSearch);
-        btnSearch.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                search();
-            }
-        });
+            ImageButton btnSearch = mView.findViewById(R.id.btnSearch);
+            btnSearch.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    search();
+                }
+            });
+        }
+
 
 
     }
@@ -658,7 +664,7 @@ public class SearchFragment extends Fragment implements SearchRecyclerAdapter.On
                     if (mResults != null){
                         mAdapter = new SearchRecyclerAdapter(getContext(), mResults, SearchFragment.this, isMovieViewAsList);
                         mRecyclerView.setAdapter(mAdapter);
-                        mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+                        mRecyclerView.setLayoutManager(isMovieViewAsList ? new GridLayoutManager(getContext(), 2) : new LinearLayoutManager(getContext()));
                     } else {
                         //Show disconnected message
                         Toast.makeText(getContext(), "Network connection unavailable", Toast.LENGTH_SHORT).show();
@@ -674,7 +680,7 @@ public class SearchFragment extends Fragment implements SearchRecyclerAdapter.On
             if (mResults != null && mRecyclerView != null){
                 mAdapter = new SearchRecyclerAdapter(getContext(), mResults, SearchFragment.this, isMovieViewAsList);
                 mRecyclerView.setAdapter(mAdapter);
-                mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+                mRecyclerView.setLayoutManager(isMovieViewAsList ? new GridLayoutManager(getContext(), 2) : new LinearLayoutManager(getContext()));
             } else {
                 mAdapter.notifyDataSetChanged();
             }
@@ -727,11 +733,16 @@ public class SearchFragment extends Fragment implements SearchRecyclerAdapter.On
     @Override
     public void onPause() {
         super.onPause();
-        SharedPreferencesHelper.getInstance().setPreferences("search_viewMode", String.valueOf(isMovieViewAsList));
-        SharedPreferencesHelper.getInstance().setPreferences("search_query", mSearch_query.trim());
+        //SharedPreferencesHelper.getInstance().setPreferences("search_viewMode", String.valueOf(isMovieViewAsList));
+        //SharedPreferencesHelper.getInstance().setPreferences("search_query", mSearch_query.trim());
     }
 
-
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        SharedPreferencesHelper.getInstance().removePreferences("search_query");
+        SharedPreferencesHelper.getInstance().removePreferences("search_viewMode");
+    }
 
     public interface CheckKeyboardState {
         void onKeyboardStateChanged(boolean isOpen);

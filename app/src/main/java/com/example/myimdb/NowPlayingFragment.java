@@ -82,7 +82,7 @@ public class NowPlayingFragment extends Fragment implements NowPlayingRecyclerAd
 
         SharedPreferencesHelper prefs = SharedPreferencesHelper.getInstance();
         isMovieViewAsList = Boolean.valueOf(prefs.getPreferences("np_viewMode", "false"));
-        mScrollPosition = Integer.valueOf(prefs.getPreferences("np_scrollPos", "0"));
+        //mScrollPosition = Integer.valueOf(prefs.getPreferences("np_scrollPos", "0"));
 
         /*if (prefs.contains("my_state")) {
             // modify your fragment's starting state with the saved info
@@ -90,7 +90,7 @@ public class NowPlayingFragment extends Fragment implements NowPlayingRecyclerAd
 
 
 
-        
+
 
 
 
@@ -433,7 +433,7 @@ public class NowPlayingFragment extends Fragment implements NowPlayingRecyclerAd
     public void onPause() {
         super.onPause();
         SharedPreferencesHelper.getInstance().setPreferences("np_viewMode", String.valueOf(isMovieViewAsList));
-        SharedPreferencesHelper.getInstance().setPreferences("np_scrollPos", String.valueOf(mScrollPosition));
+        //SharedPreferencesHelper.getInstance().setPreferences("np_scrollPos", String.valueOf(mScrollPosition));
     }
 }
 

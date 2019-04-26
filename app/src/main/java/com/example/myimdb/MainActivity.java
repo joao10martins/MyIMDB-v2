@@ -25,6 +25,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.example.myimdb.helpers.SharedPreferencesHelper;
 import com.example.myimdb.model.Movie;
 import com.example.myimdb.model.MovieDetails;
 import com.example.myimdb.model.MovieRealm;
@@ -279,9 +280,12 @@ public class MainActivity extends AppCompatActivity implements SearchFragment.Ch
     }
 
 
-
-
-
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        //SharedPreferencesHelper.getInstance().removePreferences("search_query");
+        //SharedPreferencesHelper.getInstance().removePreferences("search_viewMode");
+    }
 
     public interface OnToolbarChanges {
         void onShareToolbar(Toolbar toolbar);
