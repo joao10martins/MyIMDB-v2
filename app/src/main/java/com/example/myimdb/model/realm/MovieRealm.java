@@ -1,4 +1,4 @@
-package com.example.myimdb.model;
+package com.example.myimdb.model.realm;
 
 import java.util.List;
 

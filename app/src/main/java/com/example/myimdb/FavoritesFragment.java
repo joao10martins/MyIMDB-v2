@@ -26,13 +26,13 @@ import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.Volley;
+import com.example.myimdb.adapters.FavoritesRecyclerAdapter;
+import com.example.myimdb.helpers.GsonRequest;
 import com.example.myimdb.helpers.SharedPreferencesHelper;
-import com.example.myimdb.model.FavoritesRealm;
-import com.example.myimdb.model.MovieDetails;
-import com.example.myimdb.model.MovieRealm;
-import com.example.myimdb.model.SearchMovieRealm;
+import com.example.myimdb.model.realm.FavoritesRealm;
+import com.example.myimdb.model.response.MovieDetails;
+import com.example.myimdb.model.realm.MovieRealm;
 
-import io.realm.Case;
 import io.realm.Realm;
 import io.realm.RealmResults;
 import io.realm.Sort;

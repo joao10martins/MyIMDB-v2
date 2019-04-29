@@ -1,8 +1,5 @@
 package com.example.myimdb;
 
-import android.content.Context;
-import android.graphics.Rect;
-import android.graphics.drawable.AnimatedImageDrawable;
 import android.graphics.drawable.AnimationDrawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -11,33 +8,16 @@ import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
-import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
-import android.view.ViewTreeObserver;
-import android.view.inputmethod.InputMethodManager;
-import android.widget.EditText;
-import android.widget.TextView;
 
-import com.example.myimdb.helpers.SharedPreferencesHelper;
-import com.example.myimdb.model.Movie;
-import com.example.myimdb.model.MovieDetails;
-import com.example.myimdb.model.MovieRealm;
+import com.example.myimdb.adapters.NowPlayingRecyclerAdapter;
 
 
-import io.realm.OrderedCollectionChangeSet;
-import io.realm.OrderedRealmCollectionChangeListener;
 import io.realm.Realm;
-import io.realm.RealmConfiguration;
-import io.realm.RealmList;
-import io.realm.RealmResults;
-import okhttp3.OkHttpClient;
 
 public class MainActivity extends AppCompatActivity implements SearchFragment.CheckKeyboardState, NowPlayingFragment.OnNowPlayingListener, FavoritesFragment.OnFavoritesListener {
 

@@ -1,4 +1,4 @@
-package com.example.myimdb;
+package com.example.myimdb.helpers;
 
 
 import com.android.volley.NetworkResponse;

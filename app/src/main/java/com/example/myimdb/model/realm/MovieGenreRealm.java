@@ -1,13 +1,18 @@
-package com.example.myimdb.model;
+package com.example.myimdb.model.realm;
 
-public class MovieGenre {
+import io.realm.RealmObject;
+import io.realm.annotations.PrimaryKey;
 
+public class MovieGenreRealm extends RealmObject {
+
+    @PrimaryKey
     private int id;
     private String name;
 
 
+    public MovieGenreRealm(){}
 
-    public MovieGenre (int id, String name) {
+    public MovieGenreRealm (int id, String name) {
         this.id = id;
         this.name = name;
     }

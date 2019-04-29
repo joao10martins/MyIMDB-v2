@@ -1,14 +1,12 @@
 package com.example.myimdb.map;
 
-import com.example.myimdb.model.Movie;
-import com.example.myimdb.model.MovieGenre;
-import com.example.myimdb.model.MovieGenreRealm;
+import com.example.myimdb.model.response.MovieGenre;
+import com.example.myimdb.model.realm.MovieGenreRealm;
 
 
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 
 import io.realm.RealmResults;

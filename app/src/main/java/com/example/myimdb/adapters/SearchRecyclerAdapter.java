@@ -1,4 +1,4 @@
-package com.example.myimdb;
+package com.example.myimdb.adapters;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -11,19 +11,15 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
-import com.example.myimdb.model.Movie;
-import com.example.myimdb.model.MovieGenre;
-import com.example.myimdb.model.MovieRealm;
-import com.example.myimdb.model.SearchMovie;
-import com.example.myimdb.model.SearchMovieRealm;
+import com.example.myimdb.R;
+import com.example.myimdb.model.response.MovieGenre;
+import com.example.myimdb.model.realm.SearchMovieRealm;
 
 import java.util.HashMap;
 import java.util.List;
 
-import io.realm.Case;
 import io.realm.OrderedRealmCollection;
 import io.realm.Realm;
-import io.realm.RealmQuery;
 import io.realm.RealmRecyclerViewAdapter;
 
 public class SearchRecyclerAdapter extends RealmRecyclerViewAdapter<SearchMovieRealm, SearchRecyclerAdapter.SearchViewHolder> {
@@ -41,10 +37,10 @@ public class SearchRecyclerAdapter extends RealmRecyclerViewAdapter<SearchMovieR
 
     //private NowPlayingListener nowPlayingListener;
 
-    SearchRecyclerAdapter(Context context,
-                          OrderedRealmCollection<SearchMovieRealm> data,
-                          OnMovieClick listener,
-                          boolean isMovieViewAsList) {
+    public SearchRecyclerAdapter(Context context,
+                                 OrderedRealmCollection<SearchMovieRealm> data,
+                                 OnMovieClick listener,
+                                 boolean isMovieViewAsList) {
         super(data, true);
         this.context = context;
         this.mListener = listener;

@@ -1,5 +1,6 @@
-package com.example.myimdb.model;
+package com.example.myimdb.model.response;
 
+import com.example.myimdb.model.response.SearchMovie;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.List;

@@ -1,35 +1,25 @@
-package com.example.myimdb.model;
+package com.example.myimdb.model.response;
 
 import java.util.List;
 
-import io.realm.RealmList;
-import io.realm.RealmObject;
-import io.realm.annotations.PrimaryKey;
-
-public class SearchMovieRealm extends RealmObject {
-    @PrimaryKey
+public class SearchMovie {
     private int id;
     private String title;
     private String poster_path;
     private String release_date;
     private double vote_average;
-    //private RealmList<Integer> genre_ids;
+    private List<Integer> genre_ids;
 
 
     private String genresDescription;
 
-    public SearchMovieRealm(){
-
-    }
-
-    public SearchMovieRealm(int id, String title, String poster_path, String release_date, String genresDescription, double vote_average){
+    public SearchMovie(int id, String title, String poster_path, String release_date, List<Integer> genre_ids, double vote_average){
         this.id = id;
         this.title = title;
         this.poster_path = poster_path;
         this.release_date = release_date;
+        this.genre_ids = genre_ids;
         this.vote_average = vote_average;
-        //this.genre_ids = genre_ids;
-        this.genresDescription = genresDescription;
     }
 
     public double getVote_average() {
@@ -80,11 +70,11 @@ public class SearchMovieRealm extends RealmObject {
         this.release_date = release_date;
     }
 
-    /*public RealmList<Integer> getGenre_ids() {
+    public List<Integer> getGenre_ids() {
         return genre_ids;
-    }*/
+    }
 
-    /*public void setGenre_ids(RealmList<Integer> genre_ids) {
+    public void setGenre_ids(List<Integer> genre_ids) {
         this.genre_ids = genre_ids;
-    }*/
+    }
 }

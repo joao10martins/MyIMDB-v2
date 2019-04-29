@@ -1,4 +1,4 @@
-package com.example.myimdb.model;
+package com.example.myimdb.model.response;
 
 public class MovieDetails {
 
@@ -12,6 +12,7 @@ public class MovieDetails {
     private double vote_average;
     private int vote_count;
     private double popularity;
+    //maybe add genres
 
     private boolean like; // variable for like/favorites.
 

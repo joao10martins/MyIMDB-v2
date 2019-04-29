@@ -3,8 +3,6 @@ package com.example.myimdb;
 
 
 import android.content.Context;
-import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -16,7 +14,6 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -28,21 +25,20 @@ import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.Volley;
+import com.example.myimdb.adapters.NowPlayingRecyclerAdapter;
+import com.example.myimdb.helpers.GsonRequest;
 import com.example.myimdb.helpers.SharedPreferencesHelper;
 import com.example.myimdb.map.MovieMapper;
-import com.example.myimdb.model.Movie;
-import com.example.myimdb.model.MovieDetails;
-import com.example.myimdb.model.MovieRealm;
-import com.example.myimdb.model.MovieResults;
+import com.example.myimdb.model.response.Movie;
+import com.example.myimdb.model.response.MovieDetails;
+import com.example.myimdb.model.realm.MovieRealm;
+import com.example.myimdb.model.response.MovieResults;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import io.realm.OrderedCollectionChangeSet;
-import io.realm.OrderedRealmCollectionChangeListener;
 import io.realm.Realm;
 import io.realm.RealmList;
-import io.realm.RealmResults;
 
 
 /**

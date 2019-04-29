@@ -1,12 +1,10 @@
-package com.example.myimdb;
+package com.example.myimdb.adapters;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -15,19 +13,12 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
-import com.example.myimdb.model.FavoritesRealm;
-import com.example.myimdb.model.Movie;
-import com.example.myimdb.model.MovieRealm;
-
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import com.example.myimdb.R;
+import com.example.myimdb.model.realm.FavoritesRealm;
 
 import io.realm.OrderedRealmCollection;
 import io.realm.Realm;
-import io.realm.RealmList;
 import io.realm.RealmRecyclerViewAdapter;
-import io.realm.RealmResults;
 
 public class FavoritesRecyclerAdapter extends RealmRecyclerViewAdapter<FavoritesRealm, FavoritesRecyclerAdapter.FavoritesViewHolder>  {
 
@@ -42,10 +33,10 @@ public class FavoritesRecyclerAdapter extends RealmRecyclerViewAdapter<Favorites
     private boolean isRemove = false;
 
 
-    FavoritesRecyclerAdapter(OrderedRealmCollection<FavoritesRealm> data,
-                              Context context,
-                              OnMovieClick listener,
-                              boolean isMovieViewAsList) {
+    public FavoritesRecyclerAdapter(OrderedRealmCollection<FavoritesRealm> data,
+                                    Context context,
+                                    OnMovieClick listener,
+                                    boolean isMovieViewAsList) {
         super(data, true);
         // Only set this if the model class has a primary key that is also a integer or long.
         // In that case, {@code getItemId(int)} must also be overridden to return the key.

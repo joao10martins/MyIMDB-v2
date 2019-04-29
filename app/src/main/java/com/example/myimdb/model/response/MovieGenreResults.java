@@ -1,6 +1,6 @@
-package com.example.myimdb.model;
+package com.example.myimdb.model.response;
 
-import com.example.myimdb.model.MovieGenre;
+import com.example.myimdb.model.response.MovieGenre;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.List;

@@ -1,13 +1,12 @@
 
 package com.example.myimdb.map;
 
-import com.example.myimdb.model.FavoritesRealm;
-import com.example.myimdb.model.Movie;
-import com.example.myimdb.model.MovieDetails;
-import com.example.myimdb.model.MovieGenreRealm;
-import com.example.myimdb.model.MovieRealm;
-import com.example.myimdb.model.SearchMovie;
-import com.example.myimdb.model.SearchMovieRealm;
+import com.example.myimdb.model.realm.FavoritesRealm;
+import com.example.myimdb.model.response.Movie;
+import com.example.myimdb.model.response.MovieDetails;
+import com.example.myimdb.model.realm.MovieRealm;
+import com.example.myimdb.model.response.SearchMovie;
+import com.example.myimdb.model.realm.SearchMovieRealm;
 
 import java.util.ArrayList;
 import java.util.List;

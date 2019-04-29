@@ -1,13 +1,13 @@
-package com.example.myimdb.model;
+package com.example.myimdb.model.response;
 
 import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
 
-public class MovieResults {
+public class PopularResults {
 
     @SerializedName("results")
-    public List<Movie> movieList;
+    public List<Popular> popularMovieList;
     @SerializedName("total_pages")
     public int totalPages;
 

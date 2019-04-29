@@ -3,7 +3,6 @@ package com.example.myimdb;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.IntentFilter;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
@@ -12,7 +11,6 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v4.view.ViewCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.GridLayoutManager;
@@ -38,19 +36,18 @@ import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.Volley;
+import com.example.myimdb.adapters.SearchRecyclerAdapter;
+import com.example.myimdb.helpers.GsonRequest;
 import com.example.myimdb.helpers.SharedPreferencesHelper;
 import com.example.myimdb.map.GenreMapper;
 import com.example.myimdb.map.MovieMapper;
-import com.example.myimdb.model.Movie;
-import com.example.myimdb.model.MovieDetails;
-import com.example.myimdb.model.MovieGenre;
-import com.example.myimdb.model.MovieGenreRealm;
-import com.example.myimdb.model.MovieGenreResults;
-import com.example.myimdb.model.MovieRealm;
-import com.example.myimdb.model.MovieResults;
-import com.example.myimdb.model.SearchMovie;
-import com.example.myimdb.model.SearchMovieRealm;
-import com.example.myimdb.model.SearchMovieResults;
+import com.example.myimdb.model.response.MovieDetails;
+import com.example.myimdb.model.response.MovieGenre;
+import com.example.myimdb.model.realm.MovieGenreRealm;
+import com.example.myimdb.model.response.MovieGenreResults;
+import com.example.myimdb.model.response.SearchMovie;
+import com.example.myimdb.model.realm.SearchMovieRealm;
+import com.example.myimdb.model.response.SearchMovieResults;
 
 
 import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEvent;
@@ -62,10 +59,8 @@ import java.util.HashMap;
 import java.util.List;
 
 import io.realm.Case;
-import io.realm.OrderedRealmCollection;
 import io.realm.Realm;
 import io.realm.RealmList;
-import io.realm.RealmQuery;
 import io.realm.RealmResults;
 import io.realm.Sort;
 

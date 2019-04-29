@@ -1,4 +1,4 @@
-package com.example.myimdb;
+package com.example.myimdb.adapters;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
@@ -10,15 +10,10 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
-import com.example.myimdb.model.Movie;
-import com.example.myimdb.model.MovieRealm;
-
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import com.example.myimdb.R;
+import com.example.myimdb.model.realm.MovieRealm;
 
 import io.realm.OrderedRealmCollection;
-import io.realm.RealmList;
 import io.realm.RealmRecyclerViewAdapter;
 
 public class NowPlayingRecyclerAdapter extends RealmRecyclerViewAdapter<MovieRealm, NowPlayingRecyclerAdapter.NowPlayingViewHolder>  {
@@ -32,10 +27,10 @@ public class NowPlayingRecyclerAdapter extends RealmRecyclerViewAdapter<MovieRea
 
     //private NowPlayingListener nowPlayingListener;
 
-    NowPlayingRecyclerAdapter(OrderedRealmCollection<MovieRealm> data,
-                              Context context,
-                              OnMovieClick listener,
-                              boolean isMovieViewAsList) {
+    public NowPlayingRecyclerAdapter(OrderedRealmCollection<MovieRealm> data,
+                                     Context context,
+                                     OnMovieClick listener,
+                                     boolean isMovieViewAsList) {
         super(data, true);
         // Only set this if the model class has a primary key that is also a integer or long.
         // In that case, {@code getItemId(int)} must also be overridden to return the key.

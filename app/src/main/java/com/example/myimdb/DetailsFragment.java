@@ -1,28 +1,15 @@
 package com.example.myimdb;
 
 
-import android.animation.AnimatorSet;
-import android.animation.ObjectAnimator;
-import android.content.res.ColorStateList;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
-import android.support.v4.content.ContextCompat;
-import android.support.v4.widget.ImageViewCompat;
-import android.support.v7.app.ActionBar;
 import android.text.method.ScrollingMovementMethod;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationSet;
-import android.view.animation.LinearInterpolator;
-import android.view.animation.RotateAnimation;
 import android.view.animation.ScaleAnimation;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -30,10 +17,7 @@ import android.widget.Toolbar;
 
 import com.bumptech.glide.Glide;
 import com.example.myimdb.map.MovieMapper;
-import com.example.myimdb.model.FavoritesRealm;
-import com.example.myimdb.model.Movie;
-import com.example.myimdb.model.MovieDetails;
-import com.example.myimdb.model.MovieRealm;
+import com.example.myimdb.model.realm.FavoritesRealm;
 
 import java.util.ArrayList;
 import java.util.List;

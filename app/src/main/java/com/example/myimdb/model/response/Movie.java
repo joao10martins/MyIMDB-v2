@@ -1,4 +1,4 @@
-package com.example.myimdb.model;
+package com.example.myimdb.model.response;
 
 import com.google.gson.annotations.Expose;
 
