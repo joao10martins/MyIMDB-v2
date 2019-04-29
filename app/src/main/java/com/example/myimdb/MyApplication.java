@@ -20,7 +20,7 @@ public class MyApplication extends Application {
         SharedPreferencesHelper.getInstance().initialize(this);
 
         SharedPreferencesHelper.getInstance().removePreferences("search_query");
-        SharedPreferencesHelper.getInstance().removePreferences("search_viewMode");
+        //SharedPreferencesHelper.getInstance().removePreferences("search_viewMode");
         // Init Stetho
         /*Stetho.initialize(
                 Stetho.newInitializerBuilder(this)

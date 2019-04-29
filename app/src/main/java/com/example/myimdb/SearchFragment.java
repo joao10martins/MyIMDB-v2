@@ -215,6 +215,7 @@ public class SearchFragment extends Fragment implements SearchRecyclerAdapter.On
             mAdapter.updateData(filteredByRating);
             mRecyclerView.setAdapter(mAdapter);
         }
+        mRecyclerView.setLayoutManager(isMovieViewAsList ? new GridLayoutManager(getContext(), 2) : new LinearLayoutManager(getContext()));
 
     }
 
@@ -738,24 +739,8 @@ public class SearchFragment extends Fragment implements SearchRecyclerAdapter.On
 
 
     public void search(){
+
         mSearch_query = query_text.getText().toString().trim();
-        mInputManager.hideSoftInputFromWindow((null == mView) ? null : mView.getWindowToken(),InputMethodManager.HIDE_NOT_ALWAYS);
-        //mRecyclerView.setLayoutManager(isMovieViewAsList ? new GridLayoutManager(getContext(), 2) : new LinearLayoutManager(getContext()));
-        if (isFilterByName && mAdapter != null){
-            RealmResults<SearchMovieRealm> filteredByName = mAdapter.getData().sort("title", Sort.ASCENDING);
-            mAdapter.updateData(filteredByName);
-            mRecyclerView.setAdapter(mAdapter);
-        }
-        if (isFilterByReleaseDate && mAdapter != null){
-            RealmResults<SearchMovieRealm> filteredByReleaseDate = mAdapter.getData().sort("release_date", Sort.DESCENDING);
-            mAdapter.updateData(filteredByReleaseDate);
-            mRecyclerView.setAdapter(mAdapter);
-        }
-        if (isFilterByRating && mAdapter != null) {
-            RealmResults<SearchMovieRealm> filteredByRating = mAdapter.getData().sort("vote_average", Sort.DESCENDING);
-            mAdapter.updateData(filteredByRating);
-            mRecyclerView.setAdapter(mAdapter);
-        }
 
         try {
             if (mSearch_query.isEmpty() || mSearch_query.trim().isEmpty())
@@ -780,6 +765,37 @@ public class SearchFragment extends Fragment implements SearchRecyclerAdapter.On
                 }
 
             }
+
+            mResults = mRealm.where(SearchMovieRealm.class)
+                    .like("title", "*"+mSearch_query.trim()+"*", Case.INSENSITIVE) // Finds any value that have 'mSearchQuery' in any position.
+                    .findAllAsync();
+            mInputManager.hideSoftInputFromWindow((null == mView) ? null : mView.getWindowToken(),InputMethodManager.HIDE_NOT_ALWAYS);
+            //mRecyclerView.setLayoutManager(isMovieViewAsList ? new GridLayoutManager(getContext(), 2) : new LinearLayoutManager(getContext()));
+            if (isFilterByName && mAdapter != null){
+                RealmResults<SearchMovieRealm> filteredByName = mAdapter.getData().sort("title", Sort.ASCENDING);
+                mAdapter.updateData(filteredByName);
+                mRecyclerView.setAdapter(mAdapter);
+            }
+            if (isFilterByReleaseDate && mAdapter != null){
+                RealmResults<SearchMovieRealm> filteredByReleaseDate = mAdapter.getData().sort("release_date", Sort.DESCENDING);
+                mAdapter.updateData(filteredByReleaseDate);
+                mRecyclerView.setAdapter(mAdapter);
+            }
+            if (isFilterByRating && mAdapter != null) {
+                RealmResults<SearchMovieRealm> filteredByRating = mAdapter.getData().sort("vote_average", Sort.DESCENDING);
+                mAdapter.updateData(filteredByRating);
+                mRecyclerView.setAdapter(mAdapter);
+            }
+
+            if (mResults != null && mRecyclerView != null){
+                mAdapter = new SearchRecyclerAdapter(getContext(), mResults, SearchFragment.this, isMovieViewAsList);
+                mRecyclerView.setAdapter(mAdapter);
+                mRecyclerView.setLayoutManager(isMovieViewAsList ? new GridLayoutManager(getContext(), 2) : new LinearLayoutManager(getContext()));
+            } else {
+                mAdapter.notifyDataSetChanged();
+            }
+
+
 
             if(mAdapter != null && mButtonClickCount > 1){
 
@@ -807,16 +823,6 @@ public class SearchFragment extends Fragment implements SearchRecyclerAdapter.On
             }
 
 
-            mResults = mRealm.where(SearchMovieRealm.class)
-                    .like("title", "*"+mSearch_query.trim()+"*", Case.INSENSITIVE) // Finds any value that have 'mSearchQuery' in any position.
-                    .findAllAsync();
-            if (mResults != null && mRecyclerView != null){
-                mAdapter = new SearchRecyclerAdapter(getContext(), mResults, SearchFragment.this, isMovieViewAsList);
-                mRecyclerView.setAdapter(mAdapter);
-                mRecyclerView.setLayoutManager(isMovieViewAsList ? new GridLayoutManager(getContext(), 2) : new LinearLayoutManager(getContext()));
-            } else {
-                mAdapter.notifyDataSetChanged();
-            }
 
             mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
                 @Override
@@ -860,6 +866,23 @@ public class SearchFragment extends Fragment implements SearchRecyclerAdapter.On
                 // If triggered by an enter key, this is the event; otherwise, this is null.
                 if (actionId == EditorInfo.IME_ACTION_SEARCH) {
                     search();
+                    /* Setting the Filter Mode if there is one */
+                    if (isFilterByName && mAdapter != null){
+                        RealmResults<SearchMovieRealm> filteredByName = mAdapter.getData().sort("title", Sort.ASCENDING);
+                        mAdapter.updateData(filteredByName);
+                        mRecyclerView.setAdapter(mAdapter);
+                    }
+                    if (isFilterByReleaseDate && mAdapter != null){
+                        RealmResults<SearchMovieRealm> filteredByReleaseDate = mAdapter.getData().sort("release_date", Sort.DESCENDING);
+                        mAdapter.updateData(filteredByReleaseDate);
+                        mRecyclerView.setAdapter(mAdapter);
+                    }
+                    if (isFilterByRating && mAdapter != null) {
+                        RealmResults<SearchMovieRealm> filteredByRating = mAdapter.getData().sort("vote_average", Sort.DESCENDING);
+                        mAdapter.updateData(filteredByRating);
+                        mRecyclerView.setAdapter(mAdapter);
+                    }
+                    mRecyclerView.setLayoutManager(isMovieViewAsList ? new GridLayoutManager(getContext(), 2) : new LinearLayoutManager(getContext()));
                     return true;
                 }
                 return false;
@@ -889,6 +912,7 @@ public class SearchFragment extends Fragment implements SearchRecyclerAdapter.On
                     mAdapter.updateData(filteredByRating);
                     mRecyclerView.setAdapter(mAdapter);
                 }
+                mRecyclerView.setLayoutManager(isMovieViewAsList ? new GridLayoutManager(getContext(), 2) : new LinearLayoutManager(getContext()));
 
                 // TODO: display correct layout on recyclerview accordingly with last viewMode
 
