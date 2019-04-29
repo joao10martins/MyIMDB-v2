@@ -7,17 +7,27 @@ public class SearchMovie {
     private String title;
     private String poster_path;
     private String release_date;
+    private double vote_average;
     private List<Integer> genre_ids;
 
 
     private String genresDescription;
 
-    public SearchMovie(int id, String title, String poster_path, String release_date, List<Integer> genre_ids){
+    public SearchMovie(int id, String title, String poster_path, String release_date, List<Integer> genre_ids, double vote_average){
         this.id = id;
         this.title = title;
         this.poster_path = poster_path;
         this.release_date = release_date;
         this.genre_ids = genre_ids;
+        this.vote_average = vote_average;
+    }
+
+    public double getVote_average() {
+        return vote_average;
+    }
+
+    public void setVote_average(double vote_average) {
+        this.vote_average = vote_average;
     }
 
     public String getGenresDescription() {

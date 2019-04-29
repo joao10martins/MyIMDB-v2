@@ -12,6 +12,7 @@ public class SearchMovieRealm extends RealmObject {
     private String title;
     private String poster_path;
     private String release_date;
+    private double vote_average;
     //private RealmList<Integer> genre_ids;
 
 
@@ -21,13 +22,22 @@ public class SearchMovieRealm extends RealmObject {
 
     }
 
-    public SearchMovieRealm(int id, String title, String poster_path, String release_date, String genresDescription){
+    public SearchMovieRealm(int id, String title, String poster_path, String release_date, String genresDescription, double vote_average){
         this.id = id;
         this.title = title;
         this.poster_path = poster_path;
         this.release_date = release_date;
+        this.vote_average = vote_average;
         //this.genre_ids = genre_ids;
         this.genresDescription = genresDescription;
+    }
+
+    public double getVote_average() {
+        return vote_average;
+    }
+
+    public void setVote_average(double vote_average) {
+        this.vote_average = vote_average;
     }
 
     public String getGenresDescription() {

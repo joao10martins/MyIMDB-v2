@@ -102,6 +102,9 @@ public class SearchFragment extends Fragment implements SearchRecyclerAdapter.On
     private boolean isFilterByName = false;
     private boolean isFilterByReleaseDate = false;
     private boolean isFilterByRating = false;
+    private CheckBox nameCheckbox;
+    private CheckBox dateCheckbox;
+    private CheckBox ratingCheckbox;
 
     private CheckKeyboardState mListener;
 
@@ -148,6 +151,14 @@ public class SearchFragment extends Fragment implements SearchRecyclerAdapter.On
         isMovieViewAsList = Boolean.valueOf(prefs.getPreferences("search_viewMode", "false"));
         mSearch_query = prefs.getPreferences("search_query", null);
 
+        /* Setting the Filter Mode if there is one */
+        isFilterByName = Boolean.valueOf(prefs.getPreferences("search_filterByName", "false"));
+        isFilterByReleaseDate = Boolean.valueOf(prefs.getPreferences("search_filterByReleaseDate", "false"));
+        isFilterByRating = Boolean.valueOf(prefs.getPreferences("search_filterByRating", "false"));
+
+
+
+
 
         // get db
         mRealm = Realm.getDefaultInstance();
@@ -166,7 +177,6 @@ public class SearchFragment extends Fragment implements SearchRecyclerAdapter.On
         mRecyclerView = mView.findViewById(R.id.rvSearch);
         query_text = mView.findViewById(R.id.search_movie);
         mInputManager = (InputMethodManager) mContext.getSystemService(Context.INPUT_METHOD_SERVICE);
-
 
 
         /*mRealm.executeTransaction(new Realm.Transaction() {
@@ -189,6 +199,23 @@ public class SearchFragment extends Fragment implements SearchRecyclerAdapter.On
 
         // Initialize the list of Genres.
         getGenreList();
+        /* Setting the Filter Mode if there is one */
+        if (isFilterByName && mAdapter != null){
+            RealmResults<SearchMovieRealm> filteredByName = mAdapter.getData().sort("title", Sort.ASCENDING);
+            mAdapter.updateData(filteredByName);
+            mRecyclerView.setAdapter(mAdapter);
+        }
+        if (isFilterByReleaseDate && mAdapter != null){
+            RealmResults<SearchMovieRealm> filteredByReleaseDate = mAdapter.getData().sort("release_date", Sort.DESCENDING);
+            mAdapter.updateData(filteredByReleaseDate);
+            mRecyclerView.setAdapter(mAdapter);
+        }
+        if (isFilterByRating && mAdapter != null) {
+            RealmResults<SearchMovieRealm> filteredByRating = mAdapter.getData().sort("vote_average", Sort.DESCENDING);
+            mAdapter.updateData(filteredByRating);
+            mRecyclerView.setAdapter(mAdapter);
+        }
+
     }
 
     @Override
@@ -239,13 +266,14 @@ public class SearchFragment extends Fragment implements SearchRecyclerAdapter.On
                     int scrollPosition = ((LinearLayoutManager) mRecyclerView.getLayoutManager()).findFirstCompletelyVisibleItemPosition();
 
 
-                    RealmResults<SearchMovieRealm> results = mRealm.where(SearchMovieRealm.class)
+                    /*RealmResults<SearchMovieRealm> results = mRealm.where(SearchMovieRealm.class)
                             .like("title", "*"+mSearch_query.trim()+"*", Case.INSENSITIVE) // Finds any value that have 'mSearchQuery' in any position.
-                            .findAllAsync();
+                            .findAllAsync();*/
                     // TODO: if there is a filter applied, change adapter
-                    mAdapter = new SearchRecyclerAdapter(getContext(), results,SearchFragment.this, isMovieViewAsList);
+                    mAdapter = new SearchRecyclerAdapter(getContext(), mAdapter.getData(),SearchFragment.this, isMovieViewAsList);
                     mRecyclerView.setAdapter(mAdapter);
-                    mAdapter.notifyDataSetChanged();
+
+
 
                     if(mRecyclerView.getLayoutManager() instanceof LinearLayoutManager) {
                         mRecyclerView.setLayoutManager(isMovieViewAsList ? new GridLayoutManager(getContext(), 2) : new LinearLayoutManager(getContext()));
@@ -257,7 +285,7 @@ public class SearchFragment extends Fragment implements SearchRecyclerAdapter.On
                 return true;
 
             case R.id.toolbar_sort:
-                // custom popup
+                /* custom popup */
                 final View dialogView = LayoutInflater.from(getContext()).inflate(R.layout.custom_sort_by_alert_dialog, (ViewGroup) getView().getRootView(), false);
                 AlertDialog.Builder builder = new AlertDialog.Builder(getContext())
                         .setCancelable(true);
@@ -265,14 +293,20 @@ public class SearchFragment extends Fragment implements SearchRecyclerAdapter.On
                 final AlertDialog alertDialog = builder.create();
                 alertDialog.show();
 
-                // Filter by NAME
-                final CheckBox nameCheckbox = dialogView.findViewById(R.id.filterByName_checkbox);
+                /* Filter by NAME */
+                nameCheckbox = dialogView.findViewById(R.id.filterByName_checkbox);
                 nameCheckbox.setChecked(isFilterByName);
                 nameCheckbox.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
 
                         isFilterByName = !isFilterByName;
+                        if (isFilterByRating || isFilterByReleaseDate){
+                            isFilterByRating = false;
+                            ratingCheckbox.setChecked(isFilterByRating);
+                            isFilterByReleaseDate = false;
+                            dateCheckbox.setChecked(isFilterByReleaseDate);
+                        }
                         if (isFilterByName && mAdapter != null){
                             RealmResults<SearchMovieRealm> filteredByName = mAdapter.getData().sort("title", Sort.ASCENDING);
                             mAdapter.updateData(filteredByName);
@@ -290,13 +324,20 @@ public class SearchFragment extends Fragment implements SearchRecyclerAdapter.On
                     }
                 });
 
-                // Filter by RELEASE DATE
-                CheckBox dateCheckbox = dialogView.findViewById(R.id.filterByDate_checkbox);
+                /* Filter by RELEASE DATE */
+                dateCheckbox = dialogView.findViewById(R.id.filterByDate_checkbox);
                 dateCheckbox.setChecked(isFilterByReleaseDate);
                 dateCheckbox.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
+
                         isFilterByReleaseDate = !isFilterByReleaseDate;
+                        if (isFilterByRating || isFilterByName){
+                            isFilterByRating = false;
+                            ratingCheckbox.setChecked(isFilterByRating);
+                            isFilterByName = false;
+                            nameCheckbox.setChecked(isFilterByName);
+                        }
                         if (isFilterByReleaseDate && mAdapter != null){
                             RealmResults<SearchMovieRealm> filteredByReleaseDate = mAdapter.getData().sort("release_date", Sort.DESCENDING);
                             mAdapter.updateData(filteredByReleaseDate);
@@ -314,13 +355,34 @@ public class SearchFragment extends Fragment implements SearchRecyclerAdapter.On
                     }
                 });
 
-                // Filter by RATING
-                CheckBox ratingCheckbox = dialogView.findViewById(R.id.filterByRating_checkbox);
+                /* Filter by RATING */
+                ratingCheckbox = dialogView.findViewById(R.id.filterByRating_checkbox);
+                ratingCheckbox.setChecked(isFilterByRating);
                 ratingCheckbox.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
+
                         isFilterByRating = !isFilterByRating;
-                        Toast.makeText(getContext(), "Rating Checkbox Clicked!", Toast.LENGTH_SHORT).show();
+                        if (isFilterByName || isFilterByReleaseDate){
+                            isFilterByName = false;
+                            nameCheckbox.setChecked(isFilterByName);
+                            isFilterByReleaseDate = false;
+                            dateCheckbox.setChecked(isFilterByReleaseDate);
+                        }
+                        if (isFilterByRating && mAdapter != null){
+                            RealmResults<SearchMovieRealm> filteredByRating = mAdapter.getData().sort("vote_average", Sort.DESCENDING);
+                            mAdapter.updateData(filteredByRating);
+                            mRecyclerView.setAdapter(mAdapter);
+                            alertDialog.dismiss();
+                        } else {
+                            // remove filter
+                            RealmResults<SearchMovieRealm> unfilteredResults = mRealm.where(SearchMovieRealm.class)
+                                    .like("title", "*"+mSearch_query.trim()+"*", Case.INSENSITIVE) // Finds any value that have 'mSearchQuery' in any position.
+                                    .findAllAsync();
+                            mAdapter.updateData(unfilteredResults);
+                            mRecyclerView.setAdapter(mAdapter);
+                            alertDialog.dismiss();
+                        }
                     }
                 });
                 return true;
@@ -678,6 +740,22 @@ public class SearchFragment extends Fragment implements SearchRecyclerAdapter.On
     public void search(){
         mSearch_query = query_text.getText().toString().trim();
         mInputManager.hideSoftInputFromWindow((null == mView) ? null : mView.getWindowToken(),InputMethodManager.HIDE_NOT_ALWAYS);
+        //mRecyclerView.setLayoutManager(isMovieViewAsList ? new GridLayoutManager(getContext(), 2) : new LinearLayoutManager(getContext()));
+        if (isFilterByName && mAdapter != null){
+            RealmResults<SearchMovieRealm> filteredByName = mAdapter.getData().sort("title", Sort.ASCENDING);
+            mAdapter.updateData(filteredByName);
+            mRecyclerView.setAdapter(mAdapter);
+        }
+        if (isFilterByReleaseDate && mAdapter != null){
+            RealmResults<SearchMovieRealm> filteredByReleaseDate = mAdapter.getData().sort("release_date", Sort.DESCENDING);
+            mAdapter.updateData(filteredByReleaseDate);
+            mRecyclerView.setAdapter(mAdapter);
+        }
+        if (isFilterByRating && mAdapter != null) {
+            RealmResults<SearchMovieRealm> filteredByRating = mAdapter.getData().sort("vote_average", Sort.DESCENDING);
+            mAdapter.updateData(filteredByRating);
+            mRecyclerView.setAdapter(mAdapter);
+        }
 
         try {
             if (mSearch_query.isEmpty() || mSearch_query.trim().isEmpty())
@@ -793,7 +871,27 @@ public class SearchFragment extends Fragment implements SearchRecyclerAdapter.On
         btnSearch.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                //mRecyclerView.setLayoutManager(isMovieViewAsList ? new GridLayoutManager(getContext(), 2) : new LinearLayoutManager(getContext()));
                 search();
+                /* Setting the Filter Mode if there is one */
+                if (isFilterByName && mAdapter != null){
+                    RealmResults<SearchMovieRealm> filteredByName = mAdapter.getData().sort("title", Sort.ASCENDING);
+                    mAdapter.updateData(filteredByName);
+                    mRecyclerView.setAdapter(mAdapter);
+                }
+                if (isFilterByReleaseDate && mAdapter != null){
+                    RealmResults<SearchMovieRealm> filteredByReleaseDate = mAdapter.getData().sort("release_date", Sort.DESCENDING);
+                    mAdapter.updateData(filteredByReleaseDate);
+                    mRecyclerView.setAdapter(mAdapter);
+                }
+                if (isFilterByRating && mAdapter != null) {
+                    RealmResults<SearchMovieRealm> filteredByRating = mAdapter.getData().sort("vote_average", Sort.DESCENDING);
+                    mAdapter.updateData(filteredByRating);
+                    mRecyclerView.setAdapter(mAdapter);
+                }
+
+                // TODO: display correct layout on recyclerview accordingly with last viewMode
+
             }
         });
     }
@@ -816,6 +914,11 @@ public class SearchFragment extends Fragment implements SearchRecyclerAdapter.On
         if (mSearch_query != null){
             SharedPreferencesHelper.getInstance().setPreferences("search_viewMode", String.valueOf(isMovieViewAsList));
             SharedPreferencesHelper.getInstance().setPreferences("search_query", mSearch_query.trim());
+
+            /* Save filters */
+            SharedPreferencesHelper.getInstance().setPreferences("search_filterByName", String.valueOf(isFilterByName));
+            SharedPreferencesHelper.getInstance().setPreferences("search_filterByReleaseDate", String.valueOf(isFilterByReleaseDate));
+            SharedPreferencesHelper.getInstance().setPreferences("search_filterByRating", String.valueOf(isFilterByRating));
         }
 
     }

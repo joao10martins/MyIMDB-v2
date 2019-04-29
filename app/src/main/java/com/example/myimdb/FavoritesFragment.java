@@ -8,6 +8,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBar;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -17,6 +18,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -28,9 +30,12 @@ import com.example.myimdb.helpers.SharedPreferencesHelper;
 import com.example.myimdb.model.FavoritesRealm;
 import com.example.myimdb.model.MovieDetails;
 import com.example.myimdb.model.MovieRealm;
+import com.example.myimdb.model.SearchMovieRealm;
 
+import io.realm.Case;
 import io.realm.Realm;
 import io.realm.RealmResults;
+import io.realm.Sort;
 
 public class FavoritesFragment extends Fragment implements FavoritesRecyclerAdapter.OnMovieClick, SearchFragment.CheckKeyboardState {
 
@@ -50,6 +55,12 @@ public class FavoritesFragment extends Fragment implements FavoritesRecyclerAdap
     private FavoritesRecyclerAdapter mAdapter;
     private OnFavoritesListener mListener;
     private boolean isFavoritesFromSearch;
+    private boolean isFilterByName = false;
+    private boolean isFilterByReleaseDate = false;
+    private boolean isFilterByRating = false;
+    private CheckBox nameCheckbox;
+    private CheckBox dateCheckbox;
+    private CheckBox ratingCheckbox;
 
     /* Realm */
     Realm mRealm;
@@ -68,6 +79,11 @@ public class FavoritesFragment extends Fragment implements FavoritesRecyclerAdap
 
         SharedPreferencesHelper prefs = SharedPreferencesHelper.getInstance();
         isMovieViewAsList = Boolean.valueOf(prefs.getPreferences("fav_viewMode", "false"));
+
+        /* Setting the Filter Mode if there is one */
+        isFilterByName = Boolean.valueOf(prefs.getPreferences("fav_filterByName", "false"));
+        isFilterByReleaseDate = Boolean.valueOf(prefs.getPreferences("fav_filterByReleaseDate", "false"));
+        isFilterByRating = Boolean.valueOf(prefs.getPreferences("fav_filterByRating", "false"));
 
 
         mRealm = Realm.getDefaultInstance();
@@ -98,6 +114,22 @@ public class FavoritesFragment extends Fragment implements FavoritesRecyclerAdap
         mRating = mView.findViewById(R.id.fav_grid_layout_rating);*/
 
         getFavorites();
+        /* Setting the Filter Mode if there is one */
+        if (isFilterByName && mAdapter != null){
+            RealmResults<FavoritesRealm> filteredByName = mAdapter.getData().sort("title", Sort.ASCENDING);
+            mAdapter.updateData(filteredByName);
+            mRecyclerView.setAdapter(mAdapter);
+        }
+        if (isFilterByReleaseDate && mAdapter != null){
+            RealmResults<FavoritesRealm> filteredByReleaseDate = mAdapter.getData().sort("release_date", Sort.DESCENDING);
+            mAdapter.updateData(filteredByReleaseDate);
+            mRecyclerView.setAdapter(mAdapter);
+        }
+        if (isFilterByRating && mAdapter != null) {
+            RealmResults<FavoritesRealm> filteredByRating = mAdapter.getData().sort("vote_average", Sort.DESCENDING);
+            mAdapter.updateData(filteredByRating);
+            mRecyclerView.setAdapter(mAdapter);
+        }
 
     }
 
@@ -156,6 +188,103 @@ public class FavoritesFragment extends Fragment implements FavoritesRecyclerAdap
                 //return true;
             case R.id.toolbar_sort:
                 //custom popup
+                final View dialogView = LayoutInflater.from(getContext()).inflate(R.layout.custom_sort_by_alert_dialog, (ViewGroup) getView().getRootView(), false);
+                AlertDialog.Builder builder = new AlertDialog.Builder(getContext())
+                        .setCancelable(true);
+                builder.setView(dialogView);
+                final AlertDialog alertDialog = builder.create();
+                alertDialog.show();
+
+                /* Filter by NAME */
+                nameCheckbox = dialogView.findViewById(R.id.filterByName_checkbox);
+                nameCheckbox.setChecked(isFilterByName);
+                nameCheckbox.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+
+                        isFilterByName = !isFilterByName;
+                        if (isFilterByRating || isFilterByReleaseDate){
+                            isFilterByRating = false;
+                            ratingCheckbox.setChecked(isFilterByRating);
+                            isFilterByReleaseDate = false;
+                            dateCheckbox.setChecked(isFilterByReleaseDate);
+                        }
+                        if (isFilterByName && mAdapter != null){
+                            RealmResults<FavoritesRealm> filteredByName = mAdapter.getData().sort("title", Sort.ASCENDING);
+                            mAdapter.updateData(filteredByName);
+                            mRecyclerView.setAdapter(mAdapter);
+                            alertDialog.dismiss();
+                        } else {
+                            // remove filter
+                            RealmResults<FavoritesRealm> unfilteredResults = mRealm.where(FavoritesRealm.class)
+                                    .findAllAsync();
+                            mAdapter.updateData(unfilteredResults);
+                            mRecyclerView.setAdapter(mAdapter);
+                            alertDialog.dismiss();
+                        }
+                    }
+                });
+
+                /* Filter by RELEASE DATE */
+                dateCheckbox = dialogView.findViewById(R.id.filterByDate_checkbox);
+                dateCheckbox.setChecked(isFilterByReleaseDate);
+                dateCheckbox.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+
+                        isFilterByReleaseDate = !isFilterByReleaseDate;
+                        if (isFilterByRating || isFilterByName){
+                            isFilterByRating = false;
+                            ratingCheckbox.setChecked(isFilterByRating);
+                            isFilterByName = false;
+                            nameCheckbox.setChecked(isFilterByName);
+                        }
+                        if (isFilterByReleaseDate && mAdapter != null){
+                            RealmResults<FavoritesRealm> filteredByReleaseDate = mAdapter.getData().sort("release_date", Sort.DESCENDING);
+                            mAdapter.updateData(filteredByReleaseDate);
+                            mRecyclerView.setAdapter(mAdapter);
+                            alertDialog.dismiss();
+                        } else {
+                            // remove filter
+                            RealmResults<FavoritesRealm> unfilteredResults = mRealm.where(FavoritesRealm.class)
+                                    .findAllAsync();
+                            mAdapter.updateData(unfilteredResults);
+                            mRecyclerView.setAdapter(mAdapter);
+                            alertDialog.dismiss();
+                        }
+                    }
+                });
+
+                /* Filter by RATING */
+                ratingCheckbox = dialogView.findViewById(R.id.filterByRating_checkbox);
+                ratingCheckbox.setChecked(isFilterByRating);
+                ratingCheckbox.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+
+                        isFilterByRating = !isFilterByRating;
+                        if (isFilterByName || isFilterByReleaseDate){
+                            isFilterByName = false;
+                            nameCheckbox.setChecked(isFilterByName);
+                            isFilterByReleaseDate = false;
+                            dateCheckbox.setChecked(isFilterByReleaseDate);
+                        }
+                        if (isFilterByRating && mAdapter != null){
+                            RealmResults<FavoritesRealm> filteredByRating = mAdapter.getData().sort("vote_average", Sort.DESCENDING);
+                            mAdapter.updateData(filteredByRating);
+                            mRecyclerView.setAdapter(mAdapter);
+                            alertDialog.dismiss();
+                        } else {
+                            // remove filter
+                            RealmResults<FavoritesRealm> unfilteredResults = mRealm.where(FavoritesRealm.class)
+                                    .findAllAsync();
+                            mAdapter.updateData(unfilteredResults);
+                            mRecyclerView.setAdapter(mAdapter);
+                            alertDialog.dismiss();
+                        }
+                    }
+                });
+                return true;
         }
 
         return super.onOptionsItemSelected(item);
@@ -272,6 +401,10 @@ public class FavoritesFragment extends Fragment implements FavoritesRecyclerAdap
     public void onPause() {
         super.onPause();
         SharedPreferencesHelper.getInstance().setPreferences("fav_viewMode", String.valueOf(isMovieViewAsList));
+        /* Save filters */
+        SharedPreferencesHelper.getInstance().setPreferences("fav_filterByName", String.valueOf(isFilterByName));
+        SharedPreferencesHelper.getInstance().setPreferences("fav_filterByReleaseDate", String.valueOf(isFilterByReleaseDate));
+        SharedPreferencesHelper.getInstance().setPreferences("fav_filterByRating", String.valueOf(isFilterByRating));
     }
 
 
