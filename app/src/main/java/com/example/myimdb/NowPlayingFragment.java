@@ -8,6 +8,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -60,6 +61,7 @@ public class NowPlayingFragment extends Fragment implements NowPlayingRecyclerAd
     private int mTotalPages;
     private boolean isMovieViewAsList = false;
     private int mScrollPosition;
+    private TabLayout mNowPlayingTabs;
 
     private View mView;
 
@@ -82,11 +84,7 @@ public class NowPlayingFragment extends Fragment implements NowPlayingRecyclerAd
 
         SharedPreferencesHelper prefs = SharedPreferencesHelper.getInstance();
         isMovieViewAsList = Boolean.valueOf(prefs.getPreferences("np_viewMode", "false"));
-        //mScrollPosition = Integer.valueOf(prefs.getPreferences("np_scrollPos", "0"));
 
-        /*if (prefs.contains("my_state")) {
-            // modify your fragment's starting state with the saved info
-        }*/
 
 
 
@@ -116,9 +114,13 @@ public class NowPlayingFragment extends Fragment implements NowPlayingRecyclerAd
         mContext = getActivity();
 
         mRecyclerView = mView.findViewById(R.id.rv_NowPlaying);
+        mNowPlayingTabs = mView.findViewById(R.id.tab_layout_menu);
+
 
         getNowPlaying();
     }
+
+
 
 
     @Override
@@ -198,6 +200,22 @@ public class NowPlayingFragment extends Fragment implements NowPlayingRecyclerAd
 
     private void getNowPlaying(){
 
+        mNowPlayingTabs.addOnTabSelectedListener(new TabLayout.BaseOnTabSelectedListener() {
+            @Override
+            public void onTabSelected(TabLayout.Tab tab) {
+                setCurrenTabDisplay(tab.getPosition());
+            }
+
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {
+
+            }
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {
+
+            }
+        });
         mRequestQueue = Volley.newRequestQueue(getActivity().getApplicationContext());
         mListCount = 1;
 
@@ -254,6 +272,19 @@ public class NowPlayingFragment extends Fragment implements NowPlayingRecyclerAd
 
     }
 
+    private void setCurrenTabDisplay(int tabPosition) {
+        switch (tabPosition) {
+            case 0 :
+                //display popular
+                break;
+            case 1 :
+                //display top rated
+                break;
+            case 2:
+                //display upcoming
+                break;
+        }
+    }
 
 
     private Response.Listener<MovieResults> createMyReqSuccessListener() {
