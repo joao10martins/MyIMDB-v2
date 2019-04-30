@@ -27,13 +27,17 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.Volley;
 import com.example.myimdb.adapters.NowPlayingRecyclerAdapter;
+import com.example.myimdb.adapters.PopularRecyclerAdapter;
 import com.example.myimdb.helpers.GsonRequest;
 import com.example.myimdb.helpers.SharedPreferencesHelper;
 import com.example.myimdb.map.MovieMapper;
+import com.example.myimdb.model.realm.PopularRealm;
 import com.example.myimdb.model.response.Movie;
 import com.example.myimdb.model.response.MovieDetails;
 import com.example.myimdb.model.realm.MovieRealm;
 import com.example.myimdb.model.response.MovieResults;
+import com.example.myimdb.model.response.Popular;
+import com.example.myimdb.model.response.PopularResults;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -45,13 +49,13 @@ import io.realm.RealmList;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class NowPlayingFragment extends Fragment implements NowPlayingRecyclerAdapter.OnMovieClick {
+public class NowPlayingFragment extends Fragment implements PopularRecyclerAdapter.OnMovieClick {
     private OnNowPlayingListener mListener;
-    private List<Movie> nowPlayingList = new ArrayList<>();
+    private List<Popular> popularList = new ArrayList<>();
     private Context mContext;
 
     private RecyclerView mRecyclerView;
-    private NowPlayingRecyclerAdapter mAdapter;
+    private PopularRecyclerAdapter mAdapter;
     private int mListCount;
     private RequestQueue mRequestQueue;
     private String mUrl;
@@ -159,8 +163,10 @@ public class NowPlayingFragment extends Fragment implements NowPlayingRecyclerAd
 
                 mScrollPosition = ((LinearLayoutManager) mRecyclerView.getLayoutManager()).findFirstCompletelyVisibleItemPosition();
 
-                // change between List and Grid layout(default: Grid)
-                mAdapter = new NowPlayingRecyclerAdapter(mRealm.where(MovieRealm.class).findAllAsync(), getContext(), NowPlayingFragment.this, isMovieViewAsList);
+                /* Change between List and Grid layout(default: Grid) */
+                /*TODO: check type of RecyclerAdapter(booleans) and change viewMode accordingly(might not be needed)
+                  maybe having 3 adapters(mPopular, mTopRated, mUpcoming) is a better approach than creating a new Adapter everytime. */
+                mAdapter = new PopularRecyclerAdapter(mRealm.where(PopularRealm.class).findAllAsync(), getContext(), NowPlayingFragment.this, isMovieViewAsList);
                 mRecyclerView.setAdapter(mAdapter);
                 rvItemAnim();
                 mAdapter.notifyDataSetChanged();
@@ -218,20 +224,20 @@ public class NowPlayingFragment extends Fragment implements NowPlayingRecyclerAd
         mListCount = 1;
 
         try {
-            if (nowPlayingList.size() == 0 || mRealm.where(MovieRealm.class).findAllAsync() == null) { // Executes if it is being called for the first time(has no data yet)
+            if (popularList.size() == 0 || mRealm.where(PopularRealm.class).findAllAsync() == null) { // Executes if it is being called for the first time(has no data yet)
                 mUrl = "https://api.themoviedb.org/3/movie/now_playing?api_key=07d93ad59393a99fe6bc8c1b8f0de23b&language=en-US&page=1";
 
-                GsonRequest<MovieResults> request = new GsonRequest<>(mUrl,
-                        MovieResults.class,
-                        createMyReqSuccessListener(),
+                GsonRequest<PopularResults> request = new GsonRequest<>(mUrl,
+                        PopularResults.class,
+                        getPopularSuccessListener(),
                         getErrorListener());
 
                 mRequestQueue.add(request);
                 ++mListCount;
             }
 
-            if (mRecyclerView != null && mRealm.where(MovieRealm.class).findAllAsync() != null) { // Executes in case data already exists, to avoid making unnecessary requests to the API
-                mAdapter = new NowPlayingRecyclerAdapter(mRealm.where(MovieRealm.class).findAllAsync(), getContext(), NowPlayingFragment.this, isMovieViewAsList);
+            if (mRecyclerView != null && mRealm.where(PopularRealm.class).findAllAsync() != null) { // Executes in case data already exists, to avoid making unnecessary requests to the API
+                mAdapter = new PopularRecyclerAdapter(mRealm.where(PopularRealm.class).findAllAsync(), getContext(), NowPlayingFragment.this, isMovieViewAsList);
                 //mAdapter = new NowPlayingRecyclerAdapter(getContext(), nowPlayingList, NowPlayingFragment.this);
                 mRecyclerView.setAdapter(mAdapter);
                 rvItemAnim();
@@ -252,9 +258,9 @@ public class NowPlayingFragment extends Fragment implements NowPlayingRecyclerAd
                             } else {
                                 mUrl = "https://api.themoviedb.org/3/movie/now_playing?api_key=07d93ad59393a99fe6bc8c1b8f0de23b&language=en-US&page=" + mListCount;
 
-                                GsonRequest<MovieResults> request = new GsonRequest<>(mUrl,
-                                        MovieResults.class,
-                                        createMyReqSuccessListener(),
+                                GsonRequest<PopularResults> request = new GsonRequest<>(mUrl,
+                                        PopularResults.class,
+                                        getPopularSuccessListener(),
                                         getErrorListener());
 
                                 mRequestQueue.add(request);
@@ -285,14 +291,14 @@ public class NowPlayingFragment extends Fragment implements NowPlayingRecyclerAd
     }
 
 
-    private Response.Listener<MovieResults> createMyReqSuccessListener() {
-        return new Response.Listener<MovieResults>() {
+    private Response.Listener<PopularResults> getPopularSuccessListener() {
+        return new Response.Listener<PopularResults>() {
             @Override
-            public void onResponse(MovieResults response) {
+            public void onResponse(PopularResults response) {
                 try {
                     mTotalPages = response.totalPages;
-                    nowPlayingList.addAll(response.movieList);
-                    saveMovieListToDb(nowPlayingList); // PLEASE WORK ༼ つ ◕_◕ ༽つ
+                    popularList.addAll(response.popularMovieList);
+                    savePopularMovieListToDb(popularList); // PLEASE WORK ༼ つ ◕_◕ ༽つ
                     if (mAdapter == null) {
                         mAdapter = new NowPlayingRecyclerAdapter(mRealm.where(MovieRealm.class).findAllAsync(), getContext(), NowPlayingFragment.this, isMovieViewAsList);
                         //mAdapter = new NowPlayingRecyclerAdapter(getContext(), nowPlayingList, NowPlayingFragment.this);
@@ -317,9 +323,9 @@ public class NowPlayingFragment extends Fragment implements NowPlayingRecyclerAd
                                 } else {
                                     mUrl = "https://api.themoviedb.org/3/movie/now_playing?api_key=07d93ad59393a99fe6bc8c1b8f0de23b&language=en-US&page=" + mListCount;
 
-                                    GsonRequest<MovieResults> request = new GsonRequest<>(mUrl,
-                                            MovieResults.class,
-                                            createMyReqSuccessListener(),
+                                    GsonRequest<PopularResults> request = new GsonRequest<>(mUrl,
+                                            PopularResults.class,
+                                            getPopularSuccessListener(),
                                             getErrorListener());
 
                                     mRequestQueue.add(request);
@@ -432,7 +438,7 @@ public class NowPlayingFragment extends Fragment implements NowPlayingRecyclerAd
     }
 
     // ༼ つ ◕_◕ ༽つ PLS WORK WITHOUT PROBLEMS ༼ つ ◕_◕ ༽つ
-    private void saveMovieListToDb(final List<Movie> list){
+    private void savePopularMovieListToDb(final List<Popular> list){
         // TEST
         final MovieMapper movieMapper = new MovieMapper();
 
@@ -440,8 +446,8 @@ public class NowPlayingFragment extends Fragment implements NowPlayingRecyclerAd
             realm.executeTransactionAsync(new Realm.Transaction() {
                 @Override
                 public void execute(Realm realm) {
-                    List<MovieRealm> movies = movieMapper.toMovieRealmList(list);
-                    RealmList<MovieRealm> _movies = new RealmList<>();
+                    List<PopularRealm> movies = movieMapper.toPopularRealmList(list);
+                    RealmList<PopularRealm> _movies = new RealmList<>();
                     _movies.addAll(movies);
                     realm.insertOrUpdate(_movies);
                 }

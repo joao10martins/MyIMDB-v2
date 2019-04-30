@@ -2,9 +2,11 @@
 package com.example.myimdb.map;
 
 import com.example.myimdb.model.realm.FavoritesRealm;
+import com.example.myimdb.model.realm.PopularRealm;
 import com.example.myimdb.model.response.Movie;
 import com.example.myimdb.model.response.MovieDetails;
 import com.example.myimdb.model.realm.MovieRealm;
+import com.example.myimdb.model.response.Popular;
 import com.example.myimdb.model.response.SearchMovie;
 import com.example.myimdb.model.realm.SearchMovieRealm;
 
@@ -16,6 +18,7 @@ import io.realm.RealmList;
 
 public class MovieMapper {
     List<MovieRealm> myMovieRealmList = new ArrayList<>();
+    List<PopularRealm> myPopularRealmList = new ArrayList<>();
     List<SearchMovieRealm> mySearchRealmList = new ArrayList<>();
 
     //RealmList<Integer> movieGenres = new RealmList<>();
@@ -37,6 +40,23 @@ public class MovieMapper {
             myMovieRealmList.add(myMovieRealm);
         }
         return myMovieRealmList;
+    }
+
+
+
+    public List<PopularRealm> toPopularRealmList(List<Popular> responseList){
+        for (Popular movie : responseList){
+            PopularRealm myPopularRealm = new PopularRealm(
+                    movie.getId(),
+                    movie.getVote_average(),
+                    movie.getTitle(),
+                    movie.getPopularity(),
+                    movie.getPoster_path(),
+                    //movie.getGenre_ids(), //error here (types) //TODO
+                    movie.getRelease_date());
+            myPopularRealmList.add(myPopularRealm);
+        }
+        return myPopularRealmList;
     }
 
 

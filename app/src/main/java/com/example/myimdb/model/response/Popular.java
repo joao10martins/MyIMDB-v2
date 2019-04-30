@@ -6,16 +6,18 @@ public class Popular {
     private String title;
     private double popularity;
     private String poster_path;
-    private int[] genre_ids; // maybe change to Details
+    private String release_date;
+    //private int[] genre_ids; // maybe change to Details
 
 
-    public Popular(int id, double vote_average, String title, double popularity, String poster_path, int[] genre_ids) {
+    public Popular(int id, double vote_average, String title, double popularity, String poster_path, String release_date) {
         this.id = id;
         this.vote_average = vote_average;
         this.title = title;
         this.popularity = popularity;
         this.poster_path = poster_path;
-        this.genre_ids = genre_ids;
+        this.release_date = release_date;
+        //this.genre_ids = genre_ids;
     }
 
     public int getId() {
@@ -58,11 +60,19 @@ public class Popular {
         this.poster_path = poster_path;
     }
 
-    public int[] getGenre_ids() {
+    public String getRelease_date() {
+        return release_date;
+    }
+
+    public void setRelease_date(String release_date) {
+        this.release_date = release_date;
+    }
+
+    /*public int[] getGenre_ids() {
         return genre_ids;
     }
 
     public void setGenre_ids(int[] genre_ids) {
         this.genre_ids = genre_ids;
-    }
+    }*/
 }
