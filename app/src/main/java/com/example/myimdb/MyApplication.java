@@ -20,6 +20,10 @@ public class MyApplication extends Application {
         SharedPreferencesHelper.getInstance().initialize(this);
 
         SharedPreferencesHelper.getInstance().removePreferences("search_query");
+
+        SharedPreferencesHelper.getInstance().removePreferences("np_popularTab");
+        SharedPreferencesHelper.getInstance().removePreferences("np_topRatedTab");
+        SharedPreferencesHelper.getInstance().removePreferences("np_upcomingTab");
         //SharedPreferencesHelper.getInstance().removePreferences("search_viewMode");
         // Init Stetho
         /*Stetho.initialize(

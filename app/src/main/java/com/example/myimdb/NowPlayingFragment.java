@@ -28,34 +28,40 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.Volley;
 import com.example.myimdb.adapters.NowPlayingRecyclerAdapter;
 import com.example.myimdb.adapters.PopularRecyclerAdapter;
+import com.example.myimdb.adapters.TopRatedRecyclerAdapter;
 import com.example.myimdb.helpers.GsonRequest;
 import com.example.myimdb.helpers.SharedPreferencesHelper;
 import com.example.myimdb.map.MovieMapper;
 import com.example.myimdb.model.realm.PopularRealm;
+import com.example.myimdb.model.realm.TopRatedRealm;
 import com.example.myimdb.model.response.Movie;
 import com.example.myimdb.model.response.MovieDetails;
 import com.example.myimdb.model.realm.MovieRealm;
 import com.example.myimdb.model.response.MovieResults;
 import com.example.myimdb.model.response.Popular;
 import com.example.myimdb.model.response.PopularResults;
+import com.example.myimdb.model.response.TopRated;
+import com.example.myimdb.model.response.TopRatedResults;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import io.realm.Realm;
 import io.realm.RealmList;
+import io.realm.RealmResults;
 
 
 /**
  * A simple {@link Fragment} subclass.
  */
-public class NowPlayingFragment extends Fragment implements PopularRecyclerAdapter.OnMovieClick {
+public class NowPlayingFragment extends Fragment implements PopularRecyclerAdapter.OnMovieClick, TopRatedRecyclerAdapter.OnMovieClick {
     private OnNowPlayingListener mListener;
     private List<Popular> popularList = new ArrayList<>();
+    private List<TopRated> topRatedList = new ArrayList<>();
+    //private List<Upcoming> upcomingList = new ArrayList<>();
     private Context mContext;
 
     private RecyclerView mRecyclerView;
-    private PopularRecyclerAdapter mAdapter;
     private int mListCount;
     private RequestQueue mRequestQueue;
     private String mUrl;
@@ -63,6 +69,16 @@ public class NowPlayingFragment extends Fragment implements PopularRecyclerAdapt
     private boolean isMovieViewAsList = false;
     private int mScrollPosition;
     private TabLayout mNowPlayingTabs;
+
+    /* TabLayout Menu */
+    private boolean isPopular = false;
+    private boolean isTopRated = false;
+    private boolean isUpcoming = false;
+
+    /* Adapters */
+    private PopularRecyclerAdapter mPopularAdapter;
+    private TopRatedRecyclerAdapter mTopRatedAdapter;
+    //private UpcomingRecyclerAdapter mUpcomingAdapter;
 
     private View mView;
 
@@ -85,23 +101,27 @@ public class NowPlayingFragment extends Fragment implements PopularRecyclerAdapt
 
         SharedPreferencesHelper prefs = SharedPreferencesHelper.getInstance();
         isMovieViewAsList = Boolean.valueOf(prefs.getPreferences("np_viewMode", "false"));
-
-
-
-
-
-
+        isPopular = Boolean.valueOf(prefs.getPreferences("np_popularTab", "false"));
+        isTopRated = Boolean.valueOf(prefs.getPreferences("np_topRatedTab", "false"));
+        isUpcoming = Boolean.valueOf(prefs.getPreferences("np_upcomingTab", "false"));
 
 
 
         mRealm = Realm.getDefaultInstance();
-        /*mRealm.executeTransaction(new Realm.Transaction() {
+        mRealm.executeTransaction(new Realm.Transaction() {
             @Override
             public void execute(Realm realm) {
-                RealmResults<MovieRealm> rows = realm.where(MovieRealm.class).findAll();
-                rows.deleteAllFromRealm();
+                RealmResults<MovieRealm> movieRealm = realm.where(MovieRealm.class).findAll();
+                RealmResults<PopularRealm> popularRealm = realm.where(PopularRealm.class).findAll();
+                movieRealm.deleteAllFromRealm();
+                popularRealm.deleteAllFromRealm();
             }
-        });*/
+        });
+
+        if (!isPopular){
+            isPopular = !isPopular;
+            getPopular();
+        }
 
 
         return mView;
@@ -118,7 +138,21 @@ public class NowPlayingFragment extends Fragment implements PopularRecyclerAdapt
         mNowPlayingTabs = mView.findViewById(R.id.tab_layout_menu);
 
 
-        getNowPlaying();
+        getNowPlaying(); // TabLayout Actions
+        if (isPopular) {
+            getPopular(); // Initiate first
+        }
+        if (isTopRated) {
+            getTopRated(); // Initiate first
+            mNowPlayingTabs.getTabAt(1).select();
+        }
+        if (isUpcoming) {
+            //getUpcoming(); // Initiate first
+        }
+
+
+
+
     }
 
 
@@ -166,10 +200,26 @@ public class NowPlayingFragment extends Fragment implements PopularRecyclerAdapt
                 /* Change between List and Grid layout(default: Grid) */
                 /*TODO: check type of RecyclerAdapter(booleans) and change viewMode accordingly(might not be needed)
                   maybe having 3 adapters(mPopular, mTopRated, mUpcoming) is a better approach than creating a new Adapter everytime. */
-                mAdapter = new PopularRecyclerAdapter(mRealm.where(PopularRealm.class).findAllAsync(), getContext(), NowPlayingFragment.this, isMovieViewAsList);
-                mRecyclerView.setAdapter(mAdapter);
-                rvItemAnim();
-                mAdapter.notifyDataSetChanged();
+                if (isPopular) {
+                    mPopularAdapter = new PopularRecyclerAdapter(mPopularAdapter.getData(), getContext(), NowPlayingFragment.this, isMovieViewAsList);
+                    mRecyclerView.setAdapter(mPopularAdapter);
+                    rvItemAnim();
+                    mPopularAdapter.notifyDataSetChanged();
+                }
+                if (isTopRated) {
+                    mTopRatedAdapter = new TopRatedRecyclerAdapter(mTopRatedAdapter.getData(), getContext(), NowPlayingFragment.this, isMovieViewAsList);
+                    mRecyclerView.setAdapter(mTopRatedAdapter);
+                    rvItemAnim();
+                    mTopRatedAdapter.notifyDataSetChanged();
+                }
+                if (isUpcoming) {
+                    /*mUpcomingAdapter = new UpcomingRecyclerAdapter(mUpcomingAdapter.getData(), getContext(), NowPlayingFragment.this, isMovieViewAsList);
+                    mRecyclerView.setAdapter(mUpcomingAdapter);
+                    rvItemAnim();
+                    mPopularAdapter.notifyDataSetChanged();*/
+                }
+
+
 
                 if(mRecyclerView.getLayoutManager() instanceof GridLayoutManager) {
                     mRecyclerView.setLayoutManager(isMovieViewAsList ? new LinearLayoutManager(getContext()) : new GridLayoutManager(getContext(), 3));
@@ -202,12 +252,11 @@ public class NowPlayingFragment extends Fragment implements PopularRecyclerAdapt
     }
 
 
-    private void getNowPlaying(){
-
+    private void getNowPlaying() {
         mNowPlayingTabs.addOnTabSelectedListener(new TabLayout.BaseOnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
-                setCurrenTabDisplay(tab.getPosition());
+                setCurrentTabDisplay(tab.getPosition());
             }
 
             @Override
@@ -220,12 +269,50 @@ public class NowPlayingFragment extends Fragment implements PopularRecyclerAdapt
 
             }
         });
+    }
+
+    private void setCurrentTabDisplay(int tabPosition) {
+        switch (tabPosition) {
+            case 0 :
+                /* display popular */
+                isPopular = !isPopular;
+                if (isPopular) {
+                    isTopRated = false;
+                    isUpcoming = false;
+                    getPopular();
+                }
+                break;
+            case 1 :
+                /* display top rated */
+                isTopRated = !isTopRated;
+                if (isTopRated) {
+                    isPopular = false;
+                    isUpcoming = false;
+                    getTopRated();
+                }
+                break;
+            case 2:
+                /* display upcoming */
+                isUpcoming = !isUpcoming;
+                if (isUpcoming) {
+                    isPopular = false;
+                    isTopRated = false;
+                    //getUpcoming();
+                }
+                break;
+        }
+    }
+
+
+    private void getPopular(){
+
+
         mRequestQueue = Volley.newRequestQueue(getActivity().getApplicationContext());
         mListCount = 1;
 
         try {
             if (popularList.size() == 0 || mRealm.where(PopularRealm.class).findAllAsync() == null) { // Executes if it is being called for the first time(has no data yet)
-                mUrl = "https://api.themoviedb.org/3/movie/now_playing?api_key=07d93ad59393a99fe6bc8c1b8f0de23b&language=en-US&page=1";
+                mUrl = "https://api.themoviedb.org/3/movie/popular?api_key=07d93ad59393a99fe6bc8c1b8f0de23b&language=en-US&page=1";
 
                 GsonRequest<PopularResults> request = new GsonRequest<>(mUrl,
                         PopularResults.class,
@@ -237,13 +324,13 @@ public class NowPlayingFragment extends Fragment implements PopularRecyclerAdapt
             }
 
             if (mRecyclerView != null && mRealm.where(PopularRealm.class).findAllAsync() != null) { // Executes in case data already exists, to avoid making unnecessary requests to the API
-                mAdapter = new PopularRecyclerAdapter(mRealm.where(PopularRealm.class).findAllAsync(), getContext(), NowPlayingFragment.this, isMovieViewAsList);
+                mPopularAdapter = new PopularRecyclerAdapter(mRealm.where(PopularRealm.class).findAllAsync(), getContext(), NowPlayingFragment.this, isMovieViewAsList);
                 //mAdapter = new NowPlayingRecyclerAdapter(getContext(), nowPlayingList, NowPlayingFragment.this);
-                mRecyclerView.setAdapter(mAdapter);
+                mRecyclerView.setAdapter(mPopularAdapter);
                 rvItemAnim();
                 mRecyclerView.setLayoutManager(isMovieViewAsList ? new LinearLayoutManager(getContext()) : new GridLayoutManager(getContext(), 3));
             } else {
-                mAdapter.notifyDataSetChanged();
+                mPopularAdapter.notifyDataSetChanged();
             }
 
                 mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
@@ -256,7 +343,7 @@ public class NowPlayingFragment extends Fragment implements PopularRecyclerAdapt
                             if (mListCount > mTotalPages) {
                                 return;
                             } else {
-                                mUrl = "https://api.themoviedb.org/3/movie/now_playing?api_key=07d93ad59393a99fe6bc8c1b8f0de23b&language=en-US&page=" + mListCount;
+                                mUrl = "https://api.themoviedb.org/3/movie/popular?api_key=07d93ad59393a99fe6bc8c1b8f0de23b&language=en-US&page=" + mListCount;
 
                                 GsonRequest<PopularResults> request = new GsonRequest<>(mUrl,
                                         PopularResults.class,
@@ -276,19 +363,7 @@ public class NowPlayingFragment extends Fragment implements PopularRecyclerAdapt
 
     }
 
-    private void setCurrenTabDisplay(int tabPosition) {
-        switch (tabPosition) {
-            case 0 :
-                //display popular
-                break;
-            case 1 :
-                //display top rated
-                break;
-            case 2:
-                //display upcoming
-                break;
-        }
-    }
+
 
 
     private Response.Listener<PopularResults> getPopularSuccessListener() {
@@ -299,14 +374,14 @@ public class NowPlayingFragment extends Fragment implements PopularRecyclerAdapt
                     mTotalPages = response.totalPages;
                     popularList.addAll(response.popularMovieList);
                     savePopularMovieListToDb(popularList); // PLEASE WORK ༼ つ ◕_◕ ༽つ
-                    if (mAdapter == null) {
-                        mAdapter = new NowPlayingRecyclerAdapter(mRealm.where(MovieRealm.class).findAllAsync(), getContext(), NowPlayingFragment.this, isMovieViewAsList);
+                    if (mPopularAdapter == null) {
+                        mPopularAdapter = new PopularRecyclerAdapter(mRealm.where(PopularRealm.class).findAllAsync(), getContext(), NowPlayingFragment.this, isMovieViewAsList);
                         //mAdapter = new NowPlayingRecyclerAdapter(getContext(), nowPlayingList, NowPlayingFragment.this);
-                        mRecyclerView.setAdapter(mAdapter);
+                        mRecyclerView.setAdapter(mPopularAdapter);
                         rvItemAnim();
                         mRecyclerView.setLayoutManager(isMovieViewAsList ? new LinearLayoutManager(getContext()) : new GridLayoutManager(getContext(), 3));
                     } else {
-                        mAdapter.notifyDataSetChanged();
+                        mPopularAdapter.notifyDataSetChanged();
                     }
 
 
@@ -321,7 +396,7 @@ public class NowPlayingFragment extends Fragment implements PopularRecyclerAdapt
                                 if (mListCount > mTotalPages) {
                                     return;
                                 } else {
-                                    mUrl = "https://api.themoviedb.org/3/movie/now_playing?api_key=07d93ad59393a99fe6bc8c1b8f0de23b&language=en-US&page=" + mListCount;
+                                    mUrl = "https://api.themoviedb.org/3/movie/popular?api_key=07d93ad59393a99fe6bc8c1b8f0de23b&language=en-US&page=" + mListCount;
 
                                     GsonRequest<PopularResults> request = new GsonRequest<>(mUrl,
                                             PopularResults.class,
@@ -341,6 +416,117 @@ public class NowPlayingFragment extends Fragment implements PopularRecyclerAdapt
                 }
             }
         };
+    }
+
+
+    private void getTopRated(){
+
+        mRequestQueue = Volley.newRequestQueue(getActivity().getApplicationContext());
+        mListCount = 1;
+
+        try {
+            if (topRatedList.size() == 0 || mRealm.where(TopRatedRealm.class).findAllAsync() == null) { // Executes if it is being called for the first time(has no data yet)
+                mUrl = "https://api.themoviedb.org/3/movie/top_rated?api_key=07d93ad59393a99fe6bc8c1b8f0de23b&language=en-US&page=1";
+
+                GsonRequest<TopRatedResults> request = new GsonRequest<>(mUrl,
+                        TopRatedResults.class,
+                        getTopRatedSuccessListener(),
+                        getErrorListener());
+
+                mRequestQueue.add(request);
+                ++mListCount;
+            }
+
+            if (mRecyclerView != null && mRealm.where(TopRatedRealm.class).findAllAsync() != null) { // Executes in case data already exists, to avoid making unnecessary requests to the API
+                mTopRatedAdapter = new TopRatedRecyclerAdapter(mRealm.where(TopRatedRealm.class).findAllAsync(), getContext(), NowPlayingFragment.this, isMovieViewAsList);
+                //mAdapter = new NowPlayingRecyclerAdapter(getContext(), nowPlayingList, NowPlayingFragment.this);
+                mRecyclerView.setAdapter(mTopRatedAdapter);
+                rvItemAnim();
+                mRecyclerView.setLayoutManager(isMovieViewAsList ? new LinearLayoutManager(getContext()) : new GridLayoutManager(getContext(), 3));
+            } else {
+                mTopRatedAdapter.notifyDataSetChanged();
+            }
+
+            mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+                @Override
+                public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                    super.onScrollStateChanged(recyclerView, newState);
+
+                    if (!recyclerView.canScrollVertically(1)) {
+                        //do something
+                        if (mListCount > mTotalPages) {
+                            return;
+                        } else {
+                            mUrl = "https://api.themoviedb.org/3/movie/top_rated?api_key=07d93ad59393a99fe6bc8c1b8f0de23b&language=en-US&page=" + mListCount;
+
+                            GsonRequest<TopRatedResults> request = new GsonRequest<>(mUrl,
+                                    TopRatedResults.class,
+                                    getTopRatedSuccessListener(),
+                                    getErrorListener());
+
+                            mRequestQueue.add(request);
+                            ++mListCount;
+                        }
+                    }
+                }
+            });
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private Response.Listener<TopRatedResults> getTopRatedSuccessListener() {
+        return new Response.Listener<TopRatedResults>() {
+            @Override
+            public void onResponse(TopRatedResults response) {
+                try {
+                    mTotalPages = response.totalPages;
+                    topRatedList.addAll(response.topRatedMovieList);
+                    saveTopRatedMovieListToDb(topRatedList); // PLEASE WORK ༼ つ ◕_◕ ༽つ
+                    if (mTopRatedAdapter == null) {
+                        mTopRatedAdapter = new TopRatedRecyclerAdapter(mRealm.where(TopRatedRealm.class).findAllAsync(), getContext(), NowPlayingFragment.this, isMovieViewAsList);
+                        //mAdapter = new NowPlayingRecyclerAdapter(getContext(), nowPlayingList, NowPlayingFragment.this);
+                        mRecyclerView.setAdapter(mTopRatedAdapter);
+                        rvItemAnim();
+                        mRecyclerView.setLayoutManager(isMovieViewAsList ? new LinearLayoutManager(getContext()) : new GridLayoutManager(getContext(), 3));
+                    } else {
+                        mTopRatedAdapter.notifyDataSetChanged();
+                    }
+
+
+
+                    mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+                        @Override
+                        public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                            super.onScrollStateChanged(recyclerView, newState);
+
+                            if (!recyclerView.canScrollVertically(1)) {
+                                //do something
+                                if (mListCount > mTotalPages) {
+                                    return;
+                                } else {
+                                    mUrl = "https://api.themoviedb.org/3/movie/top_rated?api_key=07d93ad59393a99fe6bc8c1b8f0de23b&language=en-US&page=" + mListCount;
+
+                                    GsonRequest<TopRatedResults> request = new GsonRequest<>(mUrl,
+                                            TopRatedResults.class,
+                                            getTopRatedSuccessListener(),
+                                            getErrorListener());
+
+                                    mRequestQueue.add(request);
+                                    ++mListCount;
+                                }
+                            }
+                        }
+                    });
+
+                    //mAdapter.notifyDataSetChanged();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        };
+
     }
 
 
@@ -470,6 +656,38 @@ public class NowPlayingFragment extends Fragment implements PopularRecyclerAdapt
         }
     }
 
+    private void saveTopRatedMovieListToDb(final List<TopRated> list){
+        // TEST
+        final MovieMapper movieMapper = new MovieMapper();
+
+        try (Realm realm = Realm.getDefaultInstance()) {
+            realm.executeTransactionAsync(new Realm.Transaction() {
+                @Override
+                public void execute(Realm realm) {
+                    List<TopRatedRealm> movies = movieMapper.toTopRatedRealmList(list);
+                    RealmList<TopRatedRealm> _movies = new RealmList<>();
+                    _movies.addAll(movies);
+                    realm.insertOrUpdate(_movies);
+                }
+            }, new Realm.Transaction.OnSuccess() {
+                @Override
+                public void onSuccess() {
+                    // GREAT SUCCESS (•̀ᴗ•́)و ̑̑
+                }
+            }, new Realm.Transaction.OnError() {
+                @Override
+                public void onError(Throwable error) {
+                    // sad reactions only
+                }
+            });
+        } catch (Exception e) {
+            // Wow such exception
+            e.printStackTrace();
+        } finally {
+            // Wow such finally
+        }
+    }
+
 
     public interface OnNowPlayingListener {
         void onSwitchFragment(Fragment fragment);
@@ -490,7 +708,11 @@ public class NowPlayingFragment extends Fragment implements PopularRecyclerAdapt
     public void onPause() {
         super.onPause();
         SharedPreferencesHelper.getInstance().setPreferences("np_viewMode", String.valueOf(isMovieViewAsList));
-        //SharedPreferencesHelper.getInstance().setPreferences("np_scrollPos", String.valueOf(mScrollPosition));
+
+        SharedPreferencesHelper.getInstance().setPreferences("np_popularTab", String.valueOf(isPopular));
+        SharedPreferencesHelper.getInstance().setPreferences("np_topRatedTab", String.valueOf(isTopRated));
+        SharedPreferencesHelper.getInstance().setPreferences("np_upcomingTab", String.valueOf(isUpcoming));
+
     }
 }
 

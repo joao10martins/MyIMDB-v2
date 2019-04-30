@@ -1,10 +1,9 @@
 package com.example.myimdb.model.realm;
 
-import io.realm.RealmList;
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
 
-public class PopularRealm extends RealmObject {
+public class TopRatedRealm extends RealmObject {
 
     @PrimaryKey
     private int id;
@@ -13,21 +12,20 @@ public class PopularRealm extends RealmObject {
     private double popularity;
     private String poster_path;
     private String release_date;
-    //private RealmList<Integer> genre_ids; // maybe change to Details
 
 
-    public PopularRealm(){}
 
+    public TopRatedRealm(){}
 
-    public PopularRealm(int id, double vote_average, String title, double popularity, String poster_path, String release_date) {
+    public TopRatedRealm(int id, double vote_average, String title, double popularity, String poster_path, String release_date){
         this.id = id;
         this.vote_average = vote_average;
         this.title = title;
         this.popularity = popularity;
         this.poster_path = poster_path;
         this.release_date = release_date;
-        //this.genre_ids = genre_ids;
     }
+
 
     public int getId() {
         return id;
@@ -76,12 +74,4 @@ public class PopularRealm extends RealmObject {
     public void setRelease_date(String release_date) {
         this.release_date = release_date;
     }
-
-    /*public RealmList<Integer> getGenre_ids() {
-        return genre_ids;
-    }
-
-    public void setGenre_ids(RealmList<Integer> genre_ids) {
-        this.genre_ids = genre_ids;
-    }*/
 }

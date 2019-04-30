@@ -177,7 +177,7 @@ public class FavoritesFragment extends Fragment implements FavoritesRecyclerAdap
                 int scrollPosition = ((LinearLayoutManager) mRecyclerView.getLayoutManager()).findFirstCompletelyVisibleItemPosition();
 
                 // change between List and Grid layout(default: Grid)
-                mAdapter = new FavoritesRecyclerAdapter(mRealm.where(FavoritesRealm.class).findAllAsync(), getContext(), FavoritesFragment.this, isMovieViewAsList);
+                mAdapter = new FavoritesRecyclerAdapter(mAdapter.getData(), getContext(), FavoritesFragment.this, isMovieViewAsList);
                 mRecyclerView.setAdapter(mAdapter);
                 rvItemAnim();
                 mAdapter.notifyDataSetChanged();
