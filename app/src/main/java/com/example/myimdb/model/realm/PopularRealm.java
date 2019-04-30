@@ -1,5 +1,6 @@
 package com.example.myimdb.model.realm;
 
+import io.realm.RealmList;
 import io.realm.RealmObject;
 
 public class PopularRealm extends RealmObject {
@@ -9,13 +10,13 @@ public class PopularRealm extends RealmObject {
     private String title;
     private double popularity;
     private String poster_path;
-    private int[] genre_ids; // maybe change to Details
+    private RealmList<Integer> genre_ids; // maybe change to Details
 
 
     public PopularRealm(){}
 
 
-    public PopularRealm(int id, double vote_average, String title, double popularity, String poster_path, int[] genre_ids) {
+    public PopularRealm(int id, double vote_average, String title, double popularity, String poster_path, RealmList<Integer> genre_ids) {
         this.id = id;
         this.vote_average = vote_average;
         this.title = title;
@@ -64,11 +65,11 @@ public class PopularRealm extends RealmObject {
         this.poster_path = poster_path;
     }
 
-    public int[] getGenre_ids() {
+    public RealmList<Integer> getGenre_ids() {
         return genre_ids;
     }
 
-    public void setGenre_ids(int[] genre_ids) {
+    public void setGenre_ids(RealmList<Integer> genre_ids) {
         this.genre_ids = genre_ids;
     }
 }

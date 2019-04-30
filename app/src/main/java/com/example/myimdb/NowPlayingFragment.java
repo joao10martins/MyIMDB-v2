@@ -20,6 +20,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -161,6 +162,7 @@ public class NowPlayingFragment extends Fragment implements NowPlayingRecyclerAd
                 // change between List and Grid layout(default: Grid)
                 mAdapter = new NowPlayingRecyclerAdapter(mRealm.where(MovieRealm.class).findAllAsync(), getContext(), NowPlayingFragment.this, isMovieViewAsList);
                 mRecyclerView.setAdapter(mAdapter);
+                rvItemAnim();
                 mAdapter.notifyDataSetChanged();
 
                 if(mRecyclerView.getLayoutManager() instanceof GridLayoutManager) {
@@ -232,7 +234,7 @@ public class NowPlayingFragment extends Fragment implements NowPlayingRecyclerAd
                 mAdapter = new NowPlayingRecyclerAdapter(mRealm.where(MovieRealm.class).findAllAsync(), getContext(), NowPlayingFragment.this, isMovieViewAsList);
                 //mAdapter = new NowPlayingRecyclerAdapter(getContext(), nowPlayingList, NowPlayingFragment.this);
                 mRecyclerView.setAdapter(mAdapter);
-
+                rvItemAnim();
                 mRecyclerView.setLayoutManager(isMovieViewAsList ? new LinearLayoutManager(getContext()) : new GridLayoutManager(getContext(), 3));
             } else {
                 mAdapter.notifyDataSetChanged();
@@ -295,6 +297,7 @@ public class NowPlayingFragment extends Fragment implements NowPlayingRecyclerAd
                         mAdapter = new NowPlayingRecyclerAdapter(mRealm.where(MovieRealm.class).findAllAsync(), getContext(), NowPlayingFragment.this, isMovieViewAsList);
                         //mAdapter = new NowPlayingRecyclerAdapter(getContext(), nowPlayingList, NowPlayingFragment.this);
                         mRecyclerView.setAdapter(mAdapter);
+                        rvItemAnim();
                         mRecyclerView.setLayoutManager(isMovieViewAsList ? new LinearLayoutManager(getContext()) : new GridLayoutManager(getContext(), 3));
                     } else {
                         mAdapter.notifyDataSetChanged();
@@ -406,6 +409,26 @@ public class NowPlayingFragment extends Fragment implements NowPlayingRecyclerAd
 
             }
         };
+    }
+
+    private void rvItemAnim() {
+
+        mRecyclerView.getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
+            @Override
+            public boolean onPreDraw() {
+                mRecyclerView.getViewTreeObserver().removeOnPreDrawListener(this);
+
+                for (int i=0; i < mRecyclerView.getChildCount(); i++) {
+                    View v = mRecyclerView.getChildAt(i);
+                    v.setAlpha(0.0f);
+                    v.animate().alpha(1.0f)
+                            .setDuration(700)
+                            .setStartDelay(i * 50)
+                            .start();
+                }
+                return true;
+            }
+        });
     }
 
     // ༼ つ ◕_◕ ༽つ PLS WORK WITHOUT PROBLEMS ༼ つ ◕_◕ ༽つ

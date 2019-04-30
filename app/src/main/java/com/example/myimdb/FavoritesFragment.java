@@ -18,6 +18,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -119,16 +120,19 @@ public class FavoritesFragment extends Fragment implements FavoritesRecyclerAdap
             RealmResults<FavoritesRealm> filteredByName = mAdapter.getData().sort("title", Sort.ASCENDING);
             mAdapter.updateData(filteredByName);
             mRecyclerView.setAdapter(mAdapter);
+            rvItemAnim();
         }
         if (isFilterByReleaseDate && mAdapter != null){
             RealmResults<FavoritesRealm> filteredByReleaseDate = mAdapter.getData().sort("release_date", Sort.DESCENDING);
             mAdapter.updateData(filteredByReleaseDate);
             mRecyclerView.setAdapter(mAdapter);
+            rvItemAnim();
         }
         if (isFilterByRating && mAdapter != null) {
             RealmResults<FavoritesRealm> filteredByRating = mAdapter.getData().sort("vote_average", Sort.DESCENDING);
             mAdapter.updateData(filteredByRating);
             mRecyclerView.setAdapter(mAdapter);
+            rvItemAnim();
         }
 
     }
@@ -175,6 +179,7 @@ public class FavoritesFragment extends Fragment implements FavoritesRecyclerAdap
                 // change between List and Grid layout(default: Grid)
                 mAdapter = new FavoritesRecyclerAdapter(mRealm.where(FavoritesRealm.class).findAllAsync(), getContext(), FavoritesFragment.this, isMovieViewAsList);
                 mRecyclerView.setAdapter(mAdapter);
+                rvItemAnim();
                 mAdapter.notifyDataSetChanged();
 
                 if(mRecyclerView.getLayoutManager() instanceof GridLayoutManager) {
@@ -184,8 +189,7 @@ public class FavoritesFragment extends Fragment implements FavoritesRecyclerAdap
                 }
                 mRecyclerView.scrollToPosition(scrollPosition);
 
-
-                //return true;
+                return true;
             case R.id.toolbar_sort:
                 //custom popup
                 final View dialogView = LayoutInflater.from(getContext()).inflate(R.layout.custom_sort_by_alert_dialog, (ViewGroup) getView().getRootView(), false);
@@ -213,6 +217,7 @@ public class FavoritesFragment extends Fragment implements FavoritesRecyclerAdap
                             RealmResults<FavoritesRealm> filteredByName = mAdapter.getData().sort("title", Sort.ASCENDING);
                             mAdapter.updateData(filteredByName);
                             mRecyclerView.setAdapter(mAdapter);
+                            rvItemAnim();
                             alertDialog.dismiss();
                         } else {
                             // remove filter
@@ -220,6 +225,7 @@ public class FavoritesFragment extends Fragment implements FavoritesRecyclerAdap
                                     .findAllAsync();
                             mAdapter.updateData(unfilteredResults);
                             mRecyclerView.setAdapter(mAdapter);
+                            rvItemAnim();
                             alertDialog.dismiss();
                         }
                     }
@@ -243,6 +249,7 @@ public class FavoritesFragment extends Fragment implements FavoritesRecyclerAdap
                             RealmResults<FavoritesRealm> filteredByReleaseDate = mAdapter.getData().sort("release_date", Sort.DESCENDING);
                             mAdapter.updateData(filteredByReleaseDate);
                             mRecyclerView.setAdapter(mAdapter);
+                            rvItemAnim();
                             alertDialog.dismiss();
                         } else {
                             // remove filter
@@ -250,6 +257,7 @@ public class FavoritesFragment extends Fragment implements FavoritesRecyclerAdap
                                     .findAllAsync();
                             mAdapter.updateData(unfilteredResults);
                             mRecyclerView.setAdapter(mAdapter);
+                            rvItemAnim();
                             alertDialog.dismiss();
                         }
                     }
@@ -273,6 +281,7 @@ public class FavoritesFragment extends Fragment implements FavoritesRecyclerAdap
                             RealmResults<FavoritesRealm> filteredByRating = mAdapter.getData().sort("vote_average", Sort.DESCENDING);
                             mAdapter.updateData(filteredByRating);
                             mRecyclerView.setAdapter(mAdapter);
+                            rvItemAnim();
                             alertDialog.dismiss();
                         } else {
                             // remove filter
@@ -280,6 +289,7 @@ public class FavoritesFragment extends Fragment implements FavoritesRecyclerAdap
                                     .findAllAsync();
                             mAdapter.updateData(unfilteredResults);
                             mRecyclerView.setAdapter(mAdapter);
+                            rvItemAnim();
                             alertDialog.dismiss();
                         }
                     }
@@ -302,7 +312,7 @@ public class FavoritesFragment extends Fragment implements FavoritesRecyclerAdap
             mAdapter = new FavoritesRecyclerAdapter(mRealm.where(FavoritesRealm.class).findAllAsync(), getContext(), FavoritesFragment.this, isMovieViewAsList);
             //mAdapter = new NowPlayingRecyclerAdapter(getContext(), nowPlayingList, NowPlayingFragment.this);
             mRecyclerView.setAdapter(mAdapter);
-
+            rvItemAnim();
             mRecyclerView.setLayoutManager(isMovieViewAsList ? new LinearLayoutManager(getContext()) : new GridLayoutManager(getContext(), 2));
         } else {
             mAdapter.notifyDataSetChanged();
@@ -386,6 +396,28 @@ public class FavoritesFragment extends Fragment implements FavoritesRecyclerAdap
             }
         };
     }
+
+    /* RecyclerView Populate Animation */
+    private void rvItemAnim() {
+
+        mRecyclerView.getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
+            @Override
+            public boolean onPreDraw() {
+                mRecyclerView.getViewTreeObserver().removeOnPreDrawListener(this);
+
+                for (int i=0; i < mRecyclerView.getChildCount(); i++) {
+                    View v = mRecyclerView.getChildAt(i);
+                    v.setAlpha(0.0f);
+                    v.animate().alpha(1.0f)
+                            .setDuration(900)
+                            .setStartDelay(i * 50)
+                            .start();
+                }
+                return true;
+            }
+        });
+    }
+
 
 
     @Override
