@@ -10,6 +10,9 @@ android {
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+
+        renderscriptTargetApi 18
+        renderscriptSupportModeEnabled true
     }
     buildTypes {
         release {
@@ -54,6 +57,10 @@ dependencies {
 
     //implementation 'com.uphyca:stetho_realm:2.0.0'
     //maven { url 'https://github.com/uPhyca/stetho-realm/raw/master/maven-repo' }
+
+
+    // Blurry library
+    implementation 'jp.wasabeef:blurry:3.0.0'
 }
 
 
