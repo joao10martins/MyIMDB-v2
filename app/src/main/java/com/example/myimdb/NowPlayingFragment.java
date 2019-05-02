@@ -29,11 +29,13 @@ import com.android.volley.toolbox.Volley;
 import com.example.myimdb.adapters.NowPlayingRecyclerAdapter;
 import com.example.myimdb.adapters.PopularRecyclerAdapter;
 import com.example.myimdb.adapters.TopRatedRecyclerAdapter;
+import com.example.myimdb.adapters.UpcomingRecyclerAdapter;
 import com.example.myimdb.helpers.GsonRequest;
 import com.example.myimdb.helpers.SharedPreferencesHelper;
 import com.example.myimdb.map.MovieMapper;
 import com.example.myimdb.model.realm.PopularRealm;
 import com.example.myimdb.model.realm.TopRatedRealm;
+import com.example.myimdb.model.realm.UpcomingRealm;
 import com.example.myimdb.model.response.Movie;
 import com.example.myimdb.model.response.MovieDetails;
 import com.example.myimdb.model.realm.MovieRealm;
@@ -42,6 +44,8 @@ import com.example.myimdb.model.response.Popular;
 import com.example.myimdb.model.response.PopularResults;
 import com.example.myimdb.model.response.TopRated;
 import com.example.myimdb.model.response.TopRatedResults;
+import com.example.myimdb.model.response.Upcoming;
+import com.example.myimdb.model.response.UpcomingResults;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -54,11 +58,11 @@ import io.realm.RealmResults;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class NowPlayingFragment extends Fragment implements PopularRecyclerAdapter.OnMovieClick, TopRatedRecyclerAdapter.OnMovieClick {
+public class NowPlayingFragment extends Fragment implements PopularRecyclerAdapter.OnMovieClick, TopRatedRecyclerAdapter.OnMovieClick, UpcomingRecyclerAdapter.OnMovieClick {
     private OnNowPlayingListener mListener;
     private List<Popular> popularList = new ArrayList<>();
     private List<TopRated> topRatedList = new ArrayList<>();
-    //private List<Upcoming> upcomingList = new ArrayList<>();
+    private List<Upcoming> upcomingList = new ArrayList<>();
     private Context mContext;
 
     private RecyclerView mRecyclerView;
@@ -71,14 +75,14 @@ public class NowPlayingFragment extends Fragment implements PopularRecyclerAdapt
     private TabLayout mNowPlayingTabs;
 
     /* TabLayout Menu */
-    private boolean isPopular = false;
+    private boolean isPopular = true;
     private boolean isTopRated = false;
     private boolean isUpcoming = false;
 
     /* Adapters */
     private PopularRecyclerAdapter mPopularAdapter;
     private TopRatedRecyclerAdapter mTopRatedAdapter;
-    //private UpcomingRecyclerAdapter mUpcomingAdapter;
+    private UpcomingRecyclerAdapter mUpcomingAdapter;
 
     private View mView;
 
@@ -101,7 +105,7 @@ public class NowPlayingFragment extends Fragment implements PopularRecyclerAdapt
 
         SharedPreferencesHelper prefs = SharedPreferencesHelper.getInstance();
         isMovieViewAsList = Boolean.valueOf(prefs.getPreferences("np_viewMode", "false"));
-        isPopular = Boolean.valueOf(prefs.getPreferences("np_popularTab", "false"));
+        isPopular = Boolean.valueOf(prefs.getPreferences("np_popularTab", "true"));
         isTopRated = Boolean.valueOf(prefs.getPreferences("np_topRatedTab", "false"));
         isUpcoming = Boolean.valueOf(prefs.getPreferences("np_upcomingTab", "false"));
 
@@ -118,10 +122,9 @@ public class NowPlayingFragment extends Fragment implements PopularRecyclerAdapt
             }
         });
 
-        if (!isPopular){
-            isPopular = !isPopular;
-            getPopular();
-        }
+
+
+
 
 
         return mView;
@@ -144,10 +147,13 @@ public class NowPlayingFragment extends Fragment implements PopularRecyclerAdapt
         }
         if (isTopRated) {
             getTopRated(); // Initiate first
-            mNowPlayingTabs.getTabAt(1).select();
+            mNowPlayingTabs.getTabAt(1).select(); // Sets the selected tab, but also runs onSelectedTab and sets the boolean to false
+            isTopRated = true;  // that's why there is a need to set it back to 'true' here.
         }
         if (isUpcoming) {
-            //getUpcoming(); // Initiate first
+            getUpcoming(); // Initiate first
+            mNowPlayingTabs.getTabAt(2).select(); // Sets the selected tab, but also runs onSelectedTab and sets the boolean to false
+            isUpcoming = true;  // that's why there is a need to set it back to 'true' here.
         }
 
 
@@ -205,28 +211,26 @@ public class NowPlayingFragment extends Fragment implements PopularRecyclerAdapt
                     mRecyclerView.setAdapter(mPopularAdapter);
                     rvItemAnim();
                     mPopularAdapter.notifyDataSetChanged();
+                    setRecyclerViewLayout();
                 }
                 if (isTopRated) {
                     mTopRatedAdapter = new TopRatedRecyclerAdapter(mTopRatedAdapter.getData(), getContext(), NowPlayingFragment.this, isMovieViewAsList);
                     mRecyclerView.setAdapter(mTopRatedAdapter);
                     rvItemAnim();
                     mTopRatedAdapter.notifyDataSetChanged();
+                    setRecyclerViewLayout();
                 }
                 if (isUpcoming) {
-                    /*mUpcomingAdapter = new UpcomingRecyclerAdapter(mUpcomingAdapter.getData(), getContext(), NowPlayingFragment.this, isMovieViewAsList);
+                    mUpcomingAdapter = new UpcomingRecyclerAdapter(mUpcomingAdapter.getData(), getContext(), NowPlayingFragment.this, isMovieViewAsList);
                     mRecyclerView.setAdapter(mUpcomingAdapter);
                     rvItemAnim();
-                    mPopularAdapter.notifyDataSetChanged();*/
-                }
-
-
-
-                if(mRecyclerView.getLayoutManager() instanceof GridLayoutManager) {
-                    mRecyclerView.setLayoutManager(isMovieViewAsList ? new LinearLayoutManager(getContext()) : new GridLayoutManager(getContext(), 3));
-                } else {
-                    mRecyclerView.setLayoutManager(isMovieViewAsList ? new LinearLayoutManager(getContext()) : new GridLayoutManager(getContext(), 3));
+                    mUpcomingAdapter.notifyDataSetChanged();
+                    setRecyclerViewLayout();
                 }
                 mRecyclerView.scrollToPosition(mScrollPosition);
+
+
+
         }
 
         return super.onOptionsItemSelected(item);
@@ -297,7 +301,7 @@ public class NowPlayingFragment extends Fragment implements PopularRecyclerAdapt
                 if (isUpcoming) {
                     isPopular = false;
                     isTopRated = false;
-                    //getUpcoming();
+                    getUpcoming();
                 }
                 break;
         }
@@ -305,7 +309,6 @@ public class NowPlayingFragment extends Fragment implements PopularRecyclerAdapt
 
 
     private void getPopular(){
-
 
         mRequestQueue = Volley.newRequestQueue(getActivity().getApplicationContext());
         mListCount = 1;
@@ -526,8 +529,123 @@ public class NowPlayingFragment extends Fragment implements PopularRecyclerAdapt
                 }
             }
         };
-
     }
+
+
+    private void getUpcoming() {
+
+
+        mRequestQueue = Volley.newRequestQueue(getActivity().getApplicationContext());
+        mListCount = 1;
+
+        try {
+            if (upcomingList.size() == 0 || mRealm.where(UpcomingRealm.class).findAllAsync() == null) { // Executes if it is being called for the first time(has no data yet)
+                mUrl = "https://api.themoviedb.org/3/movie/upcoming?api_key=07d93ad59393a99fe6bc8c1b8f0de23b&language=en-US&page=1";
+
+                GsonRequest<UpcomingResults> request = new GsonRequest<>(mUrl,
+                        UpcomingResults.class,
+                        getUpcomingSuccessListener(),
+                        getErrorListener());
+
+                mRequestQueue.add(request);
+                ++mListCount;
+            }
+
+            if (mRecyclerView != null && mRealm.where(UpcomingRealm.class).findAllAsync() != null) { // Executes in case data already exists, to avoid making unnecessary requests to the API
+                mUpcomingAdapter = new UpcomingRecyclerAdapter(mRealm.where(UpcomingRealm.class).findAllAsync(), getContext(), NowPlayingFragment.this, isMovieViewAsList);
+                //mAdapter = new NowPlayingRecyclerAdapter(getContext(), nowPlayingList, NowPlayingFragment.this);
+                mRecyclerView.setAdapter(mUpcomingAdapter);
+                rvItemAnim();
+                mRecyclerView.setLayoutManager(isMovieViewAsList ? new LinearLayoutManager(getContext()) : new GridLayoutManager(getContext(), 3));
+            } else {
+                mUpcomingAdapter.notifyDataSetChanged();
+            }
+
+            mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+                @Override
+                public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                    super.onScrollStateChanged(recyclerView, newState);
+
+                    if (!recyclerView.canScrollVertically(1)) {
+                        //do something
+                        if (mListCount > mTotalPages) {
+                            return;
+                        } else {
+                            mUrl = "https://api.themoviedb.org/3/movie/upcoming?api_key=07d93ad59393a99fe6bc8c1b8f0de23b&language=en-US&page=" + mListCount;
+
+                            GsonRequest<UpcomingResults> request = new GsonRequest<>(mUrl,
+                                    UpcomingResults.class,
+                                    getUpcomingSuccessListener(),
+                                    getErrorListener());
+
+                            mRequestQueue.add(request);
+                            ++mListCount;
+                        }
+                    }
+                }
+            });
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+
+
+    private Response.Listener<UpcomingResults> getUpcomingSuccessListener() {
+        return new Response.Listener<UpcomingResults>() {
+            @Override
+            public void onResponse(UpcomingResults response) {
+                try {
+                    mTotalPages = response.totalPages;
+                    upcomingList.addAll(response.upcomingrMovieList);
+                    saveUpcomingMovieListToDb(upcomingList); // PLEASE WORK ༼ つ ◕_◕ ༽つ
+                    if (mUpcomingAdapter == null) {
+                        mUpcomingAdapter = new UpcomingRecyclerAdapter(mRealm.where(UpcomingRealm.class).findAllAsync(), getContext(), NowPlayingFragment.this, isMovieViewAsList);
+                        //mAdapter = new NowPlayingRecyclerAdapter(getContext(), nowPlayingList, NowPlayingFragment.this);
+                        mRecyclerView.setAdapter(mUpcomingAdapter);
+                        rvItemAnim();
+                        mRecyclerView.setLayoutManager(isMovieViewAsList ? new LinearLayoutManager(getContext()) : new GridLayoutManager(getContext(), 3));
+                    } else {
+                        mUpcomingAdapter.notifyDataSetChanged();
+                    }
+
+
+
+                    mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+                        @Override
+                        public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                            super.onScrollStateChanged(recyclerView, newState);
+
+                            if (!recyclerView.canScrollVertically(1)) {
+                                //do something
+                                if (mListCount > mTotalPages) {
+                                    return;
+                                } else {
+                                    mUrl = "https://api.themoviedb.org/3/movie/upcoming?api_key=07d93ad59393a99fe6bc8c1b8f0de23b&language=en-US&page=" + mListCount;
+
+                                    GsonRequest<UpcomingResults> request = new GsonRequest<>(mUrl,
+                                            UpcomingResults.class,
+                                            getUpcomingSuccessListener(),
+                                            getErrorListener());
+
+                                    mRequestQueue.add(request);
+                                    ++mListCount;
+                                }
+                            }
+                        }
+                    });
+
+                    //mAdapter.notifyDataSetChanged();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        };
+    }
+
+
+
 
 
     private Response.ErrorListener getErrorListener() {
@@ -623,6 +741,18 @@ public class NowPlayingFragment extends Fragment implements PopularRecyclerAdapt
         });
     }
 
+
+    private void setRecyclerViewLayout() {
+
+        if(mRecyclerView.getLayoutManager() instanceof GridLayoutManager) {
+            mRecyclerView.setLayoutManager(isMovieViewAsList ? new LinearLayoutManager(getContext()) : new GridLayoutManager(getContext(), 3));
+        } else {
+            mRecyclerView.setLayoutManager(isMovieViewAsList ? new LinearLayoutManager(getContext()) : new GridLayoutManager(getContext(), 3));
+        }
+
+    }
+
+
     // ༼ つ ◕_◕ ༽つ PLS WORK WITHOUT PROBLEMS ༼ つ ◕_◕ ༽つ
     private void savePopularMovieListToDb(final List<Popular> list){
         // TEST
@@ -687,6 +817,41 @@ public class NowPlayingFragment extends Fragment implements PopularRecyclerAdapt
             // Wow such finally
         }
     }
+
+
+    private void saveUpcomingMovieListToDb(final List<Upcoming> list){
+        // TEST
+        final MovieMapper movieMapper = new MovieMapper();
+
+        try (Realm realm = Realm.getDefaultInstance()) {
+            realm.executeTransactionAsync(new Realm.Transaction() {
+                @Override
+                public void execute(Realm realm) {
+                    List<UpcomingRealm> movies = movieMapper.toUpcomingRealmList(list);
+                    RealmList<UpcomingRealm> _movies = new RealmList<>();
+                    _movies.addAll(movies);
+                    realm.insertOrUpdate(_movies);
+                }
+            }, new Realm.Transaction.OnSuccess() {
+                @Override
+                public void onSuccess() {
+                    // GREAT SUCCESS (•̀ᴗ•́)و ̑̑
+                }
+            }, new Realm.Transaction.OnError() {
+                @Override
+                public void onError(Throwable error) {
+                    // sad reactions only
+                }
+            });
+        } catch (Exception e) {
+            // Wow such exception
+            e.printStackTrace();
+        } finally {
+            // Wow such finally
+        }
+    }
+
+
 
 
     public interface OnNowPlayingListener {

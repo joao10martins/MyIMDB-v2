@@ -4,6 +4,7 @@ package com.example.myimdb.map;
 import com.example.myimdb.model.realm.FavoritesRealm;
 import com.example.myimdb.model.realm.PopularRealm;
 import com.example.myimdb.model.realm.TopRatedRealm;
+import com.example.myimdb.model.realm.UpcomingRealm;
 import com.example.myimdb.model.response.Movie;
 import com.example.myimdb.model.response.MovieDetails;
 import com.example.myimdb.model.realm.MovieRealm;
@@ -11,6 +12,7 @@ import com.example.myimdb.model.response.Popular;
 import com.example.myimdb.model.response.SearchMovie;
 import com.example.myimdb.model.realm.SearchMovieRealm;
 import com.example.myimdb.model.response.TopRated;
+import com.example.myimdb.model.response.Upcoming;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,7 +24,7 @@ public class MovieMapper {
     List<MovieRealm> myMovieRealmList = new ArrayList<>();
     List<PopularRealm> myPopularRealmList = new ArrayList<>();
     List<TopRatedRealm> myTopRatedRealmList = new ArrayList<>();
-    //List<UpcomingRealm> myUpcomingRealmList = new ArrayList<>();
+    List<UpcomingRealm> myUpcomingRealmList = new ArrayList<>();
     List<SearchMovieRealm> mySearchRealmList = new ArrayList<>();
 
     //RealmList<Integer> movieGenres = new RealmList<>();
@@ -77,6 +79,23 @@ public class MovieMapper {
             myTopRatedRealmList.add(myTopRatedRealm);
         }
         return myTopRatedRealmList;
+    }
+
+
+
+    public List<UpcomingRealm> toUpcomingRealmList(List<Upcoming> responseList){
+        for (Upcoming movie : responseList){
+            UpcomingRealm myUpcomingRealm = new UpcomingRealm(
+                    movie.getId(),
+                    movie.getVote_average(),
+                    movie.getTitle(),
+                    movie.getPopularity(),
+                    movie.getPoster_path(),
+                    //movie.getGenre_ids(), //error here (types) //TODO
+                    movie.getRelease_date());
+            myUpcomingRealmList.add(myUpcomingRealm);
+        }
+        return myUpcomingRealmList;
     }
 
 
