@@ -19,9 +19,8 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.Volley;
 import com.example.myimdb.helpers.GsonRequest;
-import com.example.myimdb.helpers.GsonRequestPost;
+import com.example.myimdb.helpers.volley.GsonRequestT;
 import com.example.myimdb.model.response.CreateRequestToken;
-import com.example.myimdb.model.response.PopularResults;
 import com.example.myimdb.model.response.ValidateRequestToken;
 
 import org.json.JSONObject;
@@ -41,6 +40,8 @@ public class LoginActivity extends AppCompatActivity {
     CircularProgressButton btn_login;
     private String mUsername;
     private String mPassword;
+    private int mStatusCode;
+    private String mStatusMessage;
 
 
     @Override
@@ -77,18 +78,13 @@ public class LoginActivity extends AppCompatActivity {
                 btn_login.startAnimation();
                 mUsername = username.getText().toString().trim();
                 mPassword = password.getText().toString().trim();
-                createRequestToken();
-                new Handler().postDelayed(new Runnable() {
-                    public void run() {
-                        // do something later
-                        btn_login.doneLoadingAnimation(R.color.colorPrimaryDark, getBitmapFromVectorDrawable(LoginActivity.this, R.drawable.ic_done_yellow_24dp));
-                        // if user/pass exists, go to MainActivity
-                            // code here
-                            isLoginCorrect();
-                        // else
-                            // create alertDialog and revert button animation
-                    }
-                }, 4500);
+                if (mUsername != null && mPassword != null){
+                    createRequestToken();
+                }
+
+
+
+
 
             }
         });
@@ -160,6 +156,7 @@ public class LoginActivity extends AppCompatActivity {
                     validateRequestToken(mUsername, mPassword, mRequestToken);
 
 
+
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -179,7 +176,7 @@ public class LoginActivity extends AppCompatActivity {
             jsonObject.put("password", password);
             jsonObject.put("request_token", token);
 
-            GsonRequestPost<ValidateRequestToken> request = new GsonRequest<>(mUrl,
+            GsonRequestT<ValidateRequestToken> request = new GsonRequestT<ValidateRequestToken>(mUrl,
                     ValidateRequestToken.class,
                     jsonObject,
                     getValidateTokenSuccessListener(),
@@ -192,13 +189,35 @@ public class LoginActivity extends AppCompatActivity {
     }
 
 
+
     private Response.Listener<ValidateRequestToken> getValidateTokenSuccessListener() {
         return new Response.Listener<ValidateRequestToken>() {
             @Override
             public void onResponse(ValidateRequestToken response) {
                 try {
-                    mRequestToken = response.getRequest_token();
-                    // token validated
+                    if (response.isSuccess()){
+                        mRequestToken = response.getRequest_token(); // token validated
+                        //createNewSession();
+                        if (mUsername != null && mPassword != null && mRequestToken != null){
+                            new Handler().postDelayed(new Runnable() {
+                                public void run() {
+                                    // do something later
+                                    btn_login.doneLoadingAnimation(R.color.colorPrimaryDark, getBitmapFromVectorDrawable(LoginActivity.this, R.drawable.ic_done_yellow_24dp));
+                                    // if user/pass exists, go to MainActivity
+                                    // code here
+                                    isLoginCorrect();
+                                    // else
+                                    // create alertDialog and revert button animation
+                                }
+                            }, 4500);
+                        }
+                    } else {
+                        mStatusCode = response.getStatus_code();
+                        mStatusMessage = response.getStatus_message();
+                        //alertDialog -> mStatusMessage
+                    }
+
+
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
