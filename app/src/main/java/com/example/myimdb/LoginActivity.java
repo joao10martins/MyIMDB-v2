@@ -19,11 +19,14 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.Volley;
 import com.example.myimdb.helpers.GsonRequest;
+import com.example.myimdb.helpers.GsonRequestPost;
 import com.example.myimdb.helpers.volley.GsonRequestT;
 import com.example.myimdb.model.response.CreateRequestToken;
 import com.example.myimdb.model.response.ValidateRequestToken;
 
 import org.json.JSONObject;
+
+import java.util.HashMap;
 
 import br.com.simplepass.loading_button_lib.customViews.CircularProgressButton;
 
@@ -171,14 +174,25 @@ public class LoginActivity extends AppCompatActivity {
 
         try {
             mUrl = "https://api.themoviedb.org/3/authentication/token/validate_with_login?api_key=07d93ad59393a99fe6bc8c1b8f0de23b";
-            JSONObject jsonObject = new JSONObject();
+
+            /*JSONObject jsonObject = new JSONObject();
             jsonObject.put("username", username);
             jsonObject.put("password", password);
             jsonObject.put("request_token", token);
 
-            GsonRequestT<ValidateRequestToken> request = new GsonRequestT<ValidateRequestToken>(mUrl,
+            final String requestBody = jsonObject.toString();*/
+
+
+            // Post params to be sent to the server
+            HashMap<String, String> params = new HashMap<>();
+            params.put("username", username);
+            params.put("password", password);
+            params.put("request_token", token);
+
+
+            GsonRequestPost<ValidateRequestToken> request = new GsonRequestPost<ValidateRequestToken>(mUrl,
                     ValidateRequestToken.class,
-                    jsonObject,
+                    params,
                     getValidateTokenSuccessListener(),
                     getErrorListener());
 
