@@ -6,6 +6,7 @@ import com.android.volley.NetworkResponse;
 import com.android.volley.ParseError;
 import com.android.volley.Request;
 import com.android.volley.Response;
+import com.android.volley.VolleyError;
 import com.android.volley.VolleyLog;
 import com.android.volley.toolbox.HttpHeaderParser;
 import com.google.gson.Gson;
@@ -22,6 +23,7 @@ public class GsonRequestPost<T> extends Request<T> {
     private final Class<T> clazz;
     private final Map<String,String> headers;
     private final Response.Listener<T> listener;
+    private final Response.ErrorListener errorListener;
 
     private String mRequestBody;
 
@@ -40,6 +42,7 @@ public class GsonRequestPost<T> extends Request<T> {
         this.clazz = clazz;
         this.headers = headers;
         this.listener = listener;
+        this.errorListener = errorListener;
     }
 
 
@@ -77,7 +80,21 @@ public class GsonRequestPost<T> extends Request<T> {
     }
 
 
+    /*@Override
+    public void deliverError(VolleyError error) {
+        errorListener.onErrorResponse(error);
+    }*/
 
+    /*@Override
+    protected VolleyError parseNetworkError(VolleyError volleyError) {
+        //return super.parseNetworkError(volleyError);
+        if(volleyError.networkResponse != null && volleyError.networkResponse.data != null){
+            VolleyError error = new VolleyError(new String(volleyError.networkResponse.data));
+            volleyError = error;
+        }
+
+        return volleyError;
+    }*/
 
     @Override
     protected Response<T> parseNetworkResponse(NetworkResponse response) {

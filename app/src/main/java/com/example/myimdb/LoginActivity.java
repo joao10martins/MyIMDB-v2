@@ -9,11 +9,16 @@ import android.os.Build;
 import android.os.Handler;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.graphics.drawable.DrawableCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.TextView;
 
+import com.android.volley.NetworkResponse;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
@@ -22,11 +27,17 @@ import com.example.myimdb.helpers.GsonRequest;
 import com.example.myimdb.helpers.GsonRequestPost;
 import com.example.myimdb.helpers.volley.GsonRequestT;
 import com.example.myimdb.model.response.CreateRequestToken;
+import com.example.myimdb.model.response.CreateSessionId;
 import com.example.myimdb.model.response.ValidateRequestToken;
 
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
+import java.util.StringTokenizer;
 
 import br.com.simplepass.loading_button_lib.customViews.CircularProgressButton;
 
@@ -45,6 +56,7 @@ public class LoginActivity extends AppCompatActivity {
     private String mPassword;
     private int mStatusCode;
     private String mStatusMessage;
+    private String mSessionId;
 
 
     @Override
@@ -175,13 +187,6 @@ public class LoginActivity extends AppCompatActivity {
         try {
             mUrl = "https://api.themoviedb.org/3/authentication/token/validate_with_login?api_key=07d93ad59393a99fe6bc8c1b8f0de23b";
 
-            /*JSONObject jsonObject = new JSONObject();
-            jsonObject.put("username", username);
-            jsonObject.put("password", password);
-            jsonObject.put("request_token", token);
-
-            final String requestBody = jsonObject.toString();*/
-
 
             // Post params to be sent to the server
             HashMap<String, String> params = new HashMap<>();
@@ -211,8 +216,55 @@ public class LoginActivity extends AppCompatActivity {
                 try {
                     if (response.isSuccess()){
                         mRequestToken = response.getRequest_token(); // token validated
-                        //createNewSession();
+
                         if (mUsername != null && mPassword != null && mRequestToken != null){
+                            createSessionId(mRequestToken);
+                        }
+                    }
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        };
+    }
+
+
+
+
+    private void createSessionId(String token) {
+
+        mRequestQueue = Volley.newRequestQueue(this);
+
+        try {
+            mUrl = "https://api.themoviedb.org/3/authentication/session/new?api_key=07d93ad59393a99fe6bc8c1b8f0de23b";
+
+            // Post params to be sent to the server
+            HashMap<String, String> params = new HashMap<>();
+            params.put("request_token", token);
+
+
+
+            GsonRequestPost<CreateSessionId> request = new GsonRequestPost<>(mUrl,
+                    CreateSessionId.class,
+                    params,
+                    getSessionIdSuccessListener(),
+                    getErrorListener());
+
+            mRequestQueue.add(request);
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    private Response.Listener<CreateSessionId> getSessionIdSuccessListener() {
+        return new Response.Listener<CreateSessionId>() {
+            @Override
+            public void onResponse(CreateSessionId response) {
+                try {
+                    if (response.isSuccess()){
+                        mSessionId = response.getSession_id(); // get session id
+
                             new Handler().postDelayed(new Runnable() {
                                 public void run() {
                                     // do something later
@@ -224,13 +276,8 @@ public class LoginActivity extends AppCompatActivity {
                                     // create alertDialog and revert button animation
                                 }
                             }, 4500);
-                        }
-                    } else {
-                        mStatusCode = response.getStatus_code();
-                        mStatusMessage = response.getStatus_message();
-                        //alertDialog -> mStatusMessage
-                    }
 
+                    }
 
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -246,9 +293,80 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onErrorResponse(VolleyError error) {
                 // Do whatever you want to do with error.getMessage();
+                String message = null;
+                String responseBody = null;
+                JSONObject data;
+
+
+                btn_login.revertAnimation();
+                btn_login.setBackground(getResources().getDrawable(R.drawable.login_button)); //@drawable/login_button
+
+                    try {
+
+
+                        NetworkResponse response = error.networkResponse;
+                        if(response != null && response.data != null){
+                            switch(response.statusCode){
+                                case 400:
+                                    responseBody = new String(error.networkResponse.data, "utf-8");
+                                    data = new JSONObject(responseBody);
+
+                                    message = data.getString("status_message");
+                                    errorDialog(message);
+                                    break;
+                                case 401:
+                                    responseBody = new String(error.networkResponse.data, "utf-8");
+                                    data = new JSONObject(responseBody);
+
+                                    message = data.getString("status_message");
+                                    errorDialog(message);
+                                    break;
+                            }
+
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+
+
+                /*StringTokenizer stringTokenizer = new StringTokenizer(body);
+                while (stringTokenizer.hasMoreElements()){
+                    body = stringTokenizer.nextToken();
+                }*/
                 error.printStackTrace();
             }
+
         };
+    }
+
+    public String trimMessage(String json, String key){
+        String trimmedString = null;
+
+        try{
+            JSONObject obj = new JSONObject(json);
+            trimmedString = obj.getString(key);
+        } catch(JSONException e){
+            e.printStackTrace();
+            return null;
+        }
+
+        return trimmedString;
+    }
+
+
+    private void errorDialog(String message) {
+
+
+        final View dialogView = getLayoutInflater().inflate(R.layout.custom_login_error_alert_dialog, (ViewGroup) getWindow().getDecorView().getRootView(), false);
+        TextView errorMessage = dialogView.findViewById(R.id.login_failed_message_textView);
+
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this)
+                .setCancelable(true);
+        builder.setView(dialogView);
+        final AlertDialog alertDialog = builder.create();
+        errorMessage.setText(message);
+        alertDialog.show();
     }
 
 }
