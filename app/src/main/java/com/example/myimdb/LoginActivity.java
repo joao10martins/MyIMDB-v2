@@ -15,6 +15,8 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
@@ -95,11 +97,9 @@ public class LoginActivity extends AppCompatActivity {
                 mPassword = password.getText().toString().trim();
                 if (mUsername != null && mPassword != null){
                     createRequestToken();
+                    InputMethodManager inputManager =(InputMethodManager) getApplicationContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+                    inputManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
                 }
-
-
-
-
 
             }
         });
@@ -293,8 +293,8 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onErrorResponse(VolleyError error) {
                 // Do whatever you want to do with error.getMessage();
-                String message = null;
-                String responseBody = null;
+                String message;
+                String responseBody;
                 JSONObject data;
 
 
@@ -302,8 +302,6 @@ public class LoginActivity extends AppCompatActivity {
                 btn_login.setBackground(getResources().getDrawable(R.drawable.login_button)); //@drawable/login_button
 
                     try {
-
-
                         NetworkResponse response = error.networkResponse;
                         if(response != null && response.data != null){
                             switch(response.statusCode){
@@ -327,35 +325,13 @@ public class LoginActivity extends AppCompatActivity {
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
-
-
-                /*StringTokenizer stringTokenizer = new StringTokenizer(body);
-                while (stringTokenizer.hasMoreElements()){
-                    body = stringTokenizer.nextToken();
-                }*/
-                error.printStackTrace();
             }
 
         };
     }
 
-    public String trimMessage(String json, String key){
-        String trimmedString = null;
-
-        try{
-            JSONObject obj = new JSONObject(json);
-            trimmedString = obj.getString(key);
-        } catch(JSONException e){
-            e.printStackTrace();
-            return null;
-        }
-
-        return trimmedString;
-    }
-
 
     private void errorDialog(String message) {
-
 
         final View dialogView = getLayoutInflater().inflate(R.layout.custom_login_error_alert_dialog, (ViewGroup) getWindow().getDecorView().getRootView(), false);
         TextView errorMessage = dialogView.findViewById(R.id.login_failed_message_textView);
@@ -367,6 +343,28 @@ public class LoginActivity extends AppCompatActivity {
         final AlertDialog alertDialog = builder.create();
         errorMessage.setText(message);
         alertDialog.show();
+
+        // Cancel Button
+        final Button cancel = dialogView.findViewById(R.id.buttonCancel);
+        cancel.setOnClickListener(v -> {
+            //isCancel = !isCancel;
+            alertDialog.dismiss();
+        });
+
+
+        // Retry button
+        final Button retry = dialogView.findViewById(R.id.buttonRetry);
+        retry.setOnClickListener(v -> {
+            mUsername = null;
+            mPassword = null;
+            username.setText("");
+            password.setText("");
+
+            username.requestFocus();
+            InputMethodManager inputManager =(InputMethodManager) getApplicationContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+            inputManager.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0);
+            alertDialog.dismiss();
+        });
     }
 
 }
