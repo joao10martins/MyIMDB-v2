@@ -1,6 +1,7 @@
 package com.example.myimdb;
 
 
+import android.animation.Animator;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
@@ -25,6 +26,7 @@ import java.util.List;
 import io.realm.Realm;
 import io.realm.RealmList;
 import io.realm.RealmResults;
+import xyz.hanks.library.bang.SmallBangView;
 
 
 /**
@@ -38,6 +40,7 @@ public class DetailsFragment extends Fragment implements MainActivity.OnToolbarC
     private ImageView mBackpathImage;
     private ImageView mPosterpathImage;
     private ImageView mLike;
+    private SmallBangView mSmallBangLike;
     private TextView mOriginalTitle;
     private TextView mRating;
     private TextView mVoteCount;
@@ -74,6 +77,7 @@ public class DetailsFragment extends Fragment implements MainActivity.OnToolbarC
         // Views
         mBackpathImage = mView.findViewById(R.id.details_movie_background_img);
         mPosterpathImage = mView.findViewById(R.id.details_movie_thumbnail);
+        mSmallBangLike = mView.findViewById(R.id.like_heart);
         mLike = mView.findViewById(R.id.details_like);
         mOriginalTitle = mView.findViewById(R.id.details_title);
         mRating = mView.findViewById(R.id.txt_vote_average);
@@ -165,29 +169,21 @@ public class DetailsFragment extends Fragment implements MainActivity.OnToolbarC
             isLiked = true;
         }
 
-        mLike.setOnClickListener(new View.OnClickListener() {
+        mSmallBangLike.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 // if true -> set false | if false -> set true.
                 isLiked = !isLiked;
                 if (isLiked) {
                     saveMovieToFavoritesDb(bundle, isLiked);
-                    mLike.setImageResource(R.drawable.ic_favorite_24dp);
-                    /*ScaleAnimation scaleUp = new ScaleAnimation(0.7f, 1f, 0.7f, 1f, ScaleAnimation.RELATIVE_TO_SELF, 0.5f, ScaleAnimation.RELATIVE_TO_SELF, 0.5f);
-                    ScaleAnimation scaleDown = new ScaleAnimation(1.3f, 0.7f, 1.3f, 0.7f, ScaleAnimation.RELATIVE_TO_SELF, 0.5f, ScaleAnimation.RELATIVE_TO_SELF, 0.5f);
-                    scaleUp.setDuration(500);
-                    scaleUp.setRepeatMode(ScaleAnimation.REVERSE);
-                    scaleUp.setFillAfter(true);
-                    scaleDown.setDuration(500);
+                    mSmallBangLike.setSelected(true);
+                    mSmallBangLike.likeAnimation();
 
-                    AnimationSet anim = new AnimationSet(true);
-                    anim.addAnimation(scaleUp);
-                    anim.addAnimation(scaleDown);
-                    anim.setFillAfter(false);
-                    mLike.startAnimation(scaleUp);*/
                 } else {
                     //remove from db.
-                    mLike.setImageResource(R.drawable.ic_favorite_border_24dp);
+                    mSmallBangLike.setSelected(false);
+                    mSmallBangLike.likeAnimation();
+                    //mLike.setImageResource(R.drawable.ic_favorites_selector);
                     mRealm.executeTransactionAsync(new Realm.Transaction() { // Delete selected movie from the Favorites.
                         @Override
                         public void execute(Realm realm) {
@@ -195,63 +191,9 @@ public class DetailsFragment extends Fragment implements MainActivity.OnToolbarC
                             results.deleteAllFromRealm();
                         }
                     });
-                    //ImageViewCompat.setImageTintList(mLike, ColorStateList.valueOf(ContextCompat.getColor(getContext(), R.color.liked)));
                 }
             }
         });
-
-
-
-        if (isLiked){
-            //do nothing
-        } else {
-            ScaleAnimation scaleUp = new ScaleAnimation(0.5f, 1.5f, 0.5f, 1.5f, ScaleAnimation.RELATIVE_TO_SELF, 0.5f, ScaleAnimation.RELATIVE_TO_SELF, 0.5f);
-            ScaleAnimation scaleDown = new ScaleAnimation(1.5f, 0.5f, 1.5f, 0.5f, ScaleAnimation.RELATIVE_TO_SELF, 0.5f, ScaleAnimation.RELATIVE_TO_SELF, 0.5f);
-            final ScaleAnimation scaleUpToNormal = new ScaleAnimation(0.7f, 1f, 0.7f, 1f, ScaleAnimation.RELATIVE_TO_SELF, 0.5f, ScaleAnimation.RELATIVE_TO_SELF, 0.5f);
-            scaleUp.setDuration(900);
-            scaleDown.setDuration(900);
-            scaleUp.setRepeatCount(2);
-            //scaleUp.setRepeatMode(ScaleAnimation.REVERSE);
-            scaleDown.setRepeatCount(2);
-            scaleUpToNormal.setDuration(1000);
-            scaleUpToNormal.setFillAfter(true);
-
-
-            final AnimationSet anim = new AnimationSet(true);
-
-            anim.addAnimation(scaleUp);
-            anim.addAnimation(scaleDown);
-            anim.setFillAfter(true);
-            //animation delay
-
-            anim.setAnimationListener(new Animation.AnimationListener() {
-                @Override
-                public void onAnimationStart(Animation animation) {
-
-                }
-
-                @Override
-                public void onAnimationEnd(Animation animation) {
-                    mLike.setAnimation(scaleUpToNormal);
-                }
-
-                @Override
-                public void onAnimationRepeat(Animation animation) {
-
-                }
-            });
-
-            new Handler().postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    mLike.startAnimation(anim);
-                }
-            }, 2000);
-        }
-
-
-
-
 
         return mView;
     }

@@ -71,22 +71,18 @@ public class LoginActivity extends AppCompatActivity {
         password = findViewById(R.id.login_password_edittext);
         btn_login = findViewById(R.id.btn_login);
 
-        username.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            public void onFocusChange(View v, boolean hasFocus) {
-                if (hasFocus)
-                    username.setHint("");
-                else
-                    username.setHint("Username");
-            }
+        username.setOnFocusChangeListener((v, hasFocus) -> {
+            if (hasFocus)
+                username.setHint("");
+            else
+                username.setHint("Username");
         });
 
-        password.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            public void onFocusChange(View v, boolean hasFocus) {
-                if (hasFocus)
-                    password.setHint("");
-                else
-                    password.setHint("Password");
-            }
+        password.setOnFocusChangeListener((v, hasFocus) -> {
+            if (hasFocus)
+                password.setHint("");
+            else
+                password.setHint("Password");
         });
 
         btn_login.setOnClickListener(new View.OnClickListener() {
@@ -127,13 +123,7 @@ public class LoginActivity extends AppCompatActivity {
     }
 
 
-    /*private void isLoginEmpty(String username, String password) {
-        // alertDialog for empty text fields.
-    }*/
 
-    /*private void isLoginIncorrect(String username, String password) {
-        // alertDialog for non-existent login.
-    }*/
 
     private void isLoginCorrect(/*String username, String password*/) {
         // go to MainActivity and save user/pass or token.

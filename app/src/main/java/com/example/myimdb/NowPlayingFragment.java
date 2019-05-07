@@ -117,8 +117,12 @@ public class NowPlayingFragment extends Fragment implements PopularRecyclerAdapt
             public void execute(Realm realm) {
                 RealmResults<MovieRealm> movieRealm = realm.where(MovieRealm.class).findAll();
                 RealmResults<PopularRealm> popularRealm = realm.where(PopularRealm.class).findAll();
+                RealmResults<TopRatedRealm> topRatedRealm = realm.where(TopRatedRealm.class).findAll();
+                RealmResults<UpcomingRealm> upcomingRealm = realm.where(UpcomingRealm.class).findAll();
                 movieRealm.deleteAllFromRealm();
                 popularRealm.deleteAllFromRealm();
+                topRatedRealm.deleteAllFromRealm();
+                upcomingRealm.deleteAllFromRealm();
             }
         });
 
@@ -540,7 +544,7 @@ public class NowPlayingFragment extends Fragment implements PopularRecyclerAdapt
 
         try {
             if (upcomingList.size() == 0 || mRealm.where(UpcomingRealm.class).findAllAsync() == null) { // Executes if it is being called for the first time(has no data yet)
-                mUrl = "https://api.themoviedb.org/3/movie/upcoming?api_key=07d93ad59393a99fe6bc8c1b8f0de23b&language=en-US&page=1";
+                mUrl = "https://api.themoviedb.org/3/movie/upcoming?api_key=07d93ad59393a99fe6bc8c1b8f0de23b&language=en-US&page=1&region=PT";
 
                 GsonRequest<UpcomingResults> request = new GsonRequest<>(mUrl,
                         UpcomingResults.class,
@@ -566,12 +570,13 @@ public class NowPlayingFragment extends Fragment implements PopularRecyclerAdapt
                 public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
                     super.onScrollStateChanged(recyclerView, newState);
 
+                    int scroll = mRecyclerView.getScrollY();
                     if (!recyclerView.canScrollVertically(1)) {
                         //do something
                         if (mListCount > mTotalPages) {
                             return;
                         } else {
-                            mUrl = "https://api.themoviedb.org/3/movie/upcoming?api_key=07d93ad59393a99fe6bc8c1b8f0de23b&language=en-US&page=" + mListCount;
+                            mUrl = "https://api.themoviedb.org/3/movie/upcoming?api_key=07d93ad59393a99fe6bc8c1b8f0de23b&language=en-US&page=" + mListCount + "&region=PT";
 
                             GsonRequest<UpcomingResults> request = new GsonRequest<>(mUrl,
                                     UpcomingResults.class,
@@ -622,7 +627,7 @@ public class NowPlayingFragment extends Fragment implements PopularRecyclerAdapt
                                 if (mListCount > mTotalPages) {
                                     return;
                                 } else {
-                                    mUrl = "https://api.themoviedb.org/3/movie/upcoming?api_key=07d93ad59393a99fe6bc8c1b8f0de23b&language=en-US&page=" + mListCount;
+                                    mUrl = "https://api.themoviedb.org/3/movie/upcoming?api_key=07d93ad59393a99fe6bc8c1b8f0de23b&language=en-US&page=" + mListCount + "&region=PT";
 
                                     GsonRequest<UpcomingResults> request = new GsonRequest<>(mUrl,
                                             UpcomingResults.class,

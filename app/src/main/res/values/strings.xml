@@ -22,6 +22,7 @@
     <string name="details_release_date">Release date</string>
     <string name="details_duration">Duration</string>
     <string name="nav_sort_by">Sort By</string>
+    <string name="nav_profile">Profile</string>
 
 
 </resources>

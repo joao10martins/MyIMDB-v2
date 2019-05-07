@@ -147,21 +147,7 @@ public class MainActivity extends AppCompatActivity implements SearchFragment.Ch
         return true;
     }
 
-    // Toolbar
-    /*@Override
-    public boolean onOptionsItemSelected(MenuItem item) {
 
-        int id = item.getItemId();
-
-        // TODO: switch case
-        switch (id){
-            case R.id.toolbar_favorites:
-                mListener.
-
-        }
-
-        return super.onOptionsItemSelected(item);
-    }*/
 
     // Display Now Playing Movies
     public void displayNowPlaying() {

@@ -58,6 +58,8 @@ dependencies {
     implementation 'jp.wasabeef:blurry:3.0.0'
     // Android Loading Buttons Library
     implementation 'br.com.simplepass:loading-button-android:1.14.0'
+    // Smallbang Animation(like animation)
+    implementation 'pub.hanks:smallbang:1.2.2'
 }
 
 

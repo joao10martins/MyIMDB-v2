@@ -171,17 +171,24 @@
         app:layout_constraintStart_toEndOf="@+id/details_duration_img"
         app:layout_constraintTop_toBottomOf="@+id/txt_release_date" />
 
-    <ImageView
-        android:id="@+id/details_like"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
-        android:layout_marginTop="200dp"
-        android:layout_marginEnd="8dp"
-        android:clickable="true"
-        android:elevation="8dp"
-        android:src="@drawable/ic_favorite_border_24dp"
-        android:tint="@color/liked"
+
+    <xyz.hanks.library.bang.SmallBangView
+        android:id="@+id/like_heart"
+        android:layout_width="78dp"
+        android:layout_height="78dp"
+        android:layout_marginTop="185dp"
+        android:layout_marginEnd="0dp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageView
+            android:id="@+id/details_like"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_gravity="center"
+            android:src="@drawable/heart_like_selector"
+            android:tint="@color/liked"/>
+    </xyz.hanks.library.bang.SmallBangView>
+
 
 </android.support.constraint.ConstraintLayout>
