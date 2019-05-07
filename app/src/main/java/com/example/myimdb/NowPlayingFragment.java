@@ -176,6 +176,7 @@ public class NowPlayingFragment extends Fragment implements PopularRecyclerAdapt
         menu.findItem(R.id.toolbar_visualization).setVisible(true);
         menu.findItem(R.id.toolbar_favorites).setVisible(true);
         menu.findItem(R.id.toolbar_sort).setVisible(false);
+        menu.findItem(R.id.toolbar_profile).setVisible(true);
 
     }
 

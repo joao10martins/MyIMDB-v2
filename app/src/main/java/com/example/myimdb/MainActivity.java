@@ -143,6 +143,7 @@ public class MainActivity extends AppCompatActivity implements SearchFragment.Ch
         menu.findItem(R.id.toolbar_visualization).setVisible(false);
         menu.findItem(R.id.toolbar_favorites).setVisible(false);
         menu.findItem(R.id.toolbar_sort).setVisible(false);
+        menu.findItem(R.id.toolbar_profile).setVisible(false);
 
         return true;
     }

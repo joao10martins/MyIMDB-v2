@@ -92,7 +92,8 @@ public class LoginActivity extends AppCompatActivity {
                 mUsername = username.getText().toString().trim();
                 mPassword = password.getText().toString().trim();
                 if (mUsername != null && mPassword != null){
-                    createRequestToken();
+                    //createRequestToken();
+                    isLoginCorrect();
                     InputMethodManager inputManager =(InputMethodManager) getApplicationContext().getSystemService(Context.INPUT_METHOD_SERVICE);
                     inputManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
                 }
