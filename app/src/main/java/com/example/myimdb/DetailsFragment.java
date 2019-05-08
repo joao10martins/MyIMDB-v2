@@ -34,7 +34,7 @@ import xyz.hanks.library.bang.SmallBangView;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class DetailsFragment extends Fragment implements MainActivity.OnToolbarChanges {
+public class DetailsFragment extends Fragment {
 
     private View mView;
 
@@ -51,6 +51,7 @@ public class DetailsFragment extends Fragment implements MainActivity.OnToolbarC
     private TextView mOverview;
     private Toolbar mToolbar;
     private boolean isLiked = false;
+    private String mSessionId;
 
     /* Realm */
     Realm mRealm;
@@ -254,9 +255,6 @@ public class DetailsFragment extends Fragment implements MainActivity.OnToolbarC
     }
 
 
-    @Override
-    public void onShareToolbar(android.support.v7.widget.Toolbar toolbar) {
 
-    }
 
 }

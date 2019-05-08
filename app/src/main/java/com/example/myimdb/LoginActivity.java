@@ -53,6 +53,7 @@ public class LoginActivity extends AppCompatActivity {
     private String mRequestToken;
     EditText username;
     EditText password;
+    TextView sign_up;
     CircularProgressButton btn_login;
     private String mUsername;
     private String mPassword;
@@ -70,6 +71,7 @@ public class LoginActivity extends AppCompatActivity {
         username = findViewById(R.id.login_username_edittext);
         password = findViewById(R.id.login_password_edittext);
         btn_login = findViewById(R.id.btn_login);
+        sign_up = findViewById(R.id.newAccount_signUp);
 
         username.setOnFocusChangeListener((v, hasFocus) -> {
             if (hasFocus)
@@ -92,8 +94,8 @@ public class LoginActivity extends AppCompatActivity {
                 mUsername = username.getText().toString().trim();
                 mPassword = password.getText().toString().trim();
                 if (mUsername != null && mPassword != null){
-                    //createRequestToken();
-                    isLoginCorrect();
+                    createRequestToken();
+                    //isLoginCorrect();
                     InputMethodManager inputManager =(InputMethodManager) getApplicationContext().getSystemService(Context.INPUT_METHOD_SERVICE);
                     inputManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
                 }
@@ -102,6 +104,11 @@ public class LoginActivity extends AppCompatActivity {
         });
 
 
+        sign_up.setOnClickListener(v -> {
+            // go to SignUp webpage.
+            Intent signUp = new Intent(this, SignUpActivity.class);
+            startActivity(signUp);
+        });
 
 
 
@@ -129,6 +136,7 @@ public class LoginActivity extends AppCompatActivity {
     private void isLoginCorrect(/*String username, String password*/) {
         // go to MainActivity and save user/pass or token.
         Intent login = new Intent(this, MainActivity.class);
+        login.putExtra("session_id", mSessionId);
         startActivity(login);
     }
 

@@ -28,6 +28,14 @@
         android:icon="@drawable/ic_person_black_24dp"
         app:showAsAction="always"
         android:iconTint="@color/colorAccent"
-        android:title="@string/nav_profile" />
+        android:title="@string/nav_profile">
+
+
+        <menu>
+            <item android:id="@+id/toolbar_profile_logout"
+                android:title="Logout" />
+        </menu>
+
+    </item>
 
 </menu>

@@ -14,6 +14,7 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -73,6 +74,7 @@ public class NowPlayingFragment extends Fragment implements PopularRecyclerAdapt
     private boolean isMovieViewAsList = false;
     private int mScrollPosition;
     private TabLayout mNowPlayingTabs;
+    private String mSessionId;
 
     /* TabLayout Menu */
     private boolean isPopular = true;
@@ -233,7 +235,11 @@ public class NowPlayingFragment extends Fragment implements PopularRecyclerAdapt
                     setRecyclerViewLayout();
                 }
                 mRecyclerView.scrollToPosition(mScrollPosition);
+                return true;
 
+            case R.id.toolbar_profile_logout:
+                //logout
+                return true;
 
 
         }
@@ -653,7 +659,6 @@ public class NowPlayingFragment extends Fragment implements PopularRecyclerAdapt
 
 
 
-
     private Response.ErrorListener getErrorListener() {
         return new Response.ErrorListener() {
             @Override
@@ -866,6 +871,7 @@ public class NowPlayingFragment extends Fragment implements PopularRecyclerAdapt
     }
 
 
+
     @Override
     public void onResume() {
         super.onResume();
@@ -874,6 +880,7 @@ public class NowPlayingFragment extends Fragment implements PopularRecyclerAdapt
             actionBar.setTitle("Now Playing");
         }
     }
+
 
     @Override
     public void onPause() {

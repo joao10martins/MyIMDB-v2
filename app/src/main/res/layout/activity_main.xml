@@ -29,6 +29,7 @@
         android:elevation="4dp"
         android:minHeight="?attr/actionBarSize"
         android:theme="@style/Theme.AppCompat.Light.DarkActionBar"
+        app:popupTheme="@style/OverflowMenu"
         app:layout_constraintTop_toTopOf="parent"
         app:titleTextAppearance="@style/Base.TextAppearance.AppCompat.Large"
         app:titleTextColor="@color/colorAccent" />

@@ -1,6 +1,7 @@
 package com.example.myimdb;
 
 
+import android.content.Intent;
 import android.graphics.drawable.AnimationDrawable;
 import android.os.Bundle;
 import android.support.constraint.ConstraintLayout;
@@ -8,12 +9,27 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBar;
+import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+
+
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.Volley;
+
+import com.example.myimdb.helpers.GsonRequestDelete;
+
+import com.example.myimdb.model.response.DeleteSessionId;
+
+import java.util.HashMap;
+
+
 
 
 /**
@@ -24,6 +40,15 @@ public class HomeFragment extends Fragment {
     private View mView;
     ConstraintLayout constraintLayout;
     AnimationDrawable animDrawable;
+
+    /* Variables */
+    private RequestQueue mRequestQueue;
+    private String mUrl;
+    private int mStatusCode;
+    private String mStatusMessage;
+    private String mSessionId;
+
+
 
 
     public HomeFragment() {
@@ -54,7 +79,7 @@ public class HomeFragment extends Fragment {
         menu.findItem(R.id.toolbar_visualization).setVisible(false);
         menu.findItem(R.id.toolbar_favorites).setVisible(true);
         menu.findItem(R.id.toolbar_sort).setVisible(false);
-        menu.findItem(R.id.toolbar_profile).setVisible(true);
+        //menu.findItem(R.id.toolbar_profile).setVisible(true);
     }
 
     @Override
@@ -79,11 +104,16 @@ public class HomeFragment extends Fragment {
                 ActionBar toolbar = ((MainActivity)getActivity()).getSupportActionBar();
                 toolbar.setTitle("Favorites");
                 fragmentTransaction.commit();
-                //return true;
+                return true;
+
         }
 
         return super.onOptionsItemSelected(item);
     }
+
+
+
+
 
 
 
@@ -95,4 +125,6 @@ public class HomeFragment extends Fragment {
             actionBar.setTitle("Home");
         }
     }
+
+
 }
