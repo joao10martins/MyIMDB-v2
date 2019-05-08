@@ -178,7 +178,7 @@ public class NowPlayingFragment extends Fragment implements PopularRecyclerAdapt
         menu.findItem(R.id.toolbar_visualization).setVisible(true);
         menu.findItem(R.id.toolbar_favorites).setVisible(true);
         menu.findItem(R.id.toolbar_sort).setVisible(false);
-        menu.findItem(R.id.toolbar_profile).setVisible(true);
+        //menu.findItem(R.id.toolbar_profile).setVisible(true);
 
     }
 
@@ -237,9 +237,6 @@ public class NowPlayingFragment extends Fragment implements PopularRecyclerAdapt
                 mRecyclerView.scrollToPosition(mScrollPosition);
                 return true;
 
-            case R.id.toolbar_profile_logout:
-                //logout
-                return true;
 
 
         }

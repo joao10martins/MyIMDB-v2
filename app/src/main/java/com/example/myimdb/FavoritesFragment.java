@@ -159,7 +159,7 @@ public class FavoritesFragment extends Fragment implements FavoritesRecyclerAdap
         menu.findItem(R.id.toolbar_visualization).setVisible(true);
         menu.findItem(R.id.toolbar_favorites).setVisible(false);
         menu.findItem(R.id.toolbar_sort).setVisible(true);
-        menu.findItem(R.id.toolbar_profile).setVisible(true);
+        //menu.findItem(R.id.toolbar_profile).setVisible(true);
     }
 
 

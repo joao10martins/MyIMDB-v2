@@ -204,14 +204,6 @@ public class DetailsFragment extends Fragment {
 
 
 
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        super.onCreateOptionsMenu(menu, inflater);
-        menu.findItem(R.id.toolbar_profile).setVisible(true);
-    }
-
-
-
 
     private void saveMovieToFavoritesDb(final Bundle movie, final boolean isLiked){
         // TEST
