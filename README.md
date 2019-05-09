@@ -31,7 +31,10 @@ The API reference is located at [https://www.themoviedb.org/documentation/api](h
 - [**Retrofit**](https://square.github.io/retrofit/)
 - [**Timber**](https://github.com/JakeWharton/timber)
 
-[<img src="https://i.imgur.com/SGi4L9N.png">](https://kotlinlang.org/) [<img src="https://i.imgur.com/YXgVWyw.png">](https://kotlinlang.org/)
+[<img src="https://i.imgur.com/SGi4L9N.png">](https://kotlinlang.org/) [<img src="https://i.imgur.com/YXgVWyw.png">](https://github.com/ReactiveX/RxJava) [<img src="https://i.imgur.com/In44Kmb.png">](https://github.com/google/dagger)
+[<img src="https://i.imgur.com/Ms2tAxl.png">](https://square.github.io/retrofit/)
+[<img src="https://i.imgur.com/lCeZvZl.png">](https://github.com/JakeWharton/timber)
+
 
 ## Getting Help
 
