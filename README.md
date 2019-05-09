@@ -25,7 +25,7 @@ The API reference is located at [https://www.themoviedb.org/documentation/api](h
 
 ## What to Expect in the Future
 
-- **Kotlin**
+- [**Kotlin**](https://www.google.com)
 - **RxJava2**
 - **Dagger2**
 - **Retrofit**
