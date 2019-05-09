@@ -25,7 +25,7 @@ The API reference is located at [https://www.themoviedb.org/documentation/api](h
 
 ## What to Expect in the Future
 
-- [**Kotlin**](https://kotlinlang.org/)
+- [**Kotlin**](https://kotlinlang.org/) [<img src="http://www.google.com.au/images/nav_logo7.png">](http://google.com.au/)
 - [**RxJava2**](https://github.com/ReactiveX/RxJava)
 - [**Dagger2**](https://github.com/google/dagger)
 - [**Retrofit**](https://square.github.io/retrofit/)
