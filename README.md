@@ -25,11 +25,11 @@ The API reference is located at [https://www.themoviedb.org/documentation/api](h
 
 ## What to Expect in the Future
 
-- [**Kotlin**](https://www.google.com)
-- **RxJava2**
-- **Dagger2**
-- **Retrofit**
-- **Timber**
+- [**Kotlin**](https://kotlinlang.org/)
+- [**RxJava2**](https://github.com/ReactiveX/RxJava)
+- [**Dagger2**](https://github.com/google/dagger)
+- [**Retrofit**](https://square.github.io/retrofit/)
+- [**Timber**](https://github.com/JakeWharton/timber)
 
 
 ## Getting Help
