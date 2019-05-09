@@ -12,7 +12,7 @@ The second version of a movie app, that allows an user to check which movies are
 * **Login/Sign Up:** If the user has an account on TMDb, he can use that account to login in the app. Otherwise he can easily create one.
 
 
-![](https://i.imgur.com/IlAPoLF.png)
+![](https://i.imgur.com/qBPn2xb.png)
 
 
 
