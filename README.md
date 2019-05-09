@@ -3,6 +3,8 @@
 
 The second version of a movie app, that allows an user to check which movies are currently being displayed around cinemas and theaters around the world, search for specific movies and check their details making use of the free TMDb API.
 
+Some of the technologies used: Java, Realm, Glide, Gson, Volley, XML
+
 ## What's New
 
 * **Now Playing:** Now shows all of the movies that are currently Popular, the Top Rated movies as well as the Upcoming movies(according to the TMDb Api) currently being displayed at cinemas and theaters around the world. Detailed info can be seen as well if one of the items is pressed.
@@ -19,6 +21,16 @@ The second version of a movie app, that allows an user to check which movies are
 ## Documentation
 
 The API reference is located at [https://www.themoviedb.org/documentation/api](https://www.themoviedb.org/documentation/api).
+
+
+## What to Expect in the Future
+
+- **Kotlin**
+- **RxJava2**
+- **Dagger2**
+- **Retrofit**
+- **Timber**
+
 
 ## Getting Help
 
