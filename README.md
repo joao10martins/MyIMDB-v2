@@ -11,8 +11,8 @@ The second version of a movie app, that allows an user to check which movies are
 * **Favorites:** This one's a classic, this feature displays all of the movies that a user has "liked"(added to Favorites).
 * **Login/Sign Up:** If the user has an account on TMDb, he can use that account to login in the app. Otherwise he can easily create one.
 
-![](https://imgur.com/IlAPoLF)
-![](https://imgur.com/nt3vYXg)
+![](https://i.imgur.com/IlAPoLF.png)
+![](https://i.imgur.com/nt3vYXg.png)
 
 ## Documentation
 
