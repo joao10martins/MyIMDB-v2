@@ -3,7 +3,7 @@
 
 The second version of a movie app, that allows an user to check which movies are currently being displayed around cinemas and theaters around the world, search for specific movies and check their details making use of the free TMDb API.
 
-Some of the technologies used: Java, Realm, Glide, Gson, Volley, XML
+Some of the technologies used: Java, Realm, Glide, Gson, Volley, XML, Postman
 
 ## What's New
 
