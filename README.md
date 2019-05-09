@@ -7,7 +7,7 @@ The second version of a movie app, that allows an user to check which movies are
 
 * **Now Playing:** Now shows all of the movies that are currently Popular, the Top Rated movies as well as the Upcoming movies(according to the TMDb Api) currently being displayed at cinemas and theaters around the world. Detailed info can be seen as well if one of the items is pressed.
 * **View Mode:** Allows the user to switch between a List and a Grid display of the movies.
-* **Order by:** Allows the user to select the by which he sees the movies, which are currently three: by Name, by Rating and by Release Date.
+* **Order by:** Allows the user to select the by which order he sees the movies, which are currently three: by Name, by Rating and by Release Date.
 * **Favorites:** This one's a classic, this feature displays all of the movies that a user has "liked"(added to Favorites).
 * **Login/Sign Up:** If the user has an account on TMDb, he can use that account to login in the app. Otherwise he can easily create one.
 
