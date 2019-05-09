@@ -13,6 +13,9 @@ The second version of a movie app, that allows an user to check which movies are
 
 ![](https://i.imgur.com/IlAPoLF.png)
 
+
+
+
 ![](https://i.imgur.com/nt3vYXg.png)
 
 ## Documentation
